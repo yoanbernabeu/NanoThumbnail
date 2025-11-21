@@ -12,6 +12,7 @@ export const en = {
         cta_start: "Start Now",
         badge_free: "Free (Interface)",
         badge_byok: "BYOK (Replicate)",
+        open_source: "Open Source. Today and Forever.",
         features_title: "Why Choose NanoThumbnail?",
         feature_1_title: "Nano Banana Pro",
         feature_1_desc: "We use Google's latest model, recognized as the <strong>best image generator</strong> on the market today. It excels particularly in text rendering and photo realism.",
