@@ -1,4 +1,5 @@
 import '../styles/style.css';
+import './modules/errors/styles/errors.css';
 import { state } from './state.js';
 import * as UI from './ui.js';
 import { generateImage } from './api.js';

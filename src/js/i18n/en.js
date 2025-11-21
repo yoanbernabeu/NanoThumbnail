@@ -89,6 +89,16 @@ export const en = {
         btn_cancel: "Cancel",
         btn_save: "Save"
     },
+    error: {
+        generic_title: "System Notification",
+        generic_message: "An unexpected issue occurred while processing your request. We have logged this event. Please review the technical details below if the problem persists.",
+        close: "Close",
+        view_technical_details: "View Technical Details",
+        copy_log: "Copy Error Log",
+        copied_to_clipboard: "Log copied to clipboard",
+        no_details_available: "No additional technical details available.",
+        copied_to_clipboard: "Log copied to clipboard",
+    },
     alerts: {
         enter_api_key: "Please enter a valid API key.",
         enter_prompt: "Please describe your thumbnail.",
@@ -103,4 +113,3 @@ export const en = {
         terms_of_service: "Terms of Service"
     }
 };
-

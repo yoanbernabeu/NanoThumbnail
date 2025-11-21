@@ -10,6 +10,8 @@
   },
   "devDependencies": {
     "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "prismjs": "^1.30.0"
   }
 }
-

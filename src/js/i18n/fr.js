@@ -89,6 +89,18 @@ export const fr = {
         btn_cancel: "Annuler",
         btn_save: "Sauvegarder"
     },
+    error: {
+        generic_title: "Notification Système",
+        generic_message: "Une erreur inattendue est survenue lors du traitement de votre demande. Des détails techniques sont disponibles ci-dessous pour le diagnostic.",
+        close: "Fermer",
+        view_technical_details: "Voir les détails techniques",
+        copy_log: "Copier le rapport d'erreur",
+        copied_to_clipboard: "Rapport copié dans le presse-papier",
+        no_details_available: "Aucun détail technique disponible.",
+        resolve_issue: "Résoudre le problème",
+        manage_billing: "Vérifier mon compte",
+        copied_to_clipboard: "Rapport copié dans le presse-papier"
+    },
     alerts: {
         enter_api_key: "Veuillez entrer une clé API valide.",
         enter_prompt: "Veuillez décrire votre miniature.",
