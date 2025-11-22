@@ -1,6 +1,7 @@
 import { state } from './state.js';
 import { displayResult, addToHistory } from './ui.js';
 import { t } from './i18n/i18n.js';
+import { showErrorModal } from './modules/errors/handler.js';
 
 export async function generateImage() {
     const prompt = document.getElementById('promptInput').value.trim();
@@ -44,9 +45,27 @@ export async function generateImage() {
             })
         });
 
+        // Handle HTTP Errors
         if (!response.ok) {
-            const err = await response.text();
-            throw new Error(`${t('alerts.error_api')} (${response.status}): ${err}`);
+            const errorText = await response.text();
+            let errorDetails;
+            
+            try {
+                errorDetails = JSON.parse(errorText);
+            } catch (e) {
+                errorDetails = { rawResponse: errorText };
+            }
+            
+            // Configure the modal options
+            const modalOptions = {
+                statusCode: response.status,
+                errorDetails: errorDetails
+            };
+
+            // Trigger the global modal display
+            showErrorModal(modalOptions);
+            
+            throw new Error(`${t('alerts.error_api')} (${response.status}): ${errorText}`);
         }
         
         let prediction = await response.json();
@@ -72,11 +91,17 @@ export async function generateImage() {
             
             if (pollResponse.ok) {
                 prediction = await pollResponse.json();
-                if (prediction.logs) console.log(prediction.logs); 
+                if (prediction.logs) console.log('Generation Logs:', prediction.logs); 
             }
         }
 
-        if (prediction.status !== 'succeeded') throw new Error(`${t('alerts.error_generation')}: ${prediction.status}`);
+        if (prediction.status !== 'succeeded') {
+            showErrorModal({
+                statusCode: 500, // Generic server error code implies internal failure
+                errorDetails: prediction // Pass the full object so logs are visible in details
+            });
+            throw new Error(`${t('alerts.error_generation')}: ${prediction.status}`);
+        }
 
         // Success
         document.getElementById('statusText').innerText = t('app.status_download');
@@ -87,8 +112,7 @@ export async function generateImage() {
         addToHistory(prompt, imageUrl);
 
     } catch (error) {
-        console.error(error);
-        alert("Error: " + error.message);
+        console.error('Workflow Error:', error);
         document.getElementById('loader').classList.add('hidden');
         document.getElementById('placeholder').classList.remove('hidden');
     } finally {
