@@ -37,7 +37,7 @@ import '@styles/global.css';
     <meta property="og:type" content="website">
     <meta property="og:title" content={title}>
     <meta property="og:description" content={description}>
-    <meta property="og:image" content="https://nanothumbnail.com/og.png">
+    <meta property="og:image" content="https://nanothumbnail.com/og.webp">
     
     <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
@@ -45,15 +45,20 @@ import '@styles/global.css';
     <meta property="twitter:url" content="https://nanothumbnail.com/">
     <meta name="twitter:title" content={title}>
     <meta name="twitter:description" content={description}>
-    <meta name="twitter:image" content="https://nanothumbnail.com/og.png">
+    <meta name="twitter:image" content="https://nanothumbnail.com/og.webp">
     
-    <!-- Fonts -->
+    <!-- Fonts (chargement non-bloquant) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap"></noscript>
     
-    <!-- Icons (FontAwesome CDN) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Icons (FontAwesome CDN - chargement non-bloquant) -->
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
+    <!-- Preload LCP image -->
+    <link rel="preload" as="image" href="/assets/bg.webp" fetchpriority="high">
 </head>
 <body>
     <Header 
