@@ -1,5 +1,6 @@
 import { state, type HistoryItem } from './state';
 import { t } from './i18n/index';
+import { saveImage, getImage } from './storage';
 
 // DOM Elements cache
 let historyPanel: HTMLElement | null = null;
@@ -8,10 +9,14 @@ let settingsModal: HTMLElement | null = null;
 /* --- NAVIGATION --- */
 export function openSettings(): void {
   const apiKeyInput = document.getElementById('apiKeyInput') as HTMLInputElement | null;
+  const saveLocallyCheckbox = document.getElementById('saveLocallyCheckbox') as HTMLInputElement | null;
   settingsModal = document.getElementById('settingsModal');
   
   if (apiKeyInput) {
     apiKeyInput.value = state.apiKey;
+  }
+  if (saveLocallyCheckbox) {
+    saveLocallyCheckbox.checked = state.saveLocally;
   }
   if (settingsModal) {
     settingsModal.classList.remove('hidden');
@@ -27,11 +32,18 @@ export function closeSettings(): void {
 
 export function saveSettings(): void {
   const apiKeyInput = document.getElementById('apiKeyInput') as HTMLInputElement | null;
+  const saveLocallyCheckbox = document.getElementById('saveLocallyCheckbox') as HTMLInputElement | null;
   const key = apiKeyInput?.value.trim() || '';
   
   if (key) {
     state.apiKey = key;
     localStorage.setItem('nano_api_key', key);
+    
+    // Save local storage preference
+    const saveLocally = saveLocallyCheckbox?.checked || false;
+    state.saveLocally = saveLocally;
+    localStorage.setItem('nano_save_locally', saveLocally.toString());
+    
     closeSettings();
   } else {
     alert(t('alerts.enter_api_key'));
@@ -56,8 +68,25 @@ export function loadHistoryImage(url: string, prompt: string): void {
   displayResult(url, prompt);
 }
 
-export function addToHistory(prompt: string, url: string): void {
-  const newItem: HistoryItem = { prompt, url, date: new Date().toLocaleTimeString() };
+export async function addToHistory(prompt: string, url: string, base64Data?: string): Promise<void> {
+  const localId = `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const newItem: HistoryItem = { 
+    prompt, 
+    url, 
+    date: new Date().toLocaleTimeString(),
+    localId: state.saveLocally ? localId : undefined
+  };
+  
+  // Save image locally if option is enabled and base64 data is provided
+  if (state.saveLocally && base64Data) {
+    try {
+      await saveImage(localId, base64Data);
+    } catch (error) {
+      console.error('Failed to save image locally:', error);
+      newItem.localId = undefined;
+    }
+  }
+  
   state.history.unshift(newItem);
   if (state.history.length > 10) state.history.pop();
   localStorage.setItem('nano_history', JSON.stringify(state.history));
@@ -70,7 +99,7 @@ function escapeHtml(str: string): string {
   return div.innerHTML;
 }
 
-export function renderHistory(): void {
+export async function renderHistory(): Promise<void> {
   const list = document.getElementById('historyList');
   if (!list) return;
   
@@ -79,11 +108,29 @@ export function renderHistory(): void {
     return;
   }
   
-  list.innerHTML = state.history.map((item, index) => {
+  // Resolve image URLs (local or remote)
+  const itemsWithUrls = await Promise.all(
+    state.history.map(async (item) => {
+      let imageUrl = item.url;
+      if (item.localId) {
+        try {
+          const localData = await getImage(item.localId);
+          if (localData) {
+            imageUrl = localData;
+          }
+        } catch {
+          // Fallback to remote URL
+        }
+      }
+      return { ...item, resolvedUrl: imageUrl };
+    })
+  );
+  
+  list.innerHTML = itemsWithUrls.map((item, index) => {
     const safePrompt = escapeHtml(item.prompt);
     return `
       <div class="history-item">
-        <img src="${item.url}" class="history-img" loading="lazy" data-index="${index}" style="cursor:pointer">
+        <img src="${item.resolvedUrl}" class="history-img" loading="lazy" data-index="${index}" style="cursor:pointer">
         <p class="history-prompt">${safePrompt}</p>
         <small style="color:var(--text-muted)">${item.date}</small>
       </div>
@@ -92,11 +139,22 @@ export function renderHistory(): void {
   
   const imgs = list.querySelectorAll('.history-img');
   imgs.forEach(img => {
-    img.addEventListener('click', () => {
+    img.addEventListener('click', async () => {
       const index = parseInt(img.getAttribute('data-index') || '0');
       if (index >= 0 && index < state.history.length) {
         const item = state.history[index];
-        loadHistoryImage(item.url, item.prompt);
+        let imageUrl = item.url;
+        if (item.localId) {
+          try {
+            const localData = await getImage(item.localId);
+            if (localData) {
+              imageUrl = localData;
+            }
+          } catch {
+            // Fallback to remote URL
+          }
+        }
+        loadHistoryImage(imageUrl, item.prompt);
       }
     });
   });
@@ -205,7 +263,7 @@ export function clearImage(): void {
   renderReferenceImages();
 }
 
-export async function displayResult(url: string, prompt: string): Promise<void> {
+export async function displayResult(url: string, prompt: string): Promise<string | undefined> {
   const img = document.getElementById('finalImage') as HTMLImageElement | null;
   const loader = document.getElementById('loader');
   const placeholder = document.getElementById('placeholder');
@@ -213,7 +271,7 @@ export async function displayResult(url: string, prompt: string): Promise<void> 
   const actionsBar = document.getElementById('actionsBar');
   const downloadLink = document.getElementById('downloadLink') as HTMLAnchorElement | null;
   
-  if (!img) return;
+  if (!img) return undefined;
   
   // Reset display
   img.classList.add('hidden');
@@ -222,6 +280,8 @@ export async function displayResult(url: string, prompt: string): Promise<void> 
   
   // Update status text
   if (statusText) statusText.innerText = t('app.status_loading');
+  
+  let base64Data: string | undefined;
   
   try {
     let finalSrc = url;
@@ -234,28 +294,38 @@ export async function displayResult(url: string, prompt: string): Promise<void> 
       const blob = await response.blob();
       blobUrl = URL.createObjectURL(blob);
       finalSrc = blobUrl;
+      
+      // Convert to base64 for local storage if enabled
+      if (state.saveLocally) {
+        base64Data = await blobToBase64(blob);
+      }
     }
 
     img.src = finalSrc;
     
-    img.onload = () => {
-      if (loader) loader.classList.add('hidden');
-      img.classList.remove('hidden');
-      
-      if (downloadLink) {
-        downloadLink.href = blobUrl;
-        downloadLink.download = `nano-thumbnail-${Date.now()}.png`;
-      }
-      
-      if (actionsBar) {
-        actionsBar.classList.remove('hidden');
-        actionsBar.style.display = 'flex';
-      }
-    };
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => {
+        if (loader) loader.classList.add('hidden');
+        img.classList.remove('hidden');
+        
+        if (downloadLink) {
+          downloadLink.href = blobUrl;
+          downloadLink.download = `nano-thumbnail-${Date.now()}.png`;
+        }
+        
+        if (actionsBar) {
+          actionsBar.classList.remove('hidden');
+          actionsBar.style.display = 'flex';
+        }
+        resolve();
+      };
 
-    img.onerror = () => {
-      throw new Error("Image load failed");
-    };
+      img.onerror = () => {
+        reject(new Error("Image load failed"));
+      };
+    });
+    
+    return base64Data;
 
   } catch (e) {
     console.error("Image display error:", e);
@@ -273,7 +343,22 @@ export async function displayResult(url: string, prompt: string): Promise<void> 
       actionsBar.classList.remove('hidden');
       actionsBar.style.display = 'flex';
     }
+    return undefined;
   }
+}
+
+/**
+ * Convert a Blob to base64 string
+ */
+function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 
 /* --- INIT APP --- */

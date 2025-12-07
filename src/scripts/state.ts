@@ -4,6 +4,7 @@ export interface HistoryItem {
   prompt: string;
   url: string;
   date: string;
+  localId?: string; // ID for local IndexedDB storage
 }
 
 export interface AppState {
@@ -11,6 +12,7 @@ export interface AppState {
   proxyUrl: string;
   history: HistoryItem[];
   referenceImages: string[];
+  saveLocally: boolean;
 }
 
 function loadHistory(): HistoryItem[] {
@@ -26,5 +28,6 @@ export const state: AppState = {
   apiKey: localStorage.getItem('nano_api_key') || '',
   proxyUrl: 'https://corsproxy.io/?',
   history: loadHistory(),
-  referenceImages: []
+  referenceImages: [],
+  saveLocally: localStorage.getItem('nano_save_locally') === 'true'
 };

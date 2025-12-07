@@ -86,6 +86,8 @@ export const fr = {
     label_api: "Clé API Replicate",
     help_api: "Stockée localement dans votre navigateur.",
     get_api_key: "Obtenir une clé API Replicate",
+    label_save_locally: "Sauvegarder les images localement",
+    help_save_locally: "Les images seront stockées dans votre navigateur pour éviter leur expiration.",
     btn_cancel: "Annuler",
     btn_save: "Sauvegarder"
   },

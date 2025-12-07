@@ -15,6 +15,13 @@ import GlassPanel from '../ui/GlassPanel.astro';
                 <span data-i18n="modals.get_api_key">Obtenir une clé API Replicate</span>
             </a>
         </div>
+        <div class="input-group checkbox-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="saveLocallyCheckbox">
+                <span data-i18n="modals.label_save_locally">Sauvegarder les images localement</span>
+            </label>
+            <small data-i18n="modals.help_save_locally">Les images seront stockées dans votre navigateur pour éviter leur expiration.</small>
+        </div>
         <div class="modal-actions">
             <button id="cancelSettingsBtn" class="btn btn-secondary" data-i18n="modals.btn_cancel">Annuler</button>
             <button id="saveSettingsBtn" class="btn btn-primary" data-i18n="modals.btn_save">Sauvegarder</button>
@@ -95,5 +102,26 @@ import GlassPanel from '../ui/GlassPanel.astro';
         justify-content: flex-end;
         gap: 10px;
         margin-top: 1.5rem;
+    }
+
+    .checkbox-group {
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 1rem;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        font-size: 0.95rem;
+        color: var(--text);
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+        cursor: pointer;
     }
 </style>

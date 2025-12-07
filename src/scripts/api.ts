@@ -146,8 +146,8 @@ export async function generateImage(): Promise<void> {
     
     if (imageUrl) {
       console.log('Image URL:', imageUrl);
-      await displayResult(imageUrl, prompt);
-      addToHistory(prompt, imageUrl);
+      const base64Data = await displayResult(imageUrl, prompt);
+      await addToHistory(prompt, imageUrl, base64Data);
     }
 
   } catch (error) {
