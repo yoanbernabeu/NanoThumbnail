@@ -1,0 +1,99 @@
+---
+// Settings modal component for API key configuration
+import GlassPanel from '../ui/GlassPanel.astro';
+---
+
+<div id="settingsModal" class="modal-overlay hidden">
+    <GlassPanel class="modal-content">
+        <h2 data-i18n="modals.config_title">Configuration</h2>
+        <div class="input-group">
+            <label data-i18n="modals.label_api">Clé API Replicate</label>
+            <input type="password" id="apiKeyInput" class="input-field" placeholder="r8_...">
+            <small data-i18n="modals.help_api">Stockée localement dans votre navigateur.</small>
+            <a href="https://replicate.com/account/api-tokens" target="_blank" rel="noopener noreferrer" class="api-link">
+                <i class="fa-solid fa-external-link-alt"></i>
+                <span data-i18n="modals.get_api_key">Obtenir une clé API Replicate</span>
+            </a>
+        </div>
+        <div class="modal-actions">
+            <button id="cancelSettingsBtn" class="btn btn-secondary" data-i18n="modals.btn_cancel">Annuler</button>
+            <button id="saveSettingsBtn" class="btn btn-primary" data-i18n="modals.btn_save">Sauvegarder</button>
+        </div>
+    </GlassPanel>
+</div>
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .modal-overlay.hidden {
+        display: none;
+    }
+
+    .modal-overlay :global(.modal-content) {
+        width: 100%;
+        max-width: 450px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow);
+        background: linear-gradient(145deg, rgba(25, 25, 35, 0.95), rgba(20, 20, 30, 0.9));
+    }
+
+    .modal-overlay :global(.modal-content) h2 {
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 1rem;
+    }
+
+    .input-group {
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .input-group small {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        display: block;
+        margin-top: 0.5rem;
+    }
+
+    .api-link {
+        color: var(--primary);
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 0.5rem;
+    }
+
+    .api-link i {
+        font-size: 0.75rem;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 1.5rem;
+    }
+</style>

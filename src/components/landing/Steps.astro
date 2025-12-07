@@ -1,0 +1,112 @@
+---
+// Steps section component
+---
+
+<div class="marketing-section">
+    <div class="section-header">
+        <h2 data-i18n="landing.steps_title">3 étapes vers la viralité</h2>
+        <p data-i18n="landing.steps_subtitle">Plus simple, ça n'existe pas. Nous avons supprimé toute friction technique pour vous laisser créer.</p>
+    </div>
+    
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h3 data-i18n="landing.step_1_title">L'Idée</h3>
+                <p data-i18n="landing.step_1_desc">Décrivez votre scène : "Un développeur choqué devant son écran". Pas besoin de prompt complexe.</p>
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h3 data-i18n="landing.step_2_title">L'IA</h3>
+                <p data-i18n="landing.step_2_desc">Nano Banana Pro génère votre miniature en haute définition, en intégrant parfaitement le texte demandé.</p>
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h3 data-i18n="landing.step_3_title">Le Résultat</h3>
+                <p data-i18n="landing.step_3_desc">Téléchargez votre miniature en PNG/JPG et uploadez-la directement sur YouTube.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .marketing-section {
+        padding: 5rem 2rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .section-header {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 4rem auto;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(to right, #fff, var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .section-header p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 4rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        counter-reset: step;
+        padding: 0 1rem;
+    }
+
+    .step-card {
+        position: relative;
+        padding: 3rem 2rem;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .step-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--primary);
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .step-number {
+        font-size: 4rem;
+        font-weight: 800;
+        color: rgba(255,255,255,0.05);
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 0;
+    }
+
+    .step-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .step-content h3 {
+        margin-bottom: 1rem;
+    }
+
+    .step-content p {
+        color: var(--text-muted);
+    }
+</style>

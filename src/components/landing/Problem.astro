@@ -1,0 +1,139 @@
+---
+// Problem/Solution section component
+---
+
+<div class="marketing-section alt">
+    <div class="split-layout">
+        <div class="split-content">
+            <div class="sidebar-title" data-i18n="landing.problem_title">Le Problème</div>
+            <h2 class="problem-main" data-i18n="landing.problem_main">Vos vidéos méritent mieux que 0 clic</h2>
+            <p class="problem-desc" data-i18n="landing.problem_desc_1">
+                Vous passez des heures sur le montage, mais tout se joue en 0.3 seconde. Si votre miniature n'accroche pas, personne ne regardera.
+            </p>
+            <p class="problem-desc" data-i18n="landing.problem_desc_2">
+                <strong>NanoThumbnail change la donne.</strong>
+            </p>
+        </div>
+        <div class="split-visual">
+            <!-- Animated Chart SVG -->
+            <div class="chart-container">
+                <svg width="100%" height="100%" viewBox="0 0 200 100" preserveAspectRatio="none">
+                    <!-- A crashing curve -->
+                    <path class="chart-line" d="M0,10 Q50,10 80,40 T150,80 T200,90" />
+                </svg>
+                <!-- Axis labels -->
+                <div class="axis-label axis-x">Jours</div>
+                <div class="axis-label axis-y">Vues</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .marketing-section {
+        padding: 5rem 2rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .marketing-section.alt {
+        background: rgba(255,255,255,0.02);
+    }
+
+    .sidebar-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .split-layout {
+        display: flex;
+        align-items: center;
+        gap: 4rem;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .split-content {
+        flex: 1;
+        text-align: left;
+    }
+
+    .problem-main {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .problem-desc {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .problem-desc:last-child {
+        margin-bottom: 0;
+    }
+
+    .split-visual { 
+        flex: 1; 
+        background: linear-gradient(135deg, rgba(19, 19, 31, 0.8), rgba(109, 40, 217, 0.1));
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        aspect-ratio: 16/9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .chart-container {
+        width: 80%;
+        height: 60%;
+        position: relative;
+        border-left: 1px solid rgba(255,255,255,0.1);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .chart-line {
+        stroke: #f87171;
+        stroke-width: 2;
+        fill: none;
+        stroke-dasharray: 300;
+        stroke-dashoffset: 300;
+        animation: drawChart 5s ease-in-out infinite;
+        opacity: 0.8;
+    }
+
+    @keyframes drawChart {
+        0% { stroke-dashoffset: 300; opacity: 0; }
+        15% { opacity: 1; }
+        85% { stroke-dashoffset: 0; opacity: 1; }
+        100% { stroke-dashoffset: 0; opacity: 0; }
+    }
+
+    .axis-label {
+        position: absolute;
+        color: var(--text-muted);
+        font-size: 0.7rem;
+    }
+
+    .axis-x {
+        bottom: -25px;
+        left: 0;
+    }
+
+    .axis-y {
+        left: -30px;
+        top: 0;
+    }
+
+    @media (max-width: 768px) {
+        .split-layout {
+            flex-direction: column;
+        }
+    }
+</style>

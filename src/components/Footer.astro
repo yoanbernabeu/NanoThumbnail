@@ -1,0 +1,50 @@
+---
+interface Props {
+  variant?: 'landing' | 'legal';
+}
+
+const { variant = 'landing' } = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+---
+
+<footer class:list={["footer", variant]}>
+    <p data-i18n="landing.footer">YoanDev - NanoThumbnail © 2025 • Propulsé par Replicate & Google Nano Banana Pro</p>
+    <div class="footer-links">
+        <a href={`${base}legal-notice`} data-i18n="footer.legal_notice">Mentions Légales</a>
+        <a href={`${base}privacy-policy`} data-i18n="footer.privacy_policy">Politique de confidentialité</a>
+        <a href={`${base}terms-of-service`} data-i18n="footer.terms_of_service">Conditions d'utilisation</a>
+    </div>
+</footer>
+
+<style>
+    .footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .footer.legal {
+        margin-top: 4rem;
+    }
+
+    .footer-links {
+        margin-top: 1rem;
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .footer-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+        color: var(--text-main);
+    }
+</style>

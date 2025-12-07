@@ -1,0 +1,49 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+
+import Header from '@components/Header.astro';
+import Footer from '@components/Footer.astro';
+import '@styles/global.css';
+import '@styles/legal.css';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title} - NanoThumbnail</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 448 512%22><path fill=%22%236d28d9%22 d=%22M349.4 44.6c5.9-13.7 1.5-29.7-10.6-38.5s-28.6-8-39.9 1.8l-256 224c-10 8.8-13.6 22.9-8.9 35.3S50.7 288 64 288H175.5L98.6 467.4c-5.9 13.7-1.5 29.7 10.6 38.5s28.6 8 39.9-1.8l256-224c10-8.8 13.6-22.9 8.9-35.3s-16.6-20.7-30-20.7H272.5L349.4 44.6z%22/></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons (FontAwesome CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <Header showHistoryBtn={false} showApiBtn={false} showGithubBtn={false} />
+    
+    <div class="legal-container">
+        <a href={base} class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </a>
+
+        <h1>{title}</h1>
+        
+        <slot />
+    </div>
+
+    <Footer variant="legal" />
+</body>
+</html>

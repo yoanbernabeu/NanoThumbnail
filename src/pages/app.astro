@@ -1,0 +1,51 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Sidebar from '@components/app/Sidebar.astro';
+import MainArea from '@components/app/MainArea.astro';
+import HistoryPanel from '@components/app/HistoryPanel.astro';
+import SettingsModal from '@components/app/SettingsModal.astro';
+import '@styles/errors.css';
+---
+
+<BaseLayout 
+  title="NanoThumbnail - App" 
+  description="Generate Viral Thumbnails with AI"
+  showHistoryBtn={true}
+  showApiBtn={true}
+  showGithubBtn={true}
+>
+  <div id="app-view">
+    <Sidebar />
+    <MainArea />
+  </div>
+  <HistoryPanel />
+  <SettingsModal />
+</BaseLayout>
+
+<script>
+  import { initApp } from '@scripts/ui';
+  import { initGenerateButton } from '@scripts/api';
+  
+  // Initialize app when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    initApp();
+    initGenerateButton();
+  });
+</script>
+
+<style>
+  #app-view {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    height: calc(100vh - 73px);
+  }
+
+  @media (max-width: 900px) {
+    #app-view {
+      flex-direction: column;
+      height: auto;
+      overflow: visible;
+    }
+  }
+</style>

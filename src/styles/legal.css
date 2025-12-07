@@ -1,0 +1,72 @@
+/* --- LEGAL PAGES STYLES --- */
+
+.legal-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    line-height: 1.8;
+}
+
+.legal-container h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(to right, #fff, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.legal-container h2 {
+    font-size: 1.8rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    color: var(--accent);
+}
+
+.legal-container h3 {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-main);
+}
+
+.legal-container p {
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+}
+
+.legal-container strong {
+    color: var(--text-main);
+}
+
+.legal-container a {
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--primary);
+}
+
+.legal-container a:hover {
+    color: var(--primary-hover);
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+    border-bottom: none;
+}
+
+.back-btn:hover {
+    color: var(--text-main);
+}
+
+.update-date {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+}

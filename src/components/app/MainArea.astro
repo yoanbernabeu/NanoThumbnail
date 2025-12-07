@@ -1,0 +1,101 @@
+---
+// Main area component for displaying results
+---
+
+<main class="main-area">
+    <div class="result-container" id="resultContainer">
+        <div class="result-placeholder" id="placeholder">
+            <i class="fa-solid fa-image" style="font-size: 3rem; opacity: 0.3;"></i>
+            <p data-i18n="app.placeholder_text">Votre création apparaîtra ici</p>
+        </div>
+        
+        <div id="loader" class="hidden" style="text-align:center;">
+            <span class="loader"></span>
+            <p style="margin-top: 1rem; color: var(--accent);" data-i18n="app.status_working">L'IA travaille...</p>
+            <p id="statusText" style="font-size:0.8rem; color: var(--text-muted); white-space: pre-wrap; line-height: 1.5;" data-i18n="app.status_init">Initialisation...</p>
+        </div>
+
+        <img id="finalImage" class="generated-image hidden" src="" alt="Result">
+    </div>
+    
+    <div id="actionsBar" class="actions-bar hidden">
+        <a id="downloadLink" href="#" download="miniature.png" class="btn btn-primary">
+            <i class="fa-solid fa-download"></i> <span data-i18n="app.btn_download">Télécharger</span>
+        </a>
+    </div>
+</main>
+
+<style>
+    .main-area {
+        flex: 1;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .result-container {
+        width: 100%;
+        max-width: 1024px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .result-placeholder {
+        color: var(--text-muted);
+        font-size: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .generated-image {
+        max-width: 100%;
+        max-height: 70vh;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--glass-border);
+        min-height: 300px;
+        background: #000;
+    }
+
+    .actions-bar {
+        margin-top: 1rem;
+        display: flex;
+        gap: 10px;
+    }
+
+    .actions-bar.hidden {
+        display: none;
+    }
+
+    /* Loader */
+    .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #FFF;
+        border-bottom-color: var(--primary);
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 900px) {
+        .main-area {
+            min-height: 500px;
+        }
+    }
+</style>

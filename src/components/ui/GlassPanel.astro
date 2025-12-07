@@ -1,0 +1,21 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div class:list={["glass-panel", className]}>
+    <slot />
+</div>
+
+<style>
+    .glass-panel {
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius);
+    }
+</style>

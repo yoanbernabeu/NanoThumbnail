@@ -1,0 +1,106 @@
+---
+// Features section component
+import GlassPanel from '../ui/GlassPanel.astro';
+---
+
+<div class="features-section">
+    <h2 class="features-title" data-i18n="landing.features_title">Pourquoi choisir NanoThumbnail ?</h2>
+    
+    <div class="features-grid">
+        <!-- Feature 1 -->
+        <GlassPanel class="feature-card">
+            <div class="feature-icon" style="color: var(--primary);">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <h3 data-i18n="landing.feature_1_title">Nano Banana Pro</h3>
+            <p data-i18n="landing.feature_1_desc">
+                Nous utilisons le dernier modèle de Google, reconnu comme le <strong>meilleur générateur d'images</strong> du marché actuel. Il excelle particulièrement dans le rendu de texte et le réalisme photo.
+            </p>
+        </GlassPanel>
+
+        <!-- Feature 2 -->
+        <GlassPanel class="feature-card">
+            <div class="feature-icon" style="color: var(--accent);">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <h3 data-i18n="landing.feature_2_title">100% Gratuit</h3>
+            <p data-i18n="landing.feature_2_desc">
+                Notre outil est une interface gratuite et open-source. <strong>Aucun abonnement caché</strong>, aucune commission sur vos créations. Vous ne payez que ce que vous consommez.
+            </p>
+        </GlassPanel>
+
+        <!-- Feature 3 -->
+        <GlassPanel class="feature-card">
+            <div class="feature-icon" style="color: #34d399;">
+                <i class="fa-solid fa-key"></i>
+            </div>
+            <h3 data-i18n="landing.feature_3_title">Bring Your Own Key</h3>
+            <p data-i18n="landing.feature_3_desc">
+                Connectez directement votre compte <strong>Replicate</strong>. C'est la garantie de payer le prix réel fournisseur et de garder le contrôle total sur vos données et votre API.
+            </p>
+        </GlassPanel>
+    </div>
+</div>
+
+<style>
+    .features-section {
+        padding: 4rem 2rem 6rem 2rem;
+        background: rgba(0,0,0,0.2);
+        border-top: 1px solid var(--border);
+    }
+
+    .features-title {
+        text-align: center;
+        margin-bottom: 3rem;
+        font-size: 2rem;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .features-grid :global(.feature-card) {
+        padding: 2.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .features-grid :global(.feature-card:hover) {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        border-color: rgba(255,255,255,0.2);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .features-grid :global(.feature-card) h3 {
+        margin-bottom: 1rem;
+    }
+
+    .features-grid :global(.feature-card) p {
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+</style>

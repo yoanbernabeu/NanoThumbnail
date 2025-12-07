@@ -1,0 +1,71 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  showHistoryBtn?: boolean;
+  showApiBtn?: boolean;
+  showGithubBtn?: boolean;
+}
+
+const {
+  title = "NanoThumbnail",
+  description = "Generate Viral Thumbnails with AI. Unleash the power of Google Nano Banana Pro to turn your ideas into striking YouTube thumbnails.",
+  showHistoryBtn = false,
+  showApiBtn = false,
+  showGithubBtn = false,
+} = Astro.props;
+
+import Header from '@components/Header.astro';
+import '@styles/global.css';
+---
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- HTML Meta Tags -->
+    <title>{title}</title>
+    <meta name="description" content={description}>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 448 512%22><path fill=%22%236d28d9%22 d=%22M349.4 44.6c5.9-13.7 1.5-29.7-10.6-38.5s-28.6-8-39.9 1.8l-256 224c-10 8.8-13.6 22.9-8.9 35.3S50.7 288 64 288H175.5L98.6 467.4c-5.9 13.7-1.5 29.7 10.6 38.5s28.6 8 39.9-1.8l256-224c10-8.8 13.6-22.9 8.9-35.3s-16.6-20.7-30-20.7H272.5L349.4 44.6z%22/></svg>">
+    
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://nanothumbnail.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content={description}>
+    <meta property="og:image" content="https://nanothumbnail.com/og.png">
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="nanothumbnail.com">
+    <meta property="twitter:url" content="https://nanothumbnail.com/">
+    <meta name="twitter:title" content={title}>
+    <meta name="twitter:description" content={description}>
+    <meta name="twitter:image" content="https://nanothumbnail.com/og.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons (FontAwesome CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <Header 
+      showHistoryBtn={showHistoryBtn} 
+      showApiBtn={showApiBtn}
+      showGithubBtn={showGithubBtn}
+    />
+    
+    <slot />
+
+    <script>
+      import '@scripts/i18n/index';
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+---
+// FAQ section component
+import GlassPanel from '../ui/GlassPanel.astro';
+---
+
+<div class="marketing-section alt">
+    <div class="section-header">
+        <h2 data-i18n="landing.faq_title">Questions Fréquentes</h2>
+    </div>
+    <div class="faq-grid">
+        <GlassPanel class="faq-item">
+            <h3 data-i18n="landing.faq_1_q">Est-ce vraiment gratuit ?</h3>
+            <p data-i18n="landing.faq_1_a">L'interface NanoThumbnail est 100% gratuite. Cependant, la génération d'images utilise l'API Replicate qui est payante (environ 0.14$ par image). Vous payez directement Replicate.</p>
+        </GlassPanel>
+        <GlassPanel class="faq-item">
+            <h3 data-i18n="landing.faq_2_q">Ma clé API est-elle sécurisée ?</h3>
+            <p data-i18n="landing.faq_2_a">Oui. Votre clé est stockée uniquement dans votre navigateur (LocalStorage). Elle n'est jamais envoyée sur nos serveurs (nous n'en avons pas !).</p>
+        </GlassPanel>
+        <GlassPanel class="faq-item">
+            <h3 data-i18n="landing.faq_3_q">Puis-je utiliser les images commercialement ?</h3>
+            <p data-i18n="landing.faq_3_a">Oui, les images générées par Nano Banana Pro via Replicate vous appartiennent généralement. Vérifiez les CGU de Replicate pour les détails.</p>
+        </GlassPanel>
+        <GlassPanel class="faq-item">
+            <h3 data-i18n="landing.faq_4_q">Pourquoi ce modèle est-il meilleur ?</h3>
+            <p data-i18n="landing.faq_4_a">Google Nano Banana Pro a été spécifiquement entraîné pour comprendre des instructions complexes et gérer le texte, ce qui est le point faible de Midjourney ou DALL-E.</p>
+        </GlassPanel>
+    </div>
+</div>
+
+<style>
+    .marketing-section {
+        padding: 5rem 2rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .marketing-section.alt {
+        background: rgba(255,255,255,0.02);
+    }
+
+    .section-header {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 4rem auto;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(to right, #fff, var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .faq-grid :global(.faq-item) {
+        padding: 2.5rem;
+        height: 100%;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    
+    .faq-grid :global(.faq-item:hover) {
+        transform: translateY(-5px);
+        border-color: rgba(255,255,255,0.2);
+    }
+
+    .faq-grid :global(.faq-item) h3 {
+        margin-bottom: 1rem;
+        color: var(--text-main);
+        font-size: 1.25rem;
+    }
+
+    .faq-grid :global(.faq-item) p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .faq-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

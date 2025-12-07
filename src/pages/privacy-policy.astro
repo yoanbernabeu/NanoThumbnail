@@ -1,0 +1,57 @@
+---
+import LegalLayout from '@layouts/LegalLayout.astro';
+---
+
+<LegalLayout title="Privacy Policy">
+  <p class="update-date">Last updated: November 21, 2025</p>
+
+  <p>Protecting your personal data is a priority for NanoThumbnail. This privacy policy explains how we handle data when you use our thumbnail generator.</p>
+
+  <h2>1. Data Collection and "Bring Your Own Key" Principle</h2>
+
+  <p>NanoThumbnail operates on a decentralized model ("Client-Side").</p>
+
+  <h3>API Keys (Replicate)</h3>
+
+  <p>
+    <strong>Storage:</strong> Your Replicate API key is stored exclusively in your browser's local storage (LocalStorage).<br>
+    <strong>Transmission:</strong> It is never sent to our servers (NanoThumbnail does not have a user database).<br>
+    <strong>Usage:</strong> It is sent directly from your browser to the Replicate API servers to generate images.
+  </p>
+
+  <h3>Generated Data (Prompts and Images)</h3>
+
+  <p>The texts (prompts) you enter and the generated images transit between your browser and the Replicate API. We invite you to consult the Replicate Privacy Policy to understand how they process this data.</p>
+
+  <h2>2. Cookies and Trackers</h2>
+
+  <h3>Functional Cookies</h3>
+
+  <p>The site uses LocalStorage (a technology similar to cookies) solely to save your preferences (theme, API key) to avoid you having to re-enter them at each visit. These data are strictly necessary for the service to function.</p>
+
+  <h3>Audience Measurement Cookies</h3>
+
+  <p>We do not use any intrusive tracking, advertising, or third-party analytics cookies (Google Analytics, etc.).</p>
+
+  <h2>3. Data Sharing</h2>
+
+  <p>NanoThumbnail does not sell, rent, or share any of your personal data with third parties, as we do not collect it.</p>
+
+  <h2>4. Your Rights (GDPR)</h2>
+
+  <p>Since your data (API Key) is stored on your own device:</p>
+
+  <p><strong>Access and Deletion:</strong> You can delete your data at any time by clicking the "Logout" or "Clear Key" button in the interface, or by clearing your browser cache.</p>
+
+  <h2>5. Contact</h2>
+
+  <p>For any questions regarding this policy, you can contact us at: <strong>contact@yoandev.co</strong></p>
+</LegalLayout>
+
+<style>
+  .update-date {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+</style>

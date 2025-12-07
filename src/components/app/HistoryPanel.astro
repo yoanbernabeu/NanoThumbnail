@@ -1,0 +1,60 @@
+---
+// History panel component
+---
+
+<div id="historyPanel" class="history-panel">
+    <div class="history-header">
+        <h3 data-i18n="history.title">Historique</h3>
+        <button id="closeHistoryBtn" class="close-btn">
+            <i class="fa-solid fa-times"></i>
+        </button>
+    </div>
+    <div id="historyList">
+        <!-- Items injected via JS -->
+        <p class="empty-msg" data-i18n="history.empty">Aucun historique récent.</p>
+    </div>
+</div>
+
+<style>
+    .history-panel {
+        position: fixed;
+        right: 0;
+        top: 73px;
+        bottom: 0;
+        width: 320px;
+        background: var(--bg-panel);
+        border-left: 1px solid var(--border);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        z-index: 50;
+        padding: 1.5rem;
+        overflow-y: auto;
+    }
+
+    .history-panel.open {
+        transform: translateX(0);
+    }
+
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .history-header h3 {
+        font-weight: 700;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 4px;
+    }
+
+    .empty-msg {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+</style>

@@ -1,0 +1,37 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/landing/Hero.astro';
+import Features from '@components/landing/Features.astro';
+import Problem from '@components/landing/Problem.astro';
+import Steps from '@components/landing/Steps.astro';
+import FAQ from '@components/landing/FAQ.astro';
+import CTA from '@components/landing/CTA.astro';
+import Footer from '@components/Footer.astro';
+---
+
+<BaseLayout 
+  title="NanoThumbnail" 
+  description="Generate Viral Thumbnails with AI. Unleash the power of Google Nano Banana Pro to turn your ideas into striking YouTube thumbnails."
+  showHistoryBtn={false}
+  showApiBtn={false}
+  showGithubBtn={false}
+>
+  <div id="landing-view">
+    <Hero />
+    <Features />
+    <Problem />
+    <Steps />
+    <FAQ />
+    <CTA />
+    <Footer variant="landing" />
+  </div>
+</BaseLayout>
+
+<style>
+  #landing-view {
+    flex: 1;
+    display: block;
+    overflow-y: auto;
+    position: relative;
+  }
+</style>

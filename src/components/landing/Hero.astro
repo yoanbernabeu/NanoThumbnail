@@ -1,0 +1,117 @@
+---
+// Hero section component
+const base = import.meta.env.BASE_URL;
+const bgImageUrl = `${base}assets/bg.webp`;
+---
+
+<div class="hero-section" style={`background-image: url('${bgImageUrl}')`}>
+    <h1 class="hero-title" data-i18n="landing.hero_title">Générez des miniatures<br>virales avec l'IA</h1>
+    <p class="hero-subtitle" data-i18n="landing.hero_subtitle">Utilisez la puissance de <strong>Google Nano Banana Pro</strong> pour transformer vos idées en miniatures YouTube percutantes.</p>
+    <a href={`${base}app`} class="btn btn-primary hero-cta">
+        <span data-i18n="landing.cta_start">Commencer maintenant</span> <i class="fa-solid fa-arrow-right"></i>
+    </a>
+    
+    <div class="github-link">
+        <a href="https://github.com/yoanbernabeu/NanoThumbnail" target="_blank">
+            <i class="fa-brands fa-github"></i> <span data-i18n="landing.open_source">Open Source. Aujourd'hui et pour toujours.</span>
+        </a>
+    </div>
+
+    <p class="badges">
+        <i class="fa-solid fa-check" style="color: var(--primary);"></i> <span data-i18n="landing.badge_free">Gratuit (Interface)</span> &nbsp;&nbsp;
+        <i class="fa-solid fa-check" style="color: var(--primary);"></i> <span data-i18n="landing.badge_byok">BYOK (Replicate)</span>
+    </p>
+</div>
+
+<style>
+    .hero-section {
+        min-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        position: relative;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(ellipse 80% 60% at center 40%, rgba(10, 10, 15, 0.3) 0%, rgba(10, 10, 15, 0.75) 70%, rgba(10, 10, 15, 0.95) 100%),
+            linear-gradient(to bottom, rgba(10, 10, 15, 0.4), rgba(10, 10, 15, 0.5));
+        z-index: 0;
+    }
+
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 150px;
+        background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.4));
+        z-index: 0;
+    }
+
+    .hero-section > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(to right, #fff, #d8b4fe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin-bottom: 2.5rem;
+    }
+
+    .hero-cta {
+        padding: 16px 32px;
+        font-size: 1.1rem;
+        text-decoration: none;
+    }
+
+    .github-link {
+        margin-top: 2rem;
+        font-size: 0.9rem;
+    }
+
+    .github-link a {
+        color: var(--text-muted);
+        text-decoration: none;
+        border-bottom: 1px dotted var(--text-muted);
+    }
+
+    .badges {
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        opacity: 0.7;
+    }
+
+    @media (max-width: 900px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+    }
+</style>
