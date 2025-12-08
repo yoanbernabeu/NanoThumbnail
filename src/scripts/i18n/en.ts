@@ -79,7 +79,17 @@ export const en = {
   },
   history: {
     title: "History",
-    empty: "No recent history."
+    empty: "No recent history.",
+    reuse: "Reuse prompt",
+    use_reference: "Use as reference"
+  },
+  library: {
+    title: "Library",
+    empty: "No saved images.",
+    add: "Add as reference",
+    save: "Save",
+    delete: "Delete",
+    already_saved: "Already saved"
   },
   modals: {
     config_title: "Configuration",

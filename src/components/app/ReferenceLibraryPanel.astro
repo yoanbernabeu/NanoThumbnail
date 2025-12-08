@@ -1,24 +1,24 @@
 ---
-// History panel component
+// Reference Library panel component
 ---
 
-<div id="historyPanel" class="history-panel">
-    <div class="history-header">
-        <h3 data-i18n="history.title">Historique</h3>
-        <button id="closeHistoryBtn" class="close-btn">
+<div id="libraryPanel" class="library-panel">
+    <div class="library-header">
+        <h3 data-i18n="library.title">Bibliothèque</h3>
+        <button id="closeLibraryBtn" class="close-btn">
             <i class="fa-solid fa-times"></i>
         </button>
     </div>
-    <div id="historyList">
+    <div id="libraryList">
         <!-- Items injected via JS -->
-        <p class="empty-msg" data-i18n="history.empty">
-            Aucun historique récent.
+        <p class="empty-msg" data-i18n="library.empty">
+            Aucune image sauvegardée.
         </p>
     </div>
 </div>
 
 <style>
-    .history-panel {
+    .library-panel {
         position: fixed;
         right: 0;
         top: 73px;
@@ -33,17 +33,17 @@
         overflow-y: auto;
     }
 
-    .history-panel.open {
+    .library-panel.open {
         transform: translateX(0);
     }
 
-    .history-header {
+    .library-header {
         display: flex;
         justify-content: space-between;
         margin-bottom: 1.5rem;
     }
 
-    .history-header h3 {
+    .library-header h3 {
         font-weight: 700;
     }
 
@@ -60,8 +60,30 @@
         font-size: 0.9rem;
     }
 
-    /* Reuse Button Styles */
-    :global(.reuse-btn) {
+    /* Library Item Styles */
+    :global(.library-item) {
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1rem;
+    }
+
+    :global(.library-img) {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        background: #000;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    :global(.library-actions) {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    :global(.library-btn) {
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -74,19 +96,23 @@
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s ease;
-        margin-top: 10px;
         width: 100%;
         justify-content: center;
     }
 
-    :global(.reuse-btn:hover) {
+    :global(.library-btn:hover) {
         background: rgba(255, 255, 255, 0.1);
         border-color: rgba(255, 255, 255, 0.2);
         transform: translateY(-1px);
     }
 
-    :global(.reuse-btn i) {
+    :global(.library-btn i) {
         font-size: 0.9em;
         color: var(--accent);
+    }
+
+    :global(.library-btn.delete-btn:hover) {
+        background: rgba(220, 38, 38, 0.2);
+        border-color: rgba(220, 38, 38, 0.5);
     }
 </style>

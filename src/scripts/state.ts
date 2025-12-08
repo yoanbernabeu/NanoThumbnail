@@ -1,10 +1,18 @@
 // Application state management
 
+export interface GenerationParameters {
+  resolution: string;
+  aspect_ratio: string;
+  output_format: string;
+  safety_filter_level: string;
+}
+
 export interface HistoryItem {
   prompt: string;
   url: string;
   date: string;
   localId?: string; // ID for local IndexedDB storage
+  parameters?: GenerationParameters;
 }
 
 export interface AppState {
@@ -18,7 +26,11 @@ export interface AppState {
 function loadHistory(): HistoryItem[] {
   try {
     const stored = localStorage.getItem('nano_history');
-    return stored ? JSON.parse(stored) : [];
+    if (!stored) return [];
+
+    const parsed: HistoryItem[] = JSON.parse(stored);
+    // Filter out items that are not saved locally (no localId)
+    return parsed.filter(item => item.localId);
   } catch {
     return [];
   }

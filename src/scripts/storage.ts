@@ -117,3 +117,32 @@ export async function clearAllImages(): Promise<void> {
     };
   });
 }
+
+/**
+ * Get all images from IndexedDB, optionally filtered by ID prefix
+ * @param prefix - Optional prefix to filter images by ID
+ * @returns Array of image objects with id and base64
+ */
+export async function getAllImages(prefix?: string): Promise<Array<{ id: string; base64: string; timestamp: number }>> {
+  const database = await initDB();
+
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction([STORE_NAME], 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.getAll();
+
+    request.onsuccess = () => {
+      let results = request.result || [];
+      if (prefix) {
+        results = results.filter((item: { id: string }) => item.id.startsWith(prefix));
+      }
+      // Sort by timestamp descending (newest first)
+      results.sort((a: { timestamp: number }, b: { timestamp: number }) => b.timestamp - a.timestamp);
+      resolve(results);
+    };
+    request.onerror = () => {
+      console.error('Error getting all images:', request.error);
+      reject(request.error);
+    };
+  });
+}

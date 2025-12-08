@@ -1,17 +1,19 @@
 ---
 interface Props {
-  showHistoryBtn?: boolean;
-  showApiBtn?: boolean;
-  showGithubBtn?: boolean;
+    showHistoryBtn?: boolean;
+    showLibraryBtn?: boolean;
+    showApiBtn?: boolean;
+    showGithubBtn?: boolean;
 }
 
 const {
-  showHistoryBtn = false,
-  showApiBtn = false,
-  showGithubBtn = false,
+    showHistoryBtn = false,
+    showLibraryBtn = false,
+    showApiBtn = false,
+    showGithubBtn = false,
 } = Astro.props;
 
-import LangSelect from './LangSelect.astro';
+import LangSelect from "./LangSelect.astro";
 
 const base = import.meta.env.BASE_URL;
 ---
@@ -23,16 +25,41 @@ const base = import.meta.env.BASE_URL;
     </a>
     <div class="header-actions">
         <LangSelect />
-        {showHistoryBtn && (
-            <button id="historyBtn" class="btn btn-secondary" data-action="toggleHistory">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-            </button>
-        )}
-        {showApiBtn && (
-            <button id="apiBtn" class="btn btn-secondary" data-action="openSettings">
-                <i class="fa-solid fa-gear"></i> <span data-i18n="header.api_btn">API</span>
-            </button>
-        )}
+        {
+            showHistoryBtn && (
+                <button
+                    id="historyBtn"
+                    class="btn btn-secondary"
+                    data-action="toggleHistory"
+                >
+                    <i class="fa-solid fa-clock-rotate-left" />
+                </button>
+            )
+        }
+        {
+            showLibraryBtn && (
+                <button
+                    id="libraryBtn"
+                    class="btn btn-secondary"
+                    data-action="toggleLibrary"
+                    title="Bibliothèque"
+                >
+                    <i class="fa-solid fa-folder-open" />
+                </button>
+            )
+        }
+        {
+            showApiBtn && (
+                <button
+                    id="apiBtn"
+                    class="btn btn-secondary"
+                    data-action="openSettings"
+                >
+                    <i class="fa-solid fa-gear" />{" "}
+                    <span data-i18n="header.api_btn">API</span>
+                </button>
+            )
+        }
     </div>
 </header>
 

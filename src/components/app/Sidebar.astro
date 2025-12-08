@@ -3,51 +3,101 @@
 ---
 
 <aside class="sidebar">
-    
     <div class="section">
-        <div class="sidebar-title" data-i18n="app.sidebar_idea">1. Votre Idée (Prompt)</div>
-        <textarea id="promptInput" class="input-field" rows="4" placeholder="Décrivez votre miniature (ex: Visage choqué, fond explosion, texte 'INCROYABLE'...)" data-i18n="app.prompt_placeholder"></textarea>
+        <div class="sidebar-title" data-i18n="app.sidebar_idea">
+            1. Votre Idée (Prompt)
+        </div>
+        <textarea
+            id="promptInput"
+            class="input-field"
+            rows="4"
+            placeholder="Décrivez votre miniature (ex: Visage choqué, fond explosion, texte 'INCROYABLE'...)"
+            data-i18n="app.prompt_placeholder"></textarea>
     </div>
 
     <div class="section">
-        <div class="sidebar-title" style="display: flex; justify-content: space-between; align-items: center;">
-            <span data-i18n="app.sidebar_ref">2. Images de Référence (Optionnel)</span>
-            <span id="imageCount" style="font-size: 0.75rem; color: var(--text-muted);">0/14</span>
+        <div
+            class="sidebar-title"
+            style="display: flex; justify-content: space-between; align-items: center;"
+        >
+            <span data-i18n="app.sidebar_ref"
+                >2. Images de Référence (Optionnel)</span
+            >
+            <span
+                id="imageCount"
+                style="font-size: 0.75rem; color: var(--text-muted);">0/14</span
+            >
         </div>
         <div id="previewContainer" class="preview-img-grid">
             <!-- Images will be rendered here by JS -->
         </div>
         <div class="drop-zone" id="dropZone">
-            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
-            <p style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="app.drop_text">Cliquez ou glissez des images ici</p>
-            <p class="drop-zone-max-text" style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem;">Max 14 images</p>
-            <input type="file" id="fileInput" accept="image/*" multiple hidden>
+            <i
+                class="fa-solid fa-cloud-arrow-up"
+                style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-muted);"
+            ></i>
+            <p
+                style="font-size: 0.8rem; color: var(--text-muted);"
+                data-i18n="app.drop_text"
+            >
+                Cliquez ou glissez des images ici
+            </p>
+            <p
+                class="drop-zone-max-text"
+                style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem;"
+            >
+                Max 14 images
+            </p>
+            <input
+                type="file"
+                id="fileInput"
+                accept="image/*"
+                multiple
+                hidden
+            />
         </div>
         <button id="clearAllBtn" class="btn btn-secondary clear-all-btn">
-            <i class="fa-solid fa-trash"></i> <span data-i18n="app.btn_clear_all">Tout effacer</span>
+            <i class="fa-solid fa-trash"></i>
+            <span data-i18n="app.btn_clear_all">Tout effacer</span>
         </button>
     </div>
 
     <div class="section">
-        <div class="sidebar-title" data-i18n="app.sidebar_settings">3. Paramètres</div>
-        
+        <div class="sidebar-title" data-i18n="app.sidebar_settings">
+            3. Paramètres
+        </div>
+
         <div class="select-row">
             <div class="input-group">
                 <label data-i18n="app.label_resolution">Résolution</label>
                 <select id="resolutionSelect" class="input-field">
-                    <option value="1K" data-i18n="app.opt_1k">1K (Rapide)</option>
-                    <option value="2K" selected data-i18n="app.opt_2k">2K (Standard)</option>
-                    <option value="4K" data-i18n="app.opt_4k">4K (Haut de gamme)</option>
+                    <option value="1K" data-i18n="app.opt_1k"
+                        >1K (Rapide)</option
+                    >
+                    <option value="2K" selected data-i18n="app.opt_2k"
+                        >2K (Standard)</option
+                    >
+                    <option value="4K" data-i18n="app.opt_4k"
+                        >4K (Haut de gamme)</option
+                    >
                 </select>
             </div>
             <div class="input-group">
                 <label data-i18n="app.label_ratio">Format (Ratio)</label>
                 <select id="aspectRatioSelect" class="input-field">
-                    <option value="16:9" selected data-i18n="app.opt_16_9">16:9 (Youtube)</option>
-                    <option value="9:16" data-i18n="app.opt_9_16">9:16 (Shorts)</option>
+                    <option value="16:9" selected data-i18n="app.opt_16_9"
+                        >16:9 (Youtube)</option
+                    >
+                    <option value="9:16" data-i18n="app.opt_9_16"
+                        >9:16 (Shorts)</option
+                    >
                     <option value="4:3" data-i18n="app.opt_4_3">4:3</option>
-                    <option value="1:1" data-i18n="app.opt_1_1">1:1 (Carré)</option>
-                    <option value="match_input_image" data-i18n="app.opt_match">Match Input</option>
+                    <option value="1:1" data-i18n="app.opt_1_1"
+                        >1:1 (Carré)</option
+                    >
+                    <option value="match_input_image" data-i18n="app.opt_match"
+                        >Match Input</option
+                    >
                 </select>
             </div>
         </div>
@@ -63,20 +113,37 @@
             <div class="input-group">
                 <label data-i18n="app.label_safety">Sécurité</label>
                 <select id="safetySelect" class="input-field">
-                    <option value="block_medium_and_above" data-i18n="app.opt_medium">Moyen</option>
-                    <option value="block_only_high" selected data-i18n="app.opt_permissive">Permissif</option>
-                    <option value="block_low_and_above" data-i18n="app.opt_strict">Strict</option>
+                    <option
+                        value="block_medium_and_above"
+                        data-i18n="app.opt_medium">Moyen</option
+                    >
+                    <option
+                        value="block_only_high"
+                        selected
+                        data-i18n="app.opt_permissive">Permissif</option
+                    >
+                    <option
+                        value="block_low_and_above"
+                        data-i18n="app.opt_strict">Strict</option
+                    >
                 </select>
             </div>
         </div>
     </div>
 
     <button class="btn btn-primary" id="generateBtn">
-        <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="app.btn_generate">Générer Miniature</span>
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span data-i18n="app.btn_generate">Générer Miniature</span>
     </button>
 
-    <a id="githubStarBtn" href="https://github.com/yoanbernabeu/NanoThumbnail" target="_blank" class="btn btn-secondary github-star-btn">
-        <i class="fa-brands fa-github" style="color: gold;"></i> <span data-i18n="header.github_star">Star sur GitHub</span>
+    <a
+        id="githubStarBtn"
+        href="https://github.com/yoanbernabeu/NanoThumbnail"
+        target="_blank"
+        class="btn btn-secondary github-star-btn"
+    >
+        <i class="fa-brands fa-github" style="color: gold;"></i>
+        <span data-i18n="header.github_star">Star sur GitHub</span>
     </a>
 </aside>
 
@@ -150,7 +217,7 @@
         text-align: center;
         cursor: pointer;
         transition: all 0.3s ease;
-        background: rgba(255,255,255,0.02);
+        background: rgba(255, 255, 255, 0.02);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -188,7 +255,7 @@
 
     .drop-zone.disabled:hover {
         border-color: rgba(255, 255, 255, 0.05);
-        background: rgba(255,255,255,0.02);
+        background: rgba(255, 255, 255, 0.02);
     }
 
     /* Preview Grid */

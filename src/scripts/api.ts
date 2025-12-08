@@ -1,4 +1,4 @@
-import { state } from './state';
+import { state, type GenerationParameters } from './state';
 import { displayResult, addToHistory } from './ui';
 import { t } from './i18n/index';
 import { showErrorModal } from './modules/errors/handler';
@@ -24,12 +24,12 @@ interface PredictionResponse {
 export async function generateImage(): Promise<void> {
   const promptInput = document.getElementById('promptInput') as HTMLTextAreaElement | null;
   const prompt = promptInput?.value.trim() || '';
-  
+
   if (!prompt) {
     alert(t('alerts.enter_prompt'));
     return;
   }
-  
+
   // UI Updates
   const generateBtn = document.getElementById('generateBtn') as HTMLButtonElement | null;
   const placeholder = document.getElementById('placeholder');
@@ -37,19 +37,19 @@ export async function generateImage(): Promise<void> {
   const actionsBar = document.getElementById('actionsBar');
   const loader = document.getElementById('loader');
   const statusText = document.getElementById('statusText');
-  
+
   if (generateBtn) generateBtn.disabled = true;
   if (placeholder) placeholder.classList.add('hidden');
   if (finalImage) finalImage.classList.add('hidden');
   if (actionsBar) actionsBar.classList.add('hidden');
   if (loader) loader.classList.remove('hidden');
-  
+
   // Get params
   const resolutionSelect = document.getElementById('resolutionSelect') as HTMLSelectElement | null;
   const aspectRatioSelect = document.getElementById('aspectRatioSelect') as HTMLSelectElement | null;
   const formatSelect = document.getElementById('formatSelect') as HTMLSelectElement | null;
   const safetySelect = document.getElementById('safetySelect') as HTMLSelectElement | null;
-  
+
   const resolution = resolutionSelect?.value || '2K';
   const aspectRatio = aspectRatioSelect?.value || '16:9';
   const format = formatSelect?.value || 'png';
@@ -68,7 +68,7 @@ export async function generateImage(): Promise<void> {
 
   try {
     const createUrl = `${state.proxyUrl}https://api.replicate.com/v1/models/google/nano-banana-pro/predictions`;
-    
+
     const response = await fetch(createUrl, {
       method: 'POST',
       headers: {
@@ -84,13 +84,13 @@ export async function generateImage(): Promise<void> {
     if (!response.ok) {
       const errorText = await response.text();
       let errorDetails: Record<string, unknown>;
-      
+
       try {
         errorDetails = JSON.parse(errorText);
       } catch {
         errorDetails = { rawResponse: errorText };
       }
-      
+
       // Configure the modal options
       const modalOptions = {
         statusCode: response.status,
@@ -99,10 +99,10 @@ export async function generateImage(): Promise<void> {
 
       // Trigger the global modal display
       showErrorModal(modalOptions);
-      
+
       throw new Error(`${t('alerts.error_api')} (${response.status}): ${errorText}`);
     }
-    
+
     let prediction: PredictionResponse = await response.json();
     const predictionGetUrl = prediction.urls.get;
     const startTime = Date.now();
@@ -115,17 +115,17 @@ export async function generateImage(): Promise<void> {
       if (statusText) {
         statusText.innerText = `${t('app.status_working')} (${elapsed}s)\nStatut: ${prediction.status}`;
       }
-      
+
       await new Promise(r => setTimeout(r, 1000));
-      
+
       const separator = predictionGetUrl.includes('?') ? '&' : '?';
       const urlWithCacheBuster = `${predictionGetUrl}${separator}t=${Date.now()}`;
       const finalUrl = `${state.proxyUrl}${encodeURIComponent(urlWithCacheBuster)}`;
-      
+
       const pollResponse = await fetch(finalUrl, {
         headers: { 'Authorization': `Token ${state.apiKey}` }
       });
-      
+
       if (pollResponse.ok) {
         prediction = await pollResponse.json();
         if (prediction.logs) console.log('Generation Logs:', prediction.logs);
@@ -143,11 +143,19 @@ export async function generateImage(): Promise<void> {
     // Success
     if (statusText) statusText.innerText = t('app.status_download');
     const imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
-    
+
     if (imageUrl) {
       console.log('Image URL:', imageUrl);
       const base64Data = await displayResult(imageUrl, prompt);
-      await addToHistory(prompt, imageUrl, base64Data);
+
+      const parameters: GenerationParameters = {
+        resolution,
+        aspect_ratio: aspectRatio,
+        output_format: format,
+        safety_filter_level: safety
+      };
+
+      await addToHistory(prompt, imageUrl, base64Data, parameters);
     }
 
   } catch (error) {

@@ -79,7 +79,17 @@ export const fr = {
   },
   history: {
     title: "Historique",
-    empty: "Aucun historique récent."
+    empty: "Aucun historique récent.",
+    reuse: "Réutiliser le prompt",
+    use_reference: "Utiliser comme référence"
+  },
+  library: {
+    title: "Bibliothèque",
+    empty: "Aucune image sauvegardée.",
+    add: "Ajouter comme référence",
+    save: "Sauvegarder",
+    delete: "Supprimer",
+    already_saved: "Déjà sauvegardé"
   },
   modals: {
     config_title: "Configuration",

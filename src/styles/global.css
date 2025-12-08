@@ -171,3 +171,31 @@ select.input-field {
 .remove-img:hover {
     background: rgba(220, 38, 38, 0.9);
 }
+
+.save-to-lib-btn {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: background 0.2s, color 0.2s;
+}
+
+.save-to-lib-btn:hover {
+    background: rgba(109, 40, 217, 0.9);
+    color: white;
+}
+
+.save-to-lib-btn.in-library {
+    background: rgba(109, 40, 217, 0.9);
+    cursor: default;
+}
