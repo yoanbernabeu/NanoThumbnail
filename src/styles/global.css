@@ -2,6 +2,7 @@
 :root {
     --bg-dark: #0a0a0f;
     --bg-panel: #13131f;
+    --bg-secondary: #0f0f16;
     --primary: #6d28d9; /* Violet */
     --primary-hover: #7c3aed;
     --accent: #d8b4fe;
@@ -130,6 +131,7 @@ select.input-field {
     color: var(--text-muted);
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

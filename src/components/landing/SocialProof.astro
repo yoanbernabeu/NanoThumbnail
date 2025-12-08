@@ -1,0 +1,173 @@
+---
+// Social Proof Section
+---
+
+<div class="social-proof-section">
+    <div class="trusted-by">
+        <p class="trusted-text" data-i18n="landing.social_proof.trusted_by">
+            Peut-être approuvé par des créateurs sur... (mais on ne peut pas le
+            prouver)
+        </p>
+    </div>
+
+    <div class="marquee-container">
+        <div class="marquee-content">
+            <!-- Original Set -->
+            <div class="logo-item">
+                <i class="fa-brands fa-youtube"></i> YouTube
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-twitch"></i> Twitch
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-tiktok"></i> TikTok
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-instagram"></i> Instagram
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-linkedin"></i> LinkedIn
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-twitter"></i> Twitter/X
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-facebook"></i> Facebook
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-discord"></i> Discord
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-reddit"></i> Reddit
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-pinterest"></i> Pinterest
+            </div>
+
+            <!-- Duplicate Set for seamless loop -->
+            <div class="logo-item">
+                <i class="fa-brands fa-youtube"></i> YouTube
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-twitch"></i> Twitch
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-tiktok"></i> TikTok
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-instagram"></i> Instagram
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-linkedin"></i> LinkedIn
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-twitter"></i> Twitter/X
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-facebook"></i> Facebook
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-discord"></i> Discord
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-reddit"></i> Reddit
+            </div>
+            <div class="logo-item">
+                <i class="fa-brands fa-pinterest"></i> Pinterest
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .social-proof-section {
+        padding: 4rem 0;
+        background: var(--bg-dark);
+        border-bottom: 1px solid var(--border);
+        overflow: hidden;
+    }
+
+    .trusted-by {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 0 1rem;
+    }
+
+    .trusted-text {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        opacity: 0.7;
+    }
+
+    .marquee-container {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 10%,
+            black 90%,
+            transparent
+        );
+        -webkit-mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 10%,
+            black 90%,
+            transparent
+        );
+    }
+
+    .marquee-content {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 4rem;
+        animation: scroll 30s linear infinite;
+        width: max-content;
+        padding: 1rem 0;
+    }
+
+    .logo-item {
+        font-size: 1.5rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        white-space: nowrap;
+        transition: color 0.3s ease;
+        opacity: 0.6;
+    }
+
+    .logo-item:hover {
+        color: #fff;
+        opacity: 1;
+    }
+
+    @keyframes scroll {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+
+    /* Pause animation on hover for better UX */
+    .marquee-container:hover .marquee-content {
+        animation-play-state: paused;
+    }
+
+    @media (max-width: 768px) {
+        .marquee-content {
+            gap: 2rem;
+        }
+
+        .logo-item {
+            font-size: 1.2rem;
+        }
+    }
+</style>

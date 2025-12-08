@@ -1,0 +1,205 @@
+---
+// Local Workflow Section (Merged Features)
+import GlassPanel from "../ui/GlassPanel.astro";
+const base = import.meta.env.BASE_URL;
+---
+
+<div class="local-workflow-section" id="features">
+    <div class="header">
+        <h2 data-i18n="landing.features_title">
+            Pourquoi choisir NanoThumbnail ?
+        </h2>
+        <p data-i18n="landing.local_workflow.subtitle">
+            Nous avons construit un espace de travail complet qui vit dans votre
+            navigateur. Aucune donnée ne quitte votre appareil sauf pour la
+            génération.
+        </p>
+    </div>
+
+    <div class="workflow-grid">
+        <!-- Feature 1: Nano Banana Pro -->
+        <div class="workflow-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <div class="content">
+                <h3 data-i18n="landing.feature_1_title">Nano Banana Pro</h3>
+                <p data-i18n="landing.feature_1_desc">
+                    Nous utilisons le dernier modèle de Google, reconnu comme le
+                    meilleur générateur d'images du marché actuel.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 2: 100% Free -->
+        <div class="workflow-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="content">
+                <h3 data-i18n="landing.feature_2_title">100% Gratuit</h3>
+                <p data-i18n="landing.feature_2_desc">
+                    Notre outil est une interface gratuite et open-source. Aucun
+                    abonnement caché, aucune commission.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 3: BYOK -->
+        <div class="workflow-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-key"></i>
+            </div>
+            <div class="content">
+                <h3 data-i18n="landing.feature_3_title">Bring Your Own Key</h3>
+                <p data-i18n="landing.feature_3_desc">
+                    Connectez directement votre compte Replicate. Payez le prix
+                    réel fournisseur.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 4: History -->
+        <div class="workflow-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div class="content">
+                <h3 data-i18n="landing.local_workflow.feature_1_title">
+                    Historique Local
+                </h3>
+                <p data-i18n="landing.local_workflow.feature_1_desc">
+                    Ne perdez plus jamais un prompt. Chaque génération est
+                    sauvegardée automatiquement.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 5: Iteration -->
+        <div class="workflow-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-arrows-rotate"></i>
+            </div>
+            <div class="content">
+                <h3 data-i18n="landing.local_workflow.feature_2_title">
+                    Itération Intelligente
+                </h3>
+                <p data-i18n="landing.local_workflow.feature_2_desc">
+                    Réutilisez n'importe quel prompt ou réglage passé en un clic
+                    pour affiner vos résultats.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 6: Library -->
+        <div class="workflow-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-book-bookmark"></i>
+            </div>
+            <div class="content">
+                <h3 data-i18n="landing.local_workflow.feature_3_title">
+                    Bibliothèque de Références
+                </h3>
+                <p data-i18n="landing.local_workflow.feature_3_desc">
+                    Constituez votre collection personnelle d'images de
+                    référence pour un style cohérent.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .local-workflow-section {
+        padding: 6rem 2rem;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.2),
+            rgba(0, 0, 0, 0.4)
+        );
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .header {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 4rem auto;
+    }
+
+    .header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(to right, #fff, #a78bfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .header p {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+    }
+
+    .workflow-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .workflow-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        transition:
+            transform 0.3s ease,
+            border-color 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .workflow-item:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .icon-wrapper {
+        width: 64px;
+        height: 64px;
+        background: rgba(139, 92, 246, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--primary);
+        margin: 0 auto 1.5rem auto;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .content h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+        color: #fff;
+    }
+
+    .content p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+        .workflow-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+    }
+</style>

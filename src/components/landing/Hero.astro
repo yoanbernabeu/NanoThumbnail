@@ -5,21 +5,43 @@ const bgImageUrl = `${base}assets/bg.webp`;
 ---
 
 <div class="hero-section" style={`background-image: url('${bgImageUrl}')`}>
-    <h1 class="hero-title" data-i18n="landing.hero_title">Générez des miniatures<br>virales avec l'IA</h1>
-    <p class="hero-subtitle" data-i18n="landing.hero_subtitle">Utilisez la puissance de <strong>Google Nano Banana Pro</strong> pour transformer vos idées en miniatures YouTube percutantes.</p>
-    <a href={`${base}app`} class="btn btn-primary hero-cta">
-        <span data-i18n="landing.cta_start">Commencer maintenant</span> <i class="fa-solid fa-arrow-right"></i>
-    </a>
-    
+    <div class="badge-new">
+        <span class="badge-text" data-i18n="landing.badge_new">NOUVEAU</span>
+        <span class="badge-desc" data-i18n="landing.badge_new_desc"
+            >Historique & Bibliothèque Locale</span
+        >
+    </div>
+    <h1 class="hero-title" data-i18n="landing.hero_title">
+        Générez des miniatures<br />virales avec l'IA
+    </h1>
+    <p class="hero-subtitle" data-i18n="landing.hero_subtitle">
+        Utilisez la puissance de <strong>Google Nano Banana Pro</strong> pour transformer
+        vos idées en miniatures YouTube percutantes.
+    </p>
+    <div class="cta-group">
+        <a href={`${base}app`} class="btn btn-primary hero-cta">
+            <span data-i18n="landing.cta_start">Commencer maintenant</span>
+            <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <a href="#pricing" class="btn btn-secondary hero-cta-secondary">
+            <span data-i18n="landing.cta_pricing">Voir les prix</span>
+        </a>
+    </div>
+
     <div class="github-link">
         <a href="https://github.com/yoanbernabeu/NanoThumbnail" target="_blank">
-            <i class="fa-brands fa-github"></i> <span data-i18n="landing.open_source">Open Source. Aujourd'hui et pour toujours.</span>
+            <i class="fa-brands fa-github"></i>
+            <span data-i18n="landing.open_source"
+                >Open Source. Aujourd'hui et pour toujours.</span
+            >
         </a>
     </div>
 
     <p class="badges">
-        <i class="fa-solid fa-check" style="color: var(--primary);"></i> <span data-i18n="landing.badge_free">Gratuit (Interface)</span> &nbsp;&nbsp;
-        <i class="fa-solid fa-check" style="color: var(--primary);"></i> <span data-i18n="landing.badge_byok">BYOK (Replicate)</span>
+        <i class="fa-solid fa-check" style="color: var(--primary);"></i>
+        <span data-i18n="landing.badge_free">Gratuit (Interface)</span> &nbsp;&nbsp;
+        <i class="fa-solid fa-check" style="color: var(--primary);"></i>
+        <span data-i18n="landing.badge_byok">BYOK (Replicate)</span>
     </p>
 </div>
 
@@ -40,20 +62,28 @@ const bgImageUrl = `${base}assets/bg.webp`;
     }
 
     .hero-section::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: 
-            radial-gradient(ellipse 80% 60% at center 40%, rgba(10, 10, 15, 0.3) 0%, rgba(10, 10, 15, 0.75) 70%, rgba(10, 10, 15, 0.95) 100%),
-            linear-gradient(to bottom, rgba(10, 10, 15, 0.4), rgba(10, 10, 15, 0.5));
+        background: radial-gradient(
+                ellipse 80% 60% at center 40%,
+                rgba(10, 10, 15, 0.3) 0%,
+                rgba(10, 10, 15, 0.75) 70%,
+                rgba(10, 10, 15, 0.95) 100%
+            ),
+            linear-gradient(
+                to bottom,
+                rgba(10, 10, 15, 0.4),
+                rgba(10, 10, 15, 0.5)
+            );
         z-index: 0;
     }
 
     .hero-section::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: 0;
         left: 0;
@@ -113,5 +143,56 @@ const bgImageUrl = `${base}assets/bg.webp`;
         .hero-title {
             font-size: 2.5rem;
         }
+    }
+
+    .badge-new {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 30px;
+        padding: 4px 4px 4px 12px;
+        margin-bottom: 2rem;
+        font-size: 0.85rem;
+        color: #fff;
+        gap: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .badge-new:hover {
+        transform: scale(1.05);
+        border-color: var(--primary);
+    }
+
+    .badge-text {
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .badge-desc {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+
+    .cta-group {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .hero-cta-secondary {
+        padding: 16px 32px;
+        font-size: 1.1rem;
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-radius: 8px;
+        transition: background 0.3s ease;
+    }
+
+    .hero-cta-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
     }
 </style>

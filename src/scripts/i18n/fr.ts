@@ -5,14 +5,20 @@ export const fr = {
   },
   header: {
     api_btn: "API",
-    github_star: "Star sur GitHub"
+    github_star: "Star sur GitHub",
+    nav_features: "Fonctionnalités",
+    nav_pricing: "Prix",
+    nav_faq: "FAQ"
   },
   landing: {
     hero_title: "Générez des miniatures<br>virales avec l'IA",
     hero_subtitle: "Utilisez la puissance de <strong>Google Nano Banana Pro</strong> pour transformer vos idées en miniatures YouTube percutantes.",
     cta_start: "Commencer maintenant",
+    cta_pricing: "Voir les prix",
     badge_free: "Gratuit (Interface)",
     badge_byok: "BYOK (Replicate)",
+    badge_new: "NOUVEAU",
+    badge_new_desc: "Historique & Bibliothèque Locale",
     open_source: "Open Source. Aujourd'hui et pour toujours.",
     features_title: "Pourquoi choisir NanoThumbnail ?",
     feature_1_title: "Nano Banana Pro",
@@ -21,6 +27,41 @@ export const fr = {
     feature_2_desc: "Notre outil est une interface gratuite et open-source. <strong>Aucun abonnement caché</strong>, aucune commission sur vos créations. Vous ne payez que ce que vous consommez.",
     feature_3_title: "Bring Your Own Key",
     feature_3_desc: "Connectez directement votre compte <strong>Replicate</strong>. C'est la garantie de payer le prix réel fournisseur et de garder le contrôle total sur vos données et votre API.",
+    local_workflow: {
+      title: "Votre Workflow, 100% Local",
+      subtitle: "Nous avons construit un espace de travail complet qui vit dans votre navigateur. Aucune donnée ne quitte votre appareil sauf pour la génération.",
+      feature_1_title: "Historique Local",
+      feature_1_desc: "Ne perdez plus jamais un prompt. Chaque génération est sauvegardée automatiquement.",
+      feature_2_title: "Itération Intelligente",
+      feature_2_desc: "Réutilisez n'importe quel prompt ou réglage passé en un clic pour affiner vos résultats.",
+      feature_3_title: "Bibliothèque de Références",
+      feature_3_desc: "Constituez votre collection personnelle d'images de référence pour un style cohérent."
+    },
+    social_proof: {
+      trusted_by: "Peut-être approuvé par des créateurs sur... (mais on ne peut pas le prouver) 🤷‍♂️"
+    },
+    gallery: {
+      title: "Des résultats époustouflants",
+      subtitle: "Générés en quelques secondes avec NanoThumbnail."
+    },
+    pricing: {
+      title: "Prix Transparent",
+      subtitle: "Pourquoi payer un abonnement mensuel quand vous pouvez payer à l'usage ?",
+      badge: "MEILLEURE OFFRE",
+      pay_per_use: "Payez à l'usage (~0.14€/img)",
+      feature_1: "Interface 100% Gratuite",
+      feature_2: "Clé API Replicate (Prix coûtant)",
+      feature_3: "Vie privée respectée (Local)",
+      cta: "Commencer Gratuitement",
+      competitors_title: "Concurrents SaaS",
+      competitors_price: "29€",
+      competitors_period: "/mois",
+      competitors_desc: "Abonnement récurrent",
+      competitor_feature_1: "Coût fixe élevé",
+      competitor_feature_2: "Crédits qui expirent",
+      competitor_feature_3: "Données sur leurs serveurs",
+      competitor_feature_4: "Modèles propriétaires limités"
+    },
     problem_title: "Le Problème",
     problem_main: "Vos vidéos méritent mieux que 0 clic",
     problem_desc_1: "Vous passez des heures sur le montage, mais tout se joue en 0.3 seconde. Si votre miniature n'accroche pas, personne ne regardera.",
@@ -123,6 +164,11 @@ export const fr = {
   footer: {
     legal_notice: "Mentions Légales",
     privacy_policy: "Politique de confidentialité",
-    terms_of_service: "Conditions d'utilisation"
+    terms_of_service: "Conditions d'utilisation",
+    desc: "La plateforme open-source pour générer des miniatures virales en quelques secondes.",
+    col_product: "Produit",
+    col_resources: "Ressources",
+    col_legal: "Légal",
+    copyright: "YoanDev - NanoThumbnail © 2025 • Propulsé par Replicate & Google Nano Banana Pro"
   }
 };

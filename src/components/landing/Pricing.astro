@@ -1,0 +1,253 @@
+---
+// Pricing Section
+import GlassPanel from "../ui/GlassPanel.astro";
+---
+
+<div class="pricing-section" id="pricing">
+    <div class="section-header">
+        <h2 data-i18n="landing.pricing.title">Prix Transparent</h2>
+        <p data-i18n="landing.pricing.subtitle">
+            Pourquoi payer un abonnement mensuel quand vous pouvez payer à
+            l'usage ?
+        </p>
+    </div>
+
+    <div class="pricing-grid">
+        <!-- Competitors -->
+        <div class="pricing-card competitor">
+            <div class="card-header">
+                <h3 data-i18n="landing.pricing.competitors_title">
+                    Concurrents SaaS
+                </h3>
+                <div class="price">
+                    <span data-i18n="landing.pricing.competitors_price"
+                        >29€</span
+                    ><span data-i18n="landing.pricing.competitors_period"
+                        >/mois</span>
+                </div>
+                <p data-i18n="landing.pricing.competitors_desc">
+                    Abonnement récurrent
+                </p>
+            </div>
+            <ul class="features-list">
+                <li class="negative">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span data-i18n="landing.pricing.competitor_feature_1"
+                        >Coût fixe élevé</span
+                    >
+                </li>
+                <li class="negative">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span data-i18n="landing.pricing.competitor_feature_2"
+                        >Crédits qui expirent</span
+                    >
+                </li>
+                <li class="negative">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span data-i18n="landing.pricing.competitor_feature_3"
+                        >Données sur leurs serveurs</span
+                    >
+                </li>
+                <li class="negative">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span data-i18n="landing.pricing.competitor_feature_4"
+                        >Modèles propriétaires limités</span
+                    >
+                </li>
+            </ul>
+        </div>
+
+        <!-- NanoThumbnail -->
+        <GlassPanel class="pricing-card nano">
+            <div class="badge" data-i18n="landing.pricing.badge">
+                MEILLEURE OFFRE
+            </div>
+            <div class="card-header">
+                <h3>NanoThumbnail</h3>
+                <div class="price">0€<span>/mois</span></div>
+                <p data-i18n="landing.pricing.pay_per_use">
+                    Payez à l'usage (~0.04€/img)
+                </p>
+            </div>
+            <ul class="features-list">
+                <li class="positive">
+                    <i class="fa-solid fa-check"></i>
+                    <span data-i18n="landing.pricing.feature_1"
+                        >Interface 100% Gratuite</span
+                    >
+                </li>
+                <li class="positive">
+                    <i class="fa-solid fa-check"></i>
+                    <span data-i18n="landing.pricing.feature_2"
+                        >Clé API Replicate (Prix coûtant)</span
+                    >
+                </li>
+                <li class="positive">
+                    <i class="fa-solid fa-check"></i>
+                    <span data-i18n="landing.pricing.feature_3"
+                        >Vie privée respectée (Local)</span
+                    >
+                </li>
+            </ul>
+            <div class="card-footer">
+                <a
+                    href="#"
+                    class="btn btn-primary btn-block"
+                    data-i18n="landing.pricing.cta">Commencer Gratuitement</a
+                >
+            </div>
+        </GlassPanel>
+    </div>
+</div>
+
+<style>
+    .pricing-section {
+        padding: 6rem 2rem;
+        background: radial-gradient(
+            circle at center,
+            rgba(139, 92, 246, 0.1) 0%,
+            transparent 70%
+        );
+        border-top: 1px solid var(--border);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-header p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .pricing-grid {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+        align-items: center;
+    }
+
+    .pricing-card,
+    .pricing-grid :global(.pricing-card) {
+        flex: 1;
+        padding: 2.5rem;
+        border-radius: 20px;
+        position: relative;
+    }
+
+    .pricing-card.competitor {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        opacity: 0.7;
+        transform: scale(0.95);
+    }
+
+    .pricing-grid :global(.pricing-card.nano) {
+        border: 1px solid var(--primary);
+        box-shadow: 0 0 40px rgba(139, 92, 246, 0.2);
+        transform: scale(1.05);
+        z-index: 2;
+    }
+
+    .badge {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .card-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 2rem;
+    }
+
+    .card-header h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .price {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .price span {
+        font-size: 1rem;
+        color: var(--text-muted);
+        font-weight: 400;
+    }
+
+    .card-header p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .features-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem 0;
+    }
+
+    .features-list li {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.95rem;
+    }
+
+    .features-list li.negative {
+        color: var(--text-muted);
+    }
+
+    .features-list li.negative i {
+        color: #ef4444;
+    }
+
+    .features-list li.positive {
+        color: #fff;
+    }
+
+    .features-list li.positive i {
+        color: #22c55e;
+    }
+
+    .btn-block {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 16px;
+    }
+
+    @media (max-width: 768px) {
+        .pricing-grid {
+            flex-direction: column;
+            gap: 4rem;
+        }
+
+        .pricing-card.competitor,
+        .pricing-grid :global(.pricing-card.nano) {
+            transform: none;
+            width: 100%;
+        }
+    }
+</style>

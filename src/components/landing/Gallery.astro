@@ -1,0 +1,147 @@
+---
+// Gallery Section
+const base = import.meta.env.BASE_URL;
+const images = [
+    `${base}assets/sample1.webp`,
+    `${base}assets/sample2.webp`,
+    `${base}assets/sample3.webp`,
+    `${base}assets/sample4.webp`,
+    `${base}assets/sample5.webp`,
+    `${base}assets/sample6.webp`,
+];
+---
+
+<div class="gallery-section">
+    <div class="section-header">
+        <h2 data-i18n="landing.gallery.title">Des résultats époustouflants</h2>
+        <p data-i18n="landing.gallery.subtitle">
+            Générés en quelques secondes avec NanoThumbnail.
+        </p>
+    </div>
+
+    <div class="marquee-container">
+        <div class="marquee-content">
+            {
+                images.map((img) => (
+                    <div class="gallery-item">
+                        <img
+                            src={img}
+                            alt="Generated Thumbnail"
+                            loading="lazy"
+                        />
+                    </div>
+                ))
+            }
+            <!-- Duplicate for seamless loop -->
+            {
+                images.map((img) => (
+                    <div class="gallery-item">
+                        <img
+                            src={img}
+                            alt="Generated Thumbnail"
+                            loading="lazy"
+                        />
+                    </div>
+                ))
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .gallery-section {
+        padding: 6rem 0;
+        background: #000;
+        overflow: hidden;
+        border-top: 1px solid var(--border);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        padding: 0 2rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(to right, #fff, #f472b6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .section-header p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .marquee-container {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .marquee-container::before,
+    .marquee-container::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 150px;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .marquee-container::before {
+        left: 0;
+        background: linear-gradient(to right, #000, transparent);
+    }
+
+    .marquee-container::after {
+        right: 0;
+        background: linear-gradient(to left, #000, transparent);
+    }
+
+    .marquee-content {
+        display: flex;
+        gap: 2rem;
+        animation: scroll 40s linear infinite;
+        width: max-content;
+    }
+
+    .gallery-item {
+        width: 400px;
+        aspect-ratio: 16/9;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover {
+        transform: scale(1.02);
+        border-color: var(--primary);
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    @keyframes scroll {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(calc(-50% - 1rem));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .gallery-item {
+            width: 300px;
+        }
+    }
+</style>

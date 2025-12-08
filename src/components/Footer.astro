@@ -1,50 +1,198 @@
 ---
 interface Props {
-  variant?: 'landing' | 'legal';
+    variant?: "landing" | "legal";
 }
 
-const { variant = 'landing' } = Astro.props;
+const { variant = "landing" } = Astro.props;
 
 const base = import.meta.env.BASE_URL;
 ---
 
-<footer class:list={["footer", variant]}>
-    <p data-i18n="landing.footer">YoanDev - NanoThumbnail © 2025 • Propulsé par Replicate & Google Nano Banana Pro</p>
-    <div class="footer-links">
-        <a href={`${base}legal-notice`} data-i18n="footer.legal_notice">Mentions Légales</a>
-        <a href={`${base}privacy-policy`} data-i18n="footer.privacy_policy">Politique de confidentialité</a>
-        <a href={`${base}terms-of-service`} data-i18n="footer.terms_of_service">Conditions d'utilisation</a>
+<footer
+    class:list={[
+        "footer",
+        variant,
+        { "landing-footer": variant === "landing" },
+    ]}
+>
+    <div class="footer-content">
+        <div class="footer-col brand-col">
+            <div class="logo">
+                <i class="fa-solid fa-bolt" style="color: var(--primary);"></i>
+                Nano<span>Thumbnail</span>
+            </div>
+            <p class="footer-desc" data-i18n="footer.desc">
+                La plateforme open-source pour générer des miniatures virales en
+                quelques secondes.
+            </p>
+        </div>
+
+        <div class="footer-col">
+            <h4 data-i18n="footer.col_product">Produit</h4>
+            <ul>
+                <li>
+                    <a href="#features" data-i18n="header.nav_features"
+                        >Fonctionnalités</a
+                    >
+                </li>
+                <li>
+                    <a href="#pricing" data-i18n="header.nav_pricing">Prix</a>
+                </li>
+                <li>
+                    <a href={`${base}app`} data-i18n="landing.cta_start"
+                        >Commencer</a
+                    >
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4 data-i18n="footer.col_resources">Ressources</h4>
+            <ul>
+                <li>
+                    <a
+                        href="https://github.com/yoanbernabeu/NanoThumbnail"
+                        target="_blank">GitHub</a
+                    >
+                </li>
+                <li><a href="#faq" data-i18n="header.nav_faq">FAQ</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4 data-i18n="footer.col_legal">Légal</h4>
+            <ul>
+                <li>
+                    <a
+                        href={`${base}legal-notice`}
+                        data-i18n="footer.legal_notice">Mentions Légales</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href={`${base}privacy-policy`}
+                        data-i18n="footer.privacy_policy"
+                        >Politique de confidentialité</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href={`${base}terms-of-service`}
+                        data-i18n="footer.terms_of_service">CGU</a
+                    >
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p data-i18n="footer.copyright">
+            YoanDev - NanoThumbnail © 2025 • Powered by Replicate & Google Nano
+            Banana Pro
+        </p>
     </div>
 </footer>
 
 <style>
     .footer {
-        text-align: center;
-        padding: 2rem;
-        color: var(--text-muted);
-        font-size: 0.9rem;
+        padding: 4rem 2rem 2rem 2rem;
+        background: var(--bg-secondary);
         border-top: 1px solid var(--border);
+        font-size: 0.9rem;
+        color: var(--text-muted);
     }
 
-    .footer.legal {
-        margin-top: 4rem;
+    .landing-footer {
+        background: #000;
     }
 
-    .footer-links {
-        margin-top: 1rem;
+    .footer-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 4rem;
+        max-width: 1200px;
+        margin: 0 auto 4rem auto;
+    }
+
+    .brand-col .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
         display: flex;
-        gap: 1.5rem;
-        justify-content: center;
-        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
     }
 
-    .footer-links a {
+    .brand-col .logo span {
+        color: var(--accent);
+    }
+
+    .footer-desc {
+        line-height: 1.6;
+        max-width: 300px;
+    }
+
+    .footer-col h4 {
+        color: #fff;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .footer-col ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-col li {
+        margin-bottom: 0.8rem;
+    }
+
+    .footer-col a {
         color: var(--text-muted);
         text-decoration: none;
-        transition: color 0.2s;
+        transition: color 0.2s ease;
     }
 
-    .footer-links a:hover {
-        color: var(--text-main);
+    .footer-col a:hover {
+        color: #fff;
+    }
+
+    .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 1024px) {
+        .footer-content {
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .brand-col {
+            grid-column: span 2;
+            text-align: center;
+        }
+
+        .brand-col .logo {
+            justify-content: center;
+        }
+
+        .footer-desc {
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .footer-content {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .brand-col {
+            grid-column: span 1;
+        }
     }
 </style>

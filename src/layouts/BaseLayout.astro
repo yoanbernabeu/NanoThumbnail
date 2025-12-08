@@ -6,6 +6,7 @@ interface Props {
     showLibraryBtn?: boolean;
     showApiBtn?: boolean;
     showGithubBtn?: boolean;
+    showNavLinks?: boolean;
 }
 
 const {
@@ -15,6 +16,7 @@ const {
     showLibraryBtn = false,
     showApiBtn = false,
     showGithubBtn = false,
+    showNavLinks = true,
 } = Astro.props;
 
 import Header from "@components/Header.astro";
@@ -99,6 +101,7 @@ import "@styles/global.css";
             showLibraryBtn={showLibraryBtn}
             showApiBtn={showApiBtn}
             showGithubBtn={showGithubBtn}
+            showNavLinks={showNavLinks}
         />
 
         <slot />

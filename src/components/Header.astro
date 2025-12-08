@@ -4,6 +4,7 @@ interface Props {
     showLibraryBtn?: boolean;
     showApiBtn?: boolean;
     showGithubBtn?: boolean;
+    showNavLinks?: boolean;
 }
 
 const {
@@ -11,6 +12,7 @@ const {
     showLibraryBtn = false,
     showApiBtn = false,
     showGithubBtn = false,
+    showNavLinks = true,
 } = Astro.props;
 
 import LangSelect from "./LangSelect.astro";
@@ -24,6 +26,24 @@ const base = import.meta.env.BASE_URL;
         Nano<span>Thumbnail</span>
     </a>
     <div class="header-actions">
+        {
+            showNavLinks && (
+                <>
+                    <nav class="desktop-nav">
+                        <a href="#features" data-i18n="header.nav_features">
+                            Fonctionnalités
+                        </a>
+                        <a href="#pricing" data-i18n="header.nav_pricing">
+                            Prix
+                        </a>
+                        <a href="#faq" data-i18n="header.nav_faq">
+                            FAQ
+                        </a>
+                    </nav>
+                    <div class="divider" />
+                </>
+            )
+        }
         <LangSelect />
         {
             showHistoryBtn && (
@@ -96,5 +116,36 @@ const base = import.meta.env.BASE_URL;
         display: flex;
         gap: 10px;
         align-items: center;
+    }
+
+    .desktop-nav {
+        display: flex;
+        gap: 20px;
+        margin-right: 1rem;
+    }
+
+    .desktop-nav a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+
+    .desktop-nav a:hover {
+        color: #fff;
+    }
+
+    .divider {
+        width: 1px;
+        height: 24px;
+        background: var(--border);
+        margin-right: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .desktop-nav,
+        .divider {
+            display: none;
+        }
     }
 </style>
