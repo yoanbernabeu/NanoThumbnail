@@ -7,12 +7,28 @@ import GlassPanel from '../ui/GlassPanel.astro';
     <GlassPanel class="modal-content">
         <h2 data-i18n="modals.config_title">Configuration</h2>
         <div class="input-group">
-            <label data-i18n="modals.label_api">Clé API Replicate</label>
-            <input type="password" id="apiKeyInput" class="input-field" placeholder="r8_...">
+            <label data-i18n="modals.label_provider">Fournisseur IA</label>
+            <select id="providerSelect" class="input-field">
+                <option value="replicate">Replicate</option>
+                <option value="gemini">Google Gemini</option>
+            </select>
+        </div>
+        <div id="replicateKeyGroup" class="input-group">
+            <label data-i18n="modals.label_api_replicate">Clé API Replicate</label>
+            <input type="password" id="apiKeyReplicateInput" class="input-field" placeholder="r8_...">
             <small data-i18n="modals.help_api">Stockée localement dans votre navigateur.</small>
             <a href="https://replicate.com/account/api-tokens" target="_blank" rel="noopener noreferrer" class="api-link">
                 <i class="fa-solid fa-external-link-alt"></i>
-                <span data-i18n="modals.get_api_key">Obtenir une clé API Replicate</span>
+                <span data-i18n="modals.get_api_key_replicate">Obtenir une clé API Replicate</span>
+            </a>
+        </div>
+        <div id="geminiKeyGroup" class="input-group hidden">
+            <label data-i18n="modals.label_api_gemini">Clé API Google Gemini</label>
+            <input type="password" id="apiKeyGeminiInput" class="input-field" placeholder="AIza...">
+            <small data-i18n="modals.help_api">Stockée localement dans votre navigateur.</small>
+            <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="api-link">
+                <i class="fa-solid fa-external-link-alt"></i>
+                <span data-i18n="modals.get_api_key_gemini">Obtenir une clé API Google AI</span>
             </a>
         </div>
         <div class="input-group checkbox-group">

@@ -1,13 +1,13 @@
 # NanoThumbnail
 
-NanoThumbnail is a free, open-source web application designed to create viral YouTube thumbnails using AI. It leverages the **Google Nano Banana Pro** model via the Replicate API to transform simple prompts into high-quality, expressive images.
+NanoThumbnail is a free, open-source web application designed to create viral YouTube thumbnails using AI. It supports two providers: **Replicate** (Google Nano Banana Pro model) and **Google Gemini** (gemini-3-pro-image-preview) to transform simple prompts into high-quality, expressive images.
 
 ![NanoThumbnail Preview](image.webp)
 
 ## Features
 
 -   **Nano Banana Pro Integration**: Uses Google's latest model, optimized for text rendering and photorealism.
--   **BYOK (Bring Your Own Key)**: Connect your own Replicate API key. You pay the provider directly, ensuring privacy and the lowest cost.
+-   **BYOK (Bring Your Own Key)**: Connect your own Replicate or Google Gemini API key. You pay the provider directly, ensuring privacy and the lowest cost.
 -   **100% Free Interface**: No monthly subscriptions or hidden fees for the UI.
 -   **Reference Images**: Upload up to 14 reference images to guide the AI generation.
 -   **Customizable Output**: Configure resolution (1K/2K/4K), aspect ratio (16:9, 9:16, 4:3, 1:1), output format (PNG/JPG), and safety filter level.
@@ -22,7 +22,7 @@ NanoThumbnail is a free, open-source web application designed to create viral Yo
 -   **Styling**: Custom CSS with Glassmorphism UI
 -   **Icons**: Font Awesome
 -   **Font**: Plus Jakarta Sans (Google Fonts)
--   **API**: [Replicate](https://replicate.com/) (Google Nano Banana Pro model)
+-   **API**: [Replicate](https://replicate.com/) (Google Nano Banana Pro model) or [Google Gemini](https://aistudio.google.com/) (gemini-3-pro-image-preview)
 -   **CORS Proxy**: [corsproxy.io](https://corsproxy.io/)
 -   **Hosting**: [Netlify](https://netlify.com/)
 
@@ -57,7 +57,7 @@ src/
 │   ├── privacy-policy.astro
 │   └── terms-of-service.astro
 ├── scripts/
-│   ├── api.ts               # Replicate API integration & polling
+│   ├── api.ts               # Replicate/Gemini API integration & polling
 │   ├── state.ts             # Application state management
 │   ├── ui.ts                # UI logic (history, image upload, settings)
 │   ├── i18n/                # Internationalization
@@ -78,7 +78,7 @@ src/
 
 -   Node.js (v18 or higher)
 -   npm
--   A [Replicate](https://replicate.com/) API key
+-   A [Replicate](https://replicate.com/) API key and/or a [Google Gemini](https://aistudio.google.com/apikey) API key
 
 ### Installation
 
@@ -125,8 +125,8 @@ The project is configured for deployment on **Netlify** with the `netlify.toml` 
 1. **User enters a prompt** describing the desired thumbnail
 2. **Optional**: Upload reference images to guide the generation
 3. **Configure settings**: resolution, aspect ratio, format, safety level
-4. **API call**: The prompt is enhanced and sent to Replicate's Nano Banana Pro model
-5. **Polling**: The app polls the API until the generation is complete
+4. **API call**: The prompt is enhanced and sent to Replicate (Nano Banana Pro) or Google Gemini, depending on the selected provider
+5. **Polling** (Replicate only): The app polls the API until the generation is complete. Gemini returns the image in a single request
 6. **Display**: The generated image is fetched via CORS proxy and displayed
 7. **Download**: User can download the thumbnail in the selected format
 

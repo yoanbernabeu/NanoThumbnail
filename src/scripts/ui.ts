@@ -1,4 +1,4 @@
-import { state, type HistoryItem, type GenerationParameters } from './state';
+import { state, type HistoryItem, type GenerationParameters, type ApiProvider } from './state';
 import { t } from './i18n/index';
 import { saveImage, getImage, getAllImages, deleteImage } from './storage';
 
@@ -25,18 +25,42 @@ let pendingPersonaPhotos: { left: string | null; front: string | null; right: st
 
 /* --- NAVIGATION --- */
 export function openSettings(): void {
-  const apiKeyInput = document.getElementById('apiKeyInput') as HTMLInputElement | null;
+  const providerSelect = document.getElementById('providerSelect') as HTMLSelectElement | null;
+  const apiKeyReplicateInput = document.getElementById('apiKeyReplicateInput') as HTMLInputElement | null;
+  const apiKeyGeminiInput = document.getElementById('apiKeyGeminiInput') as HTMLInputElement | null;
   const saveLocallyCheckbox = document.getElementById('saveLocallyCheckbox') as HTMLInputElement | null;
   settingsModal = document.getElementById('settingsModal');
 
-  if (apiKeyInput) {
-    apiKeyInput.value = state.apiKey;
+  if (providerSelect) {
+    providerSelect.value = state.provider;
+    providerSelect.addEventListener('change', () => {
+      toggleProviderKeyGroup(providerSelect.value as ApiProvider);
+    });
+  }
+  if (apiKeyReplicateInput) {
+    apiKeyReplicateInput.value = state.apiKeyReplicate;
+  }
+  if (apiKeyGeminiInput) {
+    apiKeyGeminiInput.value = state.apiKeyGemini;
   }
   if (saveLocallyCheckbox) {
     saveLocallyCheckbox.checked = state.saveLocally;
   }
+  toggleProviderKeyGroup(state.provider);
   if (settingsModal) {
     settingsModal.classList.remove('hidden');
+  }
+}
+
+function toggleProviderKeyGroup(provider: ApiProvider): void {
+  const replicateGroup = document.getElementById('replicateKeyGroup');
+  const geminiGroup = document.getElementById('geminiKeyGroup');
+  if (provider === 'gemini') {
+    replicateGroup?.classList.add('hidden');
+    geminiGroup?.classList.remove('hidden');
+  } else {
+    replicateGroup?.classList.remove('hidden');
+    geminiGroup?.classList.add('hidden');
   }
 }
 
@@ -48,23 +72,41 @@ export function closeSettings(): void {
 }
 
 export function saveSettings(): void {
-  const apiKeyInput = document.getElementById('apiKeyInput') as HTMLInputElement | null;
+  const providerSelect = document.getElementById('providerSelect') as HTMLSelectElement | null;
+  const apiKeyReplicateInput = document.getElementById('apiKeyReplicateInput') as HTMLInputElement | null;
+  const apiKeyGeminiInput = document.getElementById('apiKeyGeminiInput') as HTMLInputElement | null;
   const saveLocallyCheckbox = document.getElementById('saveLocallyCheckbox') as HTMLInputElement | null;
-  const key = apiKeyInput?.value.trim() || '';
 
-  if (key) {
-    state.apiKey = key;
-    localStorage.setItem('nano_api_key', key);
+  const provider = (providerSelect?.value || 'replicate') as ApiProvider;
+  const replicateKey = apiKeyReplicateInput?.value.trim() || '';
+  const geminiKey = apiKeyGeminiInput?.value.trim() || '';
+  const activeKey = provider === 'gemini' ? geminiKey : replicateKey;
 
-    // Save local storage preference
-    const saveLocally = saveLocallyCheckbox?.checked || false;
-    state.saveLocally = saveLocally;
-    localStorage.setItem('nano_save_locally', saveLocally.toString());
-
-    closeSettings();
-  } else {
+  if (!activeKey) {
     alert(t('alerts.enter_api_key'));
+    return;
   }
+
+  // Save provider
+  state.provider = provider;
+  localStorage.setItem('nano_provider', provider);
+
+  // Save keys
+  state.apiKeyReplicate = replicateKey;
+  state.apiKeyGemini = geminiKey;
+  localStorage.setItem('nano_api_key_replicate', replicateKey);
+  localStorage.setItem('nano_api_key_gemini', geminiKey);
+
+  // Update active key shortcut
+  state.apiKey = activeKey;
+
+  // Save local storage preference
+  const saveLocally = saveLocallyCheckbox?.checked || false;
+  state.saveLocally = saveLocally;
+  localStorage.setItem('nano_save_locally', saveLocally.toString());
+
+  updateProviderDependentUI();
+  closeSettings();
 }
 
 export function toggleHistory(): void {
@@ -995,6 +1037,36 @@ function clearRemix(): void {
   hideRemixStatus();
 }
 
+/* --- PROVIDER-DEPENDENT UI --- */
+export function updateProviderDependentUI(): void {
+  const isGemini = state.provider === 'gemini';
+
+  // Hide format select for Gemini (PNG only)
+  const formatGroup = document.getElementById('formatSelect')?.closest('.setting-group') as HTMLElement | null;
+  if (formatGroup) {
+    formatGroup.style.display = isGemini ? 'none' : '';
+  }
+
+  // Hide match_input_image option for Gemini
+  const aspectRatioSelect = document.getElementById('aspectRatioSelect') as HTMLSelectElement | null;
+  if (aspectRatioSelect) {
+    const matchOption = aspectRatioSelect.querySelector('option[value="match_input_image"]') as HTMLOptionElement | null;
+    if (matchOption) {
+      matchOption.style.display = isGemini ? 'none' : '';
+      // If currently selected, switch to 16:9
+      if (isGemini && aspectRatioSelect.value === 'match_input_image') {
+        aspectRatioSelect.value = '16:9';
+      }
+    }
+  }
+
+  // Hide resolution select for Gemini (not applicable)
+  const resolutionGroup = document.getElementById('resolutionSelect')?.closest('.setting-group') as HTMLElement | null;
+  if (resolutionGroup) {
+    resolutionGroup.style.display = isGemini ? 'none' : '';
+  }
+}
+
 /* --- INIT APP --- */
 export function initApp(): void {
   // Check if API key exists, if not show settings
@@ -1004,6 +1076,9 @@ export function initApp(): void {
 
   // Render history
   renderHistory();
+
+  // Apply provider-dependent UI
+  updateProviderDependentUI();
 
   // Image Upload Logic Listeners
   const dropZone = document.getElementById('dropZone');

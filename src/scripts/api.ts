@@ -2,6 +2,7 @@ import { state, type GenerationParameters } from './state';
 import { displayResult, addToHistory } from './ui';
 import { t } from './i18n/index';
 import { showErrorModal } from './modules/errors/handler';
+import { generateViaGemini } from './gemini';
 
 interface PredictionInput {
   prompt: string;
@@ -71,95 +72,120 @@ export async function generateImage(): Promise<void> {
   };
 
   try {
-    const createUrl = `${state.proxyUrl}${encodeURIComponent('https://api.replicate.com/v1/models/google/nano-banana-pro/predictions')}`;
+    if (state.provider === 'gemini') {
+      // --- GEMINI: synchronous single-request flow ---
+      if (statusText) statusText.innerText = t('app.status_working');
 
-    const response = await fetch(createUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Token ${state.apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        input: inputData
-      })
-    });
-
-    // Handle HTTP Errors
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorDetails: Record<string, unknown>;
-
-      try {
-        errorDetails = JSON.parse(errorText);
-      } catch {
-        errorDetails = { rawResponse: errorText };
-      }
-
-      // Configure the modal options
-      const modalOptions = {
-        statusCode: response.status,
-        errorDetails: errorDetails
-      };
-
-      // Trigger the global modal display
-      showErrorModal(modalOptions);
-
-      throw new Error(`${t('alerts.error_api')} (${response.status}): ${errorText}`);
-    }
-
-    let prediction: PredictionResponse = await response.json();
-    const predictionGetUrl = prediction.urls.get;
-    const startTime = Date.now();
-
-    // -----------------------------------------
-    // POLLING LOOP
-    // -----------------------------------------
-    while (prediction.status !== 'succeeded' && prediction.status !== 'failed' && prediction.status !== 'canceled') {
-      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-      if (statusText) {
-        statusText.innerText = `${t('app.status_working')} (${elapsed}s)\nStatut: ${prediction.status}`;
-      }
-
-      await new Promise(r => setTimeout(r, 1000));
-
-      const separator = predictionGetUrl.includes('?') ? '&' : '?';
-      const urlWithCacheBuster = `${predictionGetUrl}${separator}t=${Date.now()}`;
-      const finalUrl = `${state.proxyUrl}${encodeURIComponent(urlWithCacheBuster)}`;
-
-      const pollResponse = await fetch(finalUrl, {
-        headers: { 'Authorization': `Token ${state.apiKey}` }
+      const dataUri = await generateViaGemini({
+        prompt: enhancedPrompt,
+        aspectRatio,
+        referenceImages: state.referenceImages,
       });
 
-      if (pollResponse.ok) {
-        prediction = await pollResponse.json();
-        if (prediction.logs) console.log('Generation Logs:', prediction.logs);
-      }
-    }
+      if (statusText) statusText.innerText = t('app.status_download');
 
-    if (prediction.status !== 'succeeded') {
-      showErrorModal({
-        statusCode: 500,
-        errorDetails: prediction as unknown as Record<string, unknown>
-      });
-      throw new Error(`${t('alerts.error_generation')}: ${prediction.status}`);
-    }
-
-    // Success
-    if (statusText) statusText.innerText = t('app.status_download');
-    const imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
-
-    if (imageUrl) {
-      console.log('Image URL:', imageUrl);
-      const base64Data = await displayResult(imageUrl, prompt);
+      await displayResult(dataUri, prompt);
 
       const parameters: GenerationParameters = {
         resolution,
         aspect_ratio: aspectRatio,
-        output_format: format,
-        safety_filter_level: safety
+        output_format: 'png',
+        safety_filter_level: safety,
+        provider: 'gemini',
       };
 
-      await addToHistory(prompt, imageUrl, base64Data, parameters);
+      await addToHistory(prompt, dataUri, dataUri, parameters);
+    } else {
+      // --- REPLICATE: asynchronous polling flow ---
+      const createUrl = `${state.proxyUrl}${encodeURIComponent('https://api.replicate.com/v1/models/google/nano-banana-pro/predictions')}`;
+
+      const response = await fetch(createUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${state.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          input: inputData
+        })
+      });
+
+      // Handle HTTP Errors
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorDetails: Record<string, unknown>;
+
+        try {
+          errorDetails = JSON.parse(errorText);
+        } catch {
+          errorDetails = { rawResponse: errorText };
+        }
+
+        const modalOptions = {
+          statusCode: response.status,
+          errorDetails: errorDetails
+        };
+
+        showErrorModal(modalOptions);
+
+        throw new Error(`${t('alerts.error_api')} (${response.status}): ${errorText}`);
+      }
+
+      let prediction: PredictionResponse = await response.json();
+      const predictionGetUrl = prediction.urls.get;
+      const startTime = Date.now();
+
+      // -----------------------------------------
+      // POLLING LOOP
+      // -----------------------------------------
+      while (prediction.status !== 'succeeded' && prediction.status !== 'failed' && prediction.status !== 'canceled') {
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+        if (statusText) {
+          statusText.innerText = `${t('app.status_working')} (${elapsed}s)\nStatut: ${prediction.status}`;
+        }
+
+        await new Promise(r => setTimeout(r, 1000));
+
+        const separator = predictionGetUrl.includes('?') ? '&' : '?';
+        const urlWithCacheBuster = `${predictionGetUrl}${separator}t=${Date.now()}`;
+        const finalUrl = `${state.proxyUrl}${encodeURIComponent(urlWithCacheBuster)}`;
+
+        const pollResponse = await fetch(finalUrl, {
+          headers: { 'Authorization': `Token ${state.apiKey}` }
+        });
+
+        if (pollResponse.ok) {
+          prediction = await pollResponse.json();
+          if (prediction.logs) console.log('Generation Logs:', prediction.logs);
+        }
+      }
+
+      if (prediction.status !== 'succeeded') {
+        showErrorModal({
+          statusCode: 500,
+          errorDetails: prediction as unknown as Record<string, unknown>
+        });
+        throw new Error(`${t('alerts.error_generation')}: ${prediction.status}`);
+      }
+
+      // Success
+      if (statusText) statusText.innerText = t('app.status_download');
+      const imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
+
+      if (imageUrl) {
+        console.log('Image URL:', imageUrl);
+        const base64Data = await displayResult(imageUrl, prompt);
+
+        const parameters: GenerationParameters = {
+          resolution,
+          aspect_ratio: aspectRatio,
+          output_format: format,
+          safety_filter_level: safety,
+          provider: 'replicate',
+        };
+
+        await addToHistory(prompt, imageUrl, base64Data, parameters);
+      }
     }
 
   } catch (error) {

@@ -1,6 +1,9 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
 
-const ALLOWED_ORIGIN = 'https://api.replicate.com';
+const ALLOWED_ORIGINS = [
+  'https://api.replicate.com',
+  'https://generativelanguage.googleapis.com',
+];
 
 export const handler: Handler = async (event: HandlerEvent) => {
   // Handle CORS preflight
@@ -9,7 +12,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
       statusCode: 204,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+        'Access-Control-Allow-Headers': 'Authorization, Content-Type, x-goog-api-key',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       },
       body: '',
@@ -25,11 +28,11 @@ export const handler: Handler = async (event: HandlerEvent) => {
     };
   }
 
-  // Security: only allow proxying to Replicate API
-  if (!targetUrl.startsWith(ALLOWED_ORIGIN)) {
+  // Security: only allow proxying to whitelisted APIs
+  if (!ALLOWED_ORIGINS.some(origin => targetUrl.startsWith(origin))) {
     return {
       statusCode: 403,
-      body: JSON.stringify({ error: 'Forbidden: only Replicate API is allowed' }),
+      body: JSON.stringify({ error: 'Forbidden: target URL is not allowed' }),
     };
   }
 
@@ -39,6 +42,9 @@ export const handler: Handler = async (event: HandlerEvent) => {
   }
   if (event.headers['content-type']) {
     headers['Content-Type'] = event.headers['content-type'];
+  }
+  if (event.headers['x-goog-api-key']) {
+    headers['x-goog-api-key'] = event.headers['x-goog-api-key'];
   }
 
   try {
