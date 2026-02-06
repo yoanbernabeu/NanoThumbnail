@@ -38,7 +38,7 @@ function loadHistory(): HistoryItem[] {
 
 export const state: AppState = {
   apiKey: localStorage.getItem('nano_api_key') || '',
-  proxyUrl: 'https://corsproxy.io/?',
+  proxyUrl: '/.netlify/functions/replicate-proxy?url=',
   history: loadHistory(),
   referenceImages: [],
   saveLocally: localStorage.getItem('nano_save_locally') === 'true'

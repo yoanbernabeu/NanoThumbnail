@@ -67,7 +67,7 @@ export async function generateImage(): Promise<void> {
   };
 
   try {
-    const createUrl = `${state.proxyUrl}https://api.replicate.com/v1/models/google/nano-banana-pro/predictions`;
+    const createUrl = `${state.proxyUrl}${encodeURIComponent('https://api.replicate.com/v1/models/google/nano-banana-pro/predictions')}`;
 
     const response = await fetch(createUrl, {
       method: 'POST',

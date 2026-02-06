@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@astrojs/ts-plugin": "^1.10.0",
+    "@netlify/functions": "^5.1.2",
     "typescript": "^5.3.0"
   }
 }
