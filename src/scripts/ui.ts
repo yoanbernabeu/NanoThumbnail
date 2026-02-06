@@ -7,6 +7,22 @@ let historyPanel: HTMLElement | null = null;
 let libraryPanel: HTMLElement | null = null;
 let settingsModal: HTMLElement | null = null;
 
+// Persona constants & types
+const PERSONA_PREFIX = 'persona_';
+const PERSONA_STORAGE_KEY = 'nano_personas';
+
+interface PersonaMetadata {
+  id: string;
+  name: string;
+  timestamp: number;
+}
+
+let pendingPersonaPhotos: { left: string | null; front: string | null; right: string | null } = {
+  left: null,
+  front: null,
+  right: null
+};
+
 /* --- NAVIGATION --- */
 export function openSettings(): void {
   const apiKeyInput = document.getElementById('apiKeyInput') as HTMLInputElement | null;
@@ -278,11 +294,9 @@ export async function useAsReference(item: HistoryItem): Promise<void> {
       base64Data = await getImage(item.localId);
     }
 
-    // 2. If not local, fetch from URL
+    // 2. If not local, fetch directly from URL (delivery URLs support CORS)
     if (!base64Data && item.url) {
-      // Use proxy to avoid CORS
-      const proxyUrl = `${state.proxyUrl}${encodeURIComponent(item.url)}`;
-      const response = await fetch(proxyUrl);
+      const response = await fetch(item.url);
       if (!response.ok) throw new Error('Failed to fetch image');
       const blob = await response.blob();
       base64Data = await blobToBase64(blob);
@@ -305,6 +319,166 @@ export async function useAsReference(item: HistoryItem): Promise<void> {
   }
 }
 
+/* --- PERSONA LOGIC --- */
+function getPersonas(): PersonaMetadata[] {
+  try {
+    const raw = localStorage.getItem(PERSONA_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function savePersonasMetadata(personas: PersonaMetadata[]): void {
+  localStorage.setItem(PERSONA_STORAGE_KEY, JSON.stringify(personas));
+}
+
+export function openPersonaModal(): void {
+  pendingPersonaPhotos = { left: null, front: null, right: null };
+  const modal = document.getElementById('personaModal');
+  const nameInput = document.getElementById('personaNameInput') as HTMLInputElement | null;
+  if (nameInput) nameInput.value = '';
+
+  // Reset drop zones
+  modal?.querySelectorAll('.persona-drop-zone').forEach(zone => {
+    zone.classList.remove('has-image');
+    const preview = zone.querySelector('.persona-preview') as HTMLImageElement | null;
+    const placeholder = zone.querySelector('.persona-placeholder') as HTMLElement | null;
+    if (preview) { preview.classList.add('hidden'); preview.src = ''; }
+    if (placeholder) placeholder.style.display = 'flex';
+  });
+
+  if (modal) modal.classList.remove('hidden');
+}
+
+export function closePersonaModal(): void {
+  const modal = document.getElementById('personaModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+export async function savePersona(): Promise<void> {
+  const nameInput = document.getElementById('personaNameInput') as HTMLInputElement | null;
+  const name = nameInput?.value.trim() || '';
+
+  if (!name) {
+    alert(t('persona.name_required'));
+    return;
+  }
+
+  if (!pendingPersonaPhotos.left || !pendingPersonaPhotos.front || !pendingPersonaPhotos.right) {
+    alert(t('persona.all_photos_required'));
+    return;
+  }
+
+  const id = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  try {
+    await saveImage(`${PERSONA_PREFIX}${id}_left`, pendingPersonaPhotos.left);
+    await saveImage(`${PERSONA_PREFIX}${id}_front`, pendingPersonaPhotos.front);
+    await saveImage(`${PERSONA_PREFIX}${id}_right`, pendingPersonaPhotos.right);
+
+    const personas = getPersonas();
+    personas.unshift({ id, name, timestamp: Date.now() });
+    savePersonasMetadata(personas);
+
+    closePersonaModal();
+    renderLibrary();
+  } catch (error) {
+    console.error('Failed to save persona:', error);
+  }
+}
+
+export function initPersonaDropZones(): void {
+  const zones = document.querySelectorAll('.persona-drop-zone');
+  zones.forEach(zone => {
+    const position = zone.getAttribute('data-position') as 'left' | 'front' | 'right';
+    const fileInput = zone.querySelector('.persona-file-input') as HTMLInputElement;
+    const preview = zone.querySelector('.persona-preview') as HTMLImageElement;
+    const placeholder = zone.querySelector('.persona-placeholder') as HTMLElement;
+
+    zone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('click', (e) => e.stopPropagation());
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      if (file) handlePersonaFile(file, position, preview, placeholder, zone as HTMLElement);
+      fileInput.value = '';
+    });
+
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      (zone as HTMLElement).style.borderColor = 'var(--primary)';
+    });
+
+    zone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      (zone as HTMLElement).style.borderColor = '';
+    });
+
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      (zone as HTMLElement).style.borderColor = '';
+      const file = (e as DragEvent).dataTransfer?.files[0];
+      if (file) handlePersonaFile(file, position, preview, placeholder, zone as HTMLElement);
+    });
+  });
+}
+
+function handlePersonaFile(file: File, position: 'left' | 'front' | 'right', preview: HTMLImageElement, placeholder: HTMLElement, zone: HTMLElement): void {
+  if (!file.type.startsWith('image/')) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const base64 = e.target?.result as string;
+    if (base64) {
+      pendingPersonaPhotos[position] = base64;
+      preview.src = base64;
+      preview.classList.remove('hidden');
+      placeholder.style.display = 'none';
+      zone.classList.add('has-image');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+export async function addPersonaAsReference(personaId: string): Promise<void> {
+  if (state.referenceImages.length + 3 > 14) {
+    alert(t('persona.not_enough_room'));
+    return;
+  }
+
+  try {
+    const left = await getImage(`${PERSONA_PREFIX}${personaId}_left`);
+    const front = await getImage(`${PERSONA_PREFIX}${personaId}_front`);
+    const right = await getImage(`${PERSONA_PREFIX}${personaId}_right`);
+
+    if (left && front && right) {
+      state.referenceImages.push(left, front, right);
+      renderReferenceImages();
+      toggleLibrary();
+    }
+  } catch (error) {
+    console.error('Failed to add persona as reference:', error);
+  }
+}
+
+export async function deletePersona(personaId: string): Promise<void> {
+  if (!confirm(t('persona.delete_confirm'))) return;
+
+  try {
+    await deleteImage(`${PERSONA_PREFIX}${personaId}_left`);
+    await deleteImage(`${PERSONA_PREFIX}${personaId}_front`);
+    await deleteImage(`${PERSONA_PREFIX}${personaId}_right`);
+
+    const personas = getPersonas().filter(p => p.id !== personaId);
+    savePersonasMetadata(personas);
+    renderLibrary();
+  } catch (error) {
+    console.error('Failed to delete persona:', error);
+  }
+}
+
 /* --- LIBRARY LOGIC --- */
 const LIBRARY_PREFIX = 'ref_';
 
@@ -312,30 +486,92 @@ export async function renderLibrary(): Promise<void> {
   const list = document.getElementById('libraryList');
   if (!list) return;
 
+  const personas = getPersonas();
   const images = await getAllImages(LIBRARY_PREFIX);
 
-  if (images.length === 0) {
+  if (personas.length === 0 && images.length === 0) {
     list.innerHTML = `<p class="empty-msg" data-i18n="library.empty">${t('library.empty') || 'Aucune image sauvegardée.'}</p>`;
     return;
   }
 
-  list.innerHTML = images.map((img, index) => `
-    <div class="library-item">
-      <img src="${img.base64}" alt="Reference ${index + 1}" class="library-img" data-id="${img.id}">
-      <div class="library-actions">
-        <button class="library-btn add-ref-btn" data-id="${img.id}">
-          <i class="fa-solid fa-plus"></i>
-          <span>${t('library.add') || 'Ajouter comme référence'}</span>
-        </button>
-        <button class="library-btn delete-btn" data-id="${img.id}">
-          <i class="fa-solid fa-trash"></i>
-          <span>${t('library.delete') || 'Supprimer'}</span>
-        </button>
-      </div>
-    </div>
-  `).join('');
+  let html = '';
 
-  // Attach event listeners for add buttons
+  // Persona section
+  if (personas.length > 0) {
+    html += `<div class="library-section-header">${t('persona.title') || 'Personas'}</div>`;
+
+    for (const persona of personas) {
+      const left = await getImage(`${PERSONA_PREFIX}${persona.id}_left`);
+      const front = await getImage(`${PERSONA_PREFIX}${persona.id}_front`);
+      const right = await getImage(`${PERSONA_PREFIX}${persona.id}_right`);
+
+      html += `
+        <div class="persona-item">
+          <div class="persona-name">${escapeHtml(persona.name)}</div>
+          <div class="persona-grid">
+            ${left ? `<img src="${left}" class="persona-thumb" alt="Left">` : ''}
+            ${front ? `<img src="${front}" class="persona-thumb" alt="Front">` : ''}
+            ${right ? `<img src="${right}" class="persona-thumb" alt="Right">` : ''}
+          </div>
+          <div class="persona-actions">
+            <button class="library-btn add-persona-ref-btn" data-persona-id="${persona.id}">
+              <i class="fa-solid fa-plus"></i>
+              <span>${t('persona.add_as_reference') || 'Ajouter comme référence'}</span>
+            </button>
+            <button class="library-btn delete-btn" data-persona-id="${persona.id}">
+              <i class="fa-solid fa-trash"></i>
+              <span>${t('persona.delete') || 'Supprimer'}</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // Images section
+  if (images.length > 0) {
+    if (personas.length > 0) {
+      html += `<div class="library-section-header" style="margin-top:1rem">${t('library.title') || 'Images'}</div>`;
+    }
+
+    html += images.map((img, index) => `
+      <div class="library-item">
+        <img src="${img.base64}" alt="Reference ${index + 1}" class="library-img" data-id="${img.id}">
+        <div class="library-actions">
+          <button class="library-btn add-ref-btn" data-id="${img.id}">
+            <i class="fa-solid fa-plus"></i>
+            <span>${t('library.add') || 'Ajouter comme référence'}</span>
+          </button>
+          <button class="library-btn delete-btn" data-id="${img.id}">
+            <i class="fa-solid fa-trash"></i>
+            <span>${t('library.delete') || 'Supprimer'}</span>
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  list.innerHTML = html;
+
+  // Attach event listeners for persona add-as-reference buttons
+  const addPersonaRefBtns = list.querySelectorAll('.add-persona-ref-btn');
+  addPersonaRefBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-persona-id');
+      if (id) await addPersonaAsReference(id);
+    });
+  });
+
+  // Attach event listeners for persona delete buttons
+  const deletePersonaBtns = list.querySelectorAll('.persona-item .delete-btn[data-persona-id]');
+  deletePersonaBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-persona-id');
+      if (id) await deletePersona(id);
+    });
+  });
+
+  // Attach event listeners for image add buttons
   const addBtns = list.querySelectorAll('.add-ref-btn');
   addBtns.forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -344,8 +580,8 @@ export async function renderLibrary(): Promise<void> {
     });
   });
 
-  // Attach event listeners for delete buttons
-  const deleteBtns = list.querySelectorAll('.delete-btn');
+  // Attach event listeners for image delete buttons
+  const deleteBtns = list.querySelectorAll('.library-item .delete-btn[data-id]');
   deleteBtns.forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = btn.getAttribute('data-id');
@@ -717,6 +953,23 @@ export function initApp(): void {
   if (clearAllBtn) {
     clearAllBtn.addEventListener('click', clearImage);
   }
+
+  // Persona modal buttons
+  const createPersonaBtn = document.getElementById('createPersonaBtn');
+  const cancelPersonaBtn = document.getElementById('cancelPersonaBtn');
+  const savePersonaBtn = document.getElementById('savePersonaBtn');
+
+  if (createPersonaBtn) {
+    createPersonaBtn.addEventListener('click', openPersonaModal);
+  }
+  if (cancelPersonaBtn) {
+    cancelPersonaBtn.addEventListener('click', closePersonaModal);
+  }
+  if (savePersonaBtn) {
+    savePersonaBtn.addEventListener('click', savePersona);
+  }
+
+  initPersonaDropZones();
 
   // Listen for language changes to re-render dynamic content
   window.addEventListener('languageChanged', () => {

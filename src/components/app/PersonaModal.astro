@@ -1,0 +1,207 @@
+---
+// Persona creation modal component
+import GlassPanel from '../ui/GlassPanel.astro';
+---
+
+<div id="personaModal" class="modal-overlay hidden">
+    <GlassPanel class="modal-content">
+        <h2 data-i18n="persona.modal_title">Nouveau Persona</h2>
+        <div class="input-group">
+            <label data-i18n="persona.name_label">Nom du persona</label>
+            <input type="text" id="personaNameInput" class="input-field" data-i18n-placeholder="persona.name_placeholder" placeholder="Ex: Jean, Marie...">
+        </div>
+        <div class="persona-photo-grid">
+            <div class="persona-drop-zone" data-position="left">
+                <img class="persona-preview hidden" alt="Left">
+                <div class="persona-placeholder">
+                    <!-- Profil gauche : silhouette simple -->
+                    <svg class="persona-guide-svg" viewBox="0 0 64 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M38 16c0-6-4-10-9-10-4 0-7 3-8 7l-1 5c-1 2-3 4-3 7 0 2 1 3 2 4l1 1v3c0 1 0 2 1 3l3 2h8l2-2c1-1 2-3 2-5v-2c1-1 2-3 2-5v-8z" fill="currentColor" opacity="0.15" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                        <circle cx="26" cy="24" r="1.5" fill="currentColor" opacity="0.5"/>
+                        <path d="M18 30c1 1 3 2 5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                        <path d="M24 38v4l-4 3v11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M33 38v4l4 3v11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M14 56h30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.3"/>
+                        <!-- Flèche indicatrice vers la gauche -->
+                        <path d="M10 24l-5 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+                        <path d="M5 24l3-2.5M5 24l3 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+                    </svg>
+                    <span data-i18n="persona.photo_left">Gauche</span>
+                    <small data-i18n="persona.drop_photo">Cliquez ou glissez</small>
+                </div>
+                <input type="file" accept="image/*" class="persona-file-input" style="display:none">
+            </div>
+            <div class="persona-drop-zone" data-position="front">
+                <img class="persona-preview hidden" alt="Front">
+                <div class="persona-placeholder">
+                    <!-- Face : silhouette simple de face -->
+                    <svg class="persona-guide-svg" viewBox="0 0 64 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="32" cy="24" rx="14" ry="17" fill="currentColor" opacity="0.15" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="26" cy="22" r="1.5" fill="currentColor" opacity="0.5"/>
+                        <circle cx="38" cy="22" r="1.5" fill="currentColor" opacity="0.5"/>
+                        <ellipse cx="32" cy="28" rx="2.5" ry="1.5" stroke="currentColor" stroke-width="1" opacity="0.35"/>
+                        <path d="M28 33c1.5 2 6.5 2 8 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                        <path d="M26 41v4l-5 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M38 41v4l5 3v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M15 58h34" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.3"/>
+                        <!-- Croix de centrage -->
+                        <line x1="32" y1="2" x2="32" y2="8" stroke="currentColor" stroke-width="0.8" opacity="0.25"/>
+                        <line x1="29" y1="5" x2="35" y2="5" stroke="currentColor" stroke-width="0.8" opacity="0.25"/>
+                    </svg>
+                    <span data-i18n="persona.photo_front">Face</span>
+                    <small data-i18n="persona.drop_photo">Cliquez ou glissez</small>
+                </div>
+                <input type="file" accept="image/*" class="persona-file-input" style="display:none">
+            </div>
+            <div class="persona-drop-zone" data-position="right">
+                <img class="persona-preview hidden" alt="Right">
+                <div class="persona-placeholder">
+                    <!-- Profil droit : miroir horizontal du gauche -->
+                    <svg class="persona-guide-svg" viewBox="0 0 64 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform:scaleX(-1)">
+                        <path d="M38 16c0-6-4-10-9-10-4 0-7 3-8 7l-1 5c-1 2-3 4-3 7 0 2 1 3 2 4l1 1v3c0 1 0 2 1 3l3 2h8l2-2c1-1 2-3 2-5v-2c1-1 2-3 2-5v-8z" fill="currentColor" opacity="0.15" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                        <circle cx="26" cy="24" r="1.5" fill="currentColor" opacity="0.5"/>
+                        <path d="M18 30c1 1 3 2 5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                        <path d="M24 38v4l-4 3v11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M33 38v4l4 3v11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M14 56h30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.3"/>
+                        <!-- Flèche indicatrice (sera mirrorée vers la droite) -->
+                        <path d="M10 24l-5 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+                        <path d="M5 24l3-2.5M5 24l3 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+                    </svg>
+                    <span data-i18n="persona.photo_right">Droite</span>
+                    <small data-i18n="persona.drop_photo">Cliquez ou glissez</small>
+                </div>
+                <input type="file" accept="image/*" class="persona-file-input" style="display:none">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button id="cancelPersonaBtn" class="btn btn-secondary" data-i18n="persona.btn_cancel">Annuler</button>
+            <button id="savePersonaBtn" class="btn btn-primary" data-i18n="persona.btn_save">Enregistrer</button>
+        </div>
+    </GlassPanel>
+</div>
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .modal-overlay.hidden {
+        display: none;
+    }
+
+    .modal-overlay :global(.modal-content) {
+        width: 100%;
+        max-width: 550px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow);
+        background: linear-gradient(145deg, rgba(25, 25, 35, 0.95), rgba(20, 20, 30, 0.9));
+    }
+
+    .modal-overlay :global(.modal-content) h2 {
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 1rem;
+    }
+
+    .input-group {
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .persona-photo-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 1.5rem;
+    }
+
+    .persona-drop-zone {
+        position: relative;
+        aspect-ratio: 3/4;
+        border: 2px dashed var(--border);
+        border-radius: 10px;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .persona-drop-zone:hover {
+        border-color: var(--primary);
+        background: rgba(139, 92, 246, 0.05);
+    }
+
+    .persona-drop-zone.has-image {
+        border-style: solid;
+        border-color: var(--primary);
+    }
+
+    .persona-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-muted);
+        text-align: center;
+        padding: 8px;
+    }
+
+    .persona-guide-svg {
+        width: 60px;
+        height: 75px;
+        color: var(--text-muted);
+        opacity: 0.4;
+    }
+
+    .persona-placeholder span {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .persona-placeholder small {
+        font-size: 0.7rem;
+        opacity: 0.6;
+    }
+
+    .persona-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .persona-preview.hidden {
+        display: none;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 1.5rem;
+    }
+</style>

@@ -90,6 +90,7 @@ export const en = {
   app: {
     sidebar_idea: "1. Your Idea (Prompt)",
     prompt_placeholder: "Describe your thumbnail (e.g., Shocked face, explosion background, text 'AMAZING'...)",
+    title_placeholder: "Text to display on the thumbnail (optional)",
     sidebar_ref: "2. Reference Images (Optional)",
     drop_text: "Click or drag images here",
     sidebar_settings: "3. Settings",
@@ -158,6 +159,26 @@ export const en = {
     error_api: "API Error",
     error_generation: "Generation finished with status",
     error_display: "Image was generated but direct display failed. Try the download button."
+  },
+  persona: {
+    title: "Personas",
+    empty: "No personas created.",
+    create: "Create a Persona",
+    modal_title: "New Persona",
+    name_label: "Persona name",
+    name_placeholder: "E.g. John, Mary...",
+    photo_left: "Left",
+    photo_front: "Front",
+    photo_right: "Right",
+    drop_photo: "Click or drag",
+    add_as_reference: "Add as reference",
+    delete: "Delete",
+    delete_confirm: "Delete this persona and its photos?",
+    not_enough_room: "Not enough room (a persona requires 3 free slots).",
+    all_photos_required: "All 3 photos are required.",
+    name_required: "Persona name is required.",
+    btn_save: "Save",
+    btn_cancel: "Cancel"
   },
   footer: {
     legal_notice: "Legal Notice",

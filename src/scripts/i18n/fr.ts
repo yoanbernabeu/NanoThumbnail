@@ -90,6 +90,7 @@ export const fr = {
   app: {
     sidebar_idea: "1. Votre Idée (Prompt)",
     prompt_placeholder: "Décrivez votre miniature (ex: Visage choqué, fond explosion, texte 'INCROYABLE'...)",
+    title_placeholder: "Texte à afficher sur la miniature (optionnel)",
     sidebar_ref: "2. Images de Référence (Optionnel)",
     drop_text: "Cliquez ou glissez des images ici",
     sidebar_settings: "3. Paramètres",
@@ -160,6 +161,26 @@ export const fr = {
     error_api: "Erreur API",
     error_generation: "La génération a terminé avec le statut",
     error_display: "L'image a été générée mais l'affichage direct a rencontré un problème. Essayez le bouton de téléchargement."
+  },
+  persona: {
+    title: "Personas",
+    empty: "Aucun persona créé.",
+    create: "Créer un Persona",
+    modal_title: "Nouveau Persona",
+    name_label: "Nom du persona",
+    name_placeholder: "Ex: Jean, Marie...",
+    photo_left: "Gauche",
+    photo_front: "Face",
+    photo_right: "Droite",
+    drop_photo: "Cliquez ou glissez",
+    add_as_reference: "Ajouter comme référence",
+    delete: "Supprimer",
+    delete_confirm: "Supprimer ce persona et ses photos ?",
+    not_enough_room: "Pas assez de place (un persona nécessite 3 emplacements libres).",
+    all_photos_required: "Les 3 photos sont requises.",
+    name_required: "Le nom du persona est requis.",
+    btn_save: "Enregistrer",
+    btn_cancel: "Annuler"
   },
   footer: {
     legal_notice: "Mentions Légales",

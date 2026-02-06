@@ -9,6 +9,10 @@
             <i class="fa-solid fa-times"></i>
         </button>
     </div>
+    <button id="createPersonaBtn" class="create-persona-btn">
+        <i class="fa-solid fa-user-plus"></i>
+        <span data-i18n="persona.create">Créer un Persona</span>
+    </button>
     <div id="libraryList">
         <!-- Items injected via JS -->
         <p class="empty-msg" data-i18n="library.empty">
@@ -114,5 +118,77 @@
     :global(.library-btn.delete-btn:hover) {
         background: rgba(220, 38, 38, 0.2);
         border-color: rgba(220, 38, 38, 0.5);
+    }
+
+    .create-persona-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 10px 16px;
+        margin-bottom: 1.5rem;
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px dashed rgba(139, 92, 246, 0.4);
+        border-radius: 10px;
+        color: var(--primary);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .create-persona-btn:hover {
+        background: rgba(139, 92, 246, 0.2);
+        border-color: rgba(139, 92, 246, 0.6);
+        transform: translateY(-1px);
+    }
+
+    /* Persona section styles */
+    :global(.library-section-header) {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    :global(.persona-item) {
+        margin-bottom: 1.25rem;
+        padding: 12px;
+        background: rgba(139, 92, 246, 0.06);
+        border: 1px solid rgba(139, 92, 246, 0.15);
+        border-radius: 12px;
+    }
+
+    :global(.persona-name) {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 8px;
+    }
+
+    :global(.persona-grid) {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    :global(.persona-thumb) {
+        width: 100%;
+        aspect-ratio: 3/4;
+        object-fit: cover;
+        border-radius: 6px;
+        background: #000;
+    }
+
+    :global(.persona-actions) {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
     }
 </style>
