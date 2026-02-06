@@ -555,9 +555,8 @@ export async function displayResult(url: string, prompt: string): Promise<string
     let blobUrl = url;
 
     if (url.startsWith('http')) {
-      const proxyUrl = `${state.proxyUrl}${encodeURIComponent(url)}`;
-      const response = await fetch(proxyUrl);
-      if (!response.ok) throw new Error('Failed to fetch image via proxy');
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch image');
       const blob = await response.blob();
       blobUrl = URL.createObjectURL(blob);
       finalSrc = blobUrl;
@@ -595,13 +594,11 @@ export async function displayResult(url: string, prompt: string): Promise<string
     return base64Data;
 
   } catch (e) {
-    console.error("Image display error:", e);
+    console.warn("Image fetch failed, falling back to direct load:", e);
     if (loader) loader.classList.add('hidden');
 
     img.src = url;
     img.classList.remove('hidden');
-
-    alert(t('alerts.error_display'));
 
     if (downloadLink) {
       downloadLink.href = url;
