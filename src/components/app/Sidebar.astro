@@ -13,6 +13,14 @@
             rows="4"
             placeholder="Décrivez votre miniature (ex: Visage choqué, fond explosion, texte 'INCROYABLE'...)"
             data-i18n="app.prompt_placeholder"></textarea>
+        <input
+            type="text"
+            id="titleInput"
+            class="input-field"
+            style="margin-top: 0.5rem;"
+            placeholder="Texte à afficher sur la miniature (optionnel)"
+            data-i18n="app.title_placeholder"
+        />
     </div>
 
     <div class="section">
@@ -63,72 +71,77 @@
     </div>
 
     <div class="section">
-        <div class="sidebar-title" data-i18n="app.sidebar_settings">
-            3. Paramètres
-        </div>
+        <details class="settings-details">
+            <summary class="sidebar-title settings-summary">
+                <span data-i18n="app.sidebar_settings">3. Paramètres</span>
+                <i class="fa-solid fa-chevron-right settings-chevron"></i>
+            </summary>
 
-        <div class="select-row">
-            <div class="input-group">
-                <label data-i18n="app.label_resolution">Résolution</label>
-                <select id="resolutionSelect" class="input-field">
-                    <option value="1K" data-i18n="app.opt_1k"
-                        >1K (Rapide)</option
-                    >
-                    <option value="2K" selected data-i18n="app.opt_2k"
-                        >2K (Standard)</option
-                    >
-                    <option value="4K" data-i18n="app.opt_4k"
-                        >4K (Haut de gamme)</option
-                    >
-                </select>
-            </div>
-            <div class="input-group">
-                <label data-i18n="app.label_ratio">Format (Ratio)</label>
-                <select id="aspectRatioSelect" class="input-field">
-                    <option value="16:9" selected data-i18n="app.opt_16_9"
-                        >16:9 (Youtube)</option
-                    >
-                    <option value="9:16" data-i18n="app.opt_9_16"
-                        >9:16 (Shorts)</option
-                    >
-                    <option value="4:3" data-i18n="app.opt_4_3">4:3</option>
-                    <option value="1:1" data-i18n="app.opt_1_1"
-                        >1:1 (Carré)</option
-                    >
-                    <option value="match_input_image" data-i18n="app.opt_match"
-                        >Match Input</option
-                    >
-                </select>
-            </div>
-        </div>
+            <div class="settings-content">
+                <div class="select-row">
+                    <div class="input-group">
+                        <label data-i18n="app.label_resolution">Résolution</label>
+                        <select id="resolutionSelect" class="input-field">
+                            <option value="1K" data-i18n="app.opt_1k"
+                                >1K (Rapide)</option
+                            >
+                            <option value="2K" selected data-i18n="app.opt_2k"
+                                >2K (Standard)</option
+                            >
+                            <option value="4K" data-i18n="app.opt_4k"
+                                >4K (Haut de gamme)</option
+                            >
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label data-i18n="app.label_ratio">Format (Ratio)</label>
+                        <select id="aspectRatioSelect" class="input-field">
+                            <option value="16:9" selected data-i18n="app.opt_16_9"
+                                >16:9 (Youtube)</option
+                            >
+                            <option value="9:16" data-i18n="app.opt_9_16"
+                                >9:16 (Shorts)</option
+                            >
+                            <option value="4:3" data-i18n="app.opt_4_3">4:3</option>
+                            <option value="1:1" data-i18n="app.opt_1_1"
+                                >1:1 (Carré)</option
+                            >
+                            <option value="match_input_image" data-i18n="app.opt_match"
+                                >Match Input</option
+                            >
+                        </select>
+                    </div>
+                </div>
 
-        <div class="select-row">
-            <div class="input-group">
-                <label data-i18n="app.label_format">Format Fichier</label>
-                <select id="formatSelect" class="input-field">
-                    <option value="png">PNG</option>
-                    <option value="jpg">JPG</option>
-                </select>
+                <div class="select-row">
+                    <div class="input-group">
+                        <label data-i18n="app.label_format">Format Fichier</label>
+                        <select id="formatSelect" class="input-field">
+                            <option value="png">PNG</option>
+                            <option value="jpg">JPG</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label data-i18n="app.label_safety">Sécurité</label>
+                        <select id="safetySelect" class="input-field">
+                            <option
+                                value="block_medium_and_above"
+                                data-i18n="app.opt_medium">Moyen</option
+                            >
+                            <option
+                                value="block_only_high"
+                                selected
+                                data-i18n="app.opt_permissive">Permissif</option
+                            >
+                            <option
+                                value="block_low_and_above"
+                                data-i18n="app.opt_strict">Strict</option
+                            >
+                        </select>
+                    </div>
+                </div>
             </div>
-            <div class="input-group">
-                <label data-i18n="app.label_safety">Sécurité</label>
-                <select id="safetySelect" class="input-field">
-                    <option
-                        value="block_medium_and_above"
-                        data-i18n="app.opt_medium">Moyen</option
-                    >
-                    <option
-                        value="block_only_high"
-                        selected
-                        data-i18n="app.opt_permissive">Permissif</option
-                    >
-                    <option
-                        value="block_low_and_above"
-                        data-i18n="app.opt_strict">Strict</option
-                    >
-                </select>
-            </div>
-        </div>
+        </details>
     </div>
 
     <button class="btn btn-primary" id="generateBtn">
@@ -180,15 +193,50 @@
     }
 
     .input-group {
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         text-align: left;
     }
 
     .input-group label {
         display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+        font-size: 0.8rem;
         color: var(--text-muted);
+    }
+
+    /* Settings details/summary */
+    .settings-details {
+        width: 100%;
+    }
+
+    .settings-details summary {
+        list-style: none;
+    }
+
+    .settings-details summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .settings-summary {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+    }
+
+    .settings-chevron {
+        font-size: 0.7rem;
+        transition: transform 0.2s ease;
+        color: var(--text-muted);
+    }
+
+    .settings-details[open] .settings-chevron {
+        transform: rotate(90deg);
+    }
+
+    .settings-content {
+        margin-top: 0.75rem;
     }
 
     .clear-all-btn {

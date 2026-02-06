@@ -55,7 +55,11 @@ export async function generateImage(): Promise<void> {
   const format = formatSelect?.value || 'png';
   const safety = safetySelect?.value || 'block_only_high';
 
-  const enhancedPrompt = `YouTube thumbnail, catchy, high contrast, vibrant colors, 4k, highly detailed, ${prompt}, cinematic lighting, expressive, viral style`;
+  const titleInput = document.getElementById('titleInput') as HTMLInputElement | null;
+  const title = titleInput?.value.trim() || '';
+
+  const titlePart = title ? `, bold text overlay saying '${title}'` : '';
+  const enhancedPrompt = `YouTube thumbnail, catchy, high contrast, vibrant colors, 4k, highly detailed, ${prompt}${titlePart}, cinematic lighting, expressive, viral style`;
 
   const inputData: PredictionInput = {
     prompt: enhancedPrompt,
