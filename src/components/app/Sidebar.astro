@@ -24,6 +24,42 @@
     </div>
 
     <div class="section">
+        <details class="remix-details">
+            <summary class="sidebar-title remix-summary">
+                <span data-i18n="remix.title">Remix</span>
+                <i class="fa-solid fa-chevron-right remix-chevron"></i>
+            </summary>
+
+            <div class="remix-content">
+                <div class="remix-input-row">
+                    <input
+                        type="text"
+                        id="remixUrlInput"
+                        class="input-field"
+                        placeholder="Collez une URL YouTube..."
+                        data-i18n="remix.url_placeholder"
+                    />
+                    <button id="remixLoadBtn" class="btn btn-primary remix-load-btn">
+                        <i class="fa-solid fa-download"></i>
+                        <span data-i18n="remix.btn_load">Charger</span>
+                    </button>
+                </div>
+
+                <div id="remixStatus" class="remix-status hidden"></div>
+
+                <div id="remixPreview" class="remix-preview hidden">
+                    <img id="remixThumbnail" class="remix-thumbnail" alt="YouTube Thumbnail" />
+                    <p id="remixTitle" class="remix-video-title"></p>
+                    <button id="remixClearBtn" class="btn btn-secondary remix-clear-btn">
+                        <i class="fa-solid fa-times"></i>
+                        <span data-i18n="remix.clear">Effacer</span>
+                    </button>
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <div class="section">
         <div
             class="sidebar-title"
             style="display: flex; justify-content: space-between; align-items: center;"
@@ -312,6 +348,111 @@
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 0.5rem;
         margin-bottom: 0.5rem;
+    }
+
+    /* Remix section */
+    .remix-details {
+        width: 100%;
+    }
+
+    .remix-details summary {
+        list-style: none;
+    }
+
+    .remix-details summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .remix-summary {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+    }
+
+    .remix-chevron {
+        font-size: 0.7rem;
+        transition: transform 0.2s ease;
+        color: var(--text-muted);
+    }
+
+    .remix-details[open] .remix-chevron {
+        transform: rotate(90deg);
+    }
+
+    .remix-content {
+        margin-top: 0.75rem;
+    }
+
+    .remix-input-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+
+    .remix-input-row .input-field {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .remix-load-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .remix-status {
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+        border-radius: var(--radius);
+    }
+
+    .remix-status.error {
+        color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.1);
+    }
+
+    .remix-status.success {
+        color: #51cf66;
+        background: rgba(81, 207, 102, 0.1);
+    }
+
+    .remix-status.loading {
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .remix-preview {
+        margin-top: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .remix-thumbnail {
+        width: 100%;
+        border-radius: calc(var(--radius) - 2px);
+        object-fit: cover;
+        aspect-ratio: 16 / 9;
+    }
+
+    .remix-video-title {
+        font-size: 0.8rem;
+        color: var(--text-main);
+        margin: 0.5rem 0;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+
+    .remix-clear-btn {
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.8rem;
+        padding: 0.4rem;
     }
 
     @media (max-width: 900px) {

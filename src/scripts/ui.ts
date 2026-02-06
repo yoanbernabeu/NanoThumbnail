@@ -861,6 +861,140 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
+/* --- REMIX LOGIC --- */
+function extractYouTubeVideoId(url: string): string | null {
+  const patterns = [
+    /(?:youtube\.com\/watch\?.*v=)([a-zA-Z0-9_-]{11})/,
+    /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+async function fetchYouTubeTitle(videoId: string): Promise<string | null> {
+  try {
+    const response = await fetch(
+      `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
+    );
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.title || null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchYouTubeThumbnail(videoId: string): Promise<string | null> {
+  const qualities = ['maxresdefault', 'hqdefault'];
+
+  // Try direct fetch first (YouTube supports CORS)
+  for (const quality of qualities) {
+    try {
+      const url = `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
+      const response = await fetch(url);
+      if (!response.ok) continue;
+      const blob = await response.blob();
+      return await blobToBase64(blob);
+    } catch {
+      continue;
+    }
+  }
+
+  // Fallback to Netlify proxy
+  try {
+    const response = await fetch(
+      `/.netlify/functions/youtube-thumbnail-proxy?videoId=${videoId}`
+    );
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.base64 || null;
+  } catch {
+    return null;
+  }
+}
+
+function setRemixStatus(message: string, type: 'loading' | 'error' | 'success'): void {
+  const status = document.getElementById('remixStatus');
+  if (!status) return;
+  status.textContent = message;
+  status.className = `remix-status ${type}`;
+  status.classList.remove('hidden');
+}
+
+function hideRemixStatus(): void {
+  const status = document.getElementById('remixStatus');
+  if (status) status.classList.add('hidden');
+}
+
+async function handleRemixLoad(): Promise<void> {
+  const urlInput = document.getElementById('remixUrlInput') as HTMLInputElement | null;
+  const url = urlInput?.value.trim() || '';
+
+  if (!url) return;
+
+  const videoId = extractYouTubeVideoId(url);
+  if (!videoId) {
+    setRemixStatus(t('remix.error_invalid_url'), 'error');
+    return;
+  }
+
+  setRemixStatus(t('remix.loading'), 'loading');
+
+  const [title, thumbnail] = await Promise.all([
+    fetchYouTubeTitle(videoId),
+    fetchYouTubeThumbnail(videoId),
+  ]);
+
+  if (!thumbnail) {
+    setRemixStatus(t('remix.error_fetch_failed'), 'error');
+    return;
+  }
+
+  // Set title in the title input field
+  if (title) {
+    const titleInput = document.getElementById('titleInput') as HTMLInputElement | null;
+    if (titleInput) titleInput.value = title;
+  }
+
+  // Add thumbnail to reference images
+  if (state.referenceImages.length < 14) {
+    state.referenceImages.push(thumbnail);
+    renderReferenceImages();
+  }
+
+  // Show remix preview
+  const preview = document.getElementById('remixPreview');
+  const remixThumb = document.getElementById('remixThumbnail') as HTMLImageElement | null;
+  const remixTitle = document.getElementById('remixTitle');
+
+  if (preview) preview.classList.remove('hidden');
+  if (remixThumb) remixThumb.src = thumbnail;
+  if (remixTitle) remixTitle.textContent = title || '';
+
+  setRemixStatus(t('remix.thumbnail_loaded'), 'success');
+  setTimeout(hideRemixStatus, 2000);
+}
+
+function clearRemix(): void {
+  const urlInput = document.getElementById('remixUrlInput') as HTMLInputElement | null;
+  const preview = document.getElementById('remixPreview');
+  const remixThumb = document.getElementById('remixThumbnail') as HTMLImageElement | null;
+  const remixTitle = document.getElementById('remixTitle');
+
+  if (urlInput) urlInput.value = '';
+  if (preview) preview.classList.add('hidden');
+  if (remixThumb) remixThumb.src = '';
+  if (remixTitle) remixTitle.textContent = '';
+
+  hideRemixStatus();
+}
+
 /* --- INIT APP --- */
 export function initApp(): void {
   // Check if API key exists, if not show settings
@@ -970,6 +1104,26 @@ export function initApp(): void {
   }
 
   initPersonaDropZones();
+
+  // Remix listeners
+  const remixLoadBtn = document.getElementById('remixLoadBtn');
+  const remixClearBtn = document.getElementById('remixClearBtn');
+  const remixUrlInput = document.getElementById('remixUrlInput');
+
+  if (remixLoadBtn) {
+    remixLoadBtn.addEventListener('click', handleRemixLoad);
+  }
+  if (remixClearBtn) {
+    remixClearBtn.addEventListener('click', clearRemix);
+  }
+  if (remixUrlInput) {
+    remixUrlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleRemixLoad();
+      }
+    });
+  }
 
   // Listen for language changes to re-render dynamic content
   window.addEventListener('languageChanged', () => {

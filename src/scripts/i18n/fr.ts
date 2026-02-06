@@ -18,7 +18,7 @@ export const fr = {
     badge_free: "Gratuit (Interface)",
     badge_byok: "BYOK (Replicate)",
     badge_new: "NOUVEAU",
-    badge_new_desc: "Historique & Bibliothèque Locale",
+    badge_new_desc: "Personas & Titre sur vos miniatures",
     open_source: "Open Source. Aujourd'hui et pour toujours.",
     features_title: "Pourquoi choisir NanoThumbnail ?",
     feature_1_title: "Nano Banana Pro",
@@ -83,6 +83,19 @@ export const fr = {
     faq_3_a: "Oui, les images générées par Nano Banana Pro via Replicate vous appartiennent généralement. Vérifiez les CGU de Replicate pour les détails.",
     faq_4_q: "Pourquoi ce modèle est-il meilleur ?",
     faq_4_a: "Google Nano Banana Pro a été spécifiquement entraîné pour comprendre des instructions complexes et gérer le texte, ce qui est le point faible de Midjourney ou DALL-E.",
+    whats_new: {
+      title: "Quoi de neuf ?",
+      subtitle: "Les dernières fonctionnalités qui font la différence.",
+      persona_title: "Personas",
+      persona_desc: "Créez des profils visage (gauche, face, droite) et injectez-les en un clic comme références. L'IA reproduit votre visage avec précision.",
+      persona_tag: "3 photos = 1 identité",
+      title_overlay_title: "Texte sur la miniature",
+      title_overlay_desc: "Ajoutez un titre accrocheur directement dans le prompt. L'IA intègre votre texte de manière percutante dans la miniature.",
+      title_overlay_tag: "Bold & lisible",
+      smart_settings_title: "Interface repensée",
+      smart_settings_desc: "Les paramètres avancés sont désormais pliables pour garder l'essentiel visible. Un workflow plus fluide, moins de bruit.",
+      smart_settings_tag: "Clean & rapide"
+    },
     cta_final_title: "Prêt à exploser votre CTR ?",
     cta_final_btn: "Créer ma première miniature",
     footer: "YoanDev - NanoThumbnail © 2025 • Propulsé par Replicate & Google Nano Banana Pro"
@@ -181,6 +194,16 @@ export const fr = {
     name_required: "Le nom du persona est requis.",
     btn_save: "Enregistrer",
     btn_cancel: "Annuler"
+  },
+  remix: {
+    title: "Remix",
+    url_placeholder: "Collez une URL YouTube...",
+    btn_load: "Charger",
+    loading: "Chargement...",
+    error_invalid_url: "URL YouTube invalide.",
+    error_fetch_failed: "Impossible de charger les infos de la vidéo.",
+    thumbnail_loaded: "Miniature chargée !",
+    clear: "Effacer"
   },
   footer: {
     legal_notice: "Mentions Légales",
