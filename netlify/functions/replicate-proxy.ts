@@ -1,88 +1,69 @@
-import type { Handler, HandlerEvent } from '@netlify/functions';
-
 const ALLOWED_ORIGINS = [
   'https://api.replicate.com',
   'https://generativelanguage.googleapis.com',
 ];
 
-export const handler: Handler = async (event: HandlerEvent) => {
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Authorization, Content-Type, x-goog-api-key',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+};
+
+export default async (req: Request) => {
   // Handle CORS preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 204,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Authorization, Content-Type, x-goog-api-key',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      },
-      body: '',
-    };
+  if (req.method === 'OPTIONS') {
+    return new Response('', { status: 204, headers: corsHeaders });
   }
 
-  const targetUrl = event.queryStringParameters?.url;
-
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-  };
+  const url = new URL(req.url);
+  const targetUrl = url.searchParams.get('url');
 
   if (!targetUrl) {
-    return {
-      statusCode: 400,
-      headers: corsHeaders,
-      body: JSON.stringify({ error: 'Missing url parameter' }),
-    };
+    return new Response(JSON.stringify({ error: 'Missing url parameter' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 
   // Security: only allow proxying to whitelisted APIs
-  if (!ALLOWED_ORIGINS.some(origin => targetUrl.startsWith(origin))) {
-    return {
-      statusCode: 403,
-      headers: corsHeaders,
-      body: JSON.stringify({ error: 'Forbidden: target URL is not allowed' }),
-    };
+  if (!ALLOWED_ORIGINS.some((origin) => targetUrl.startsWith(origin))) {
+    return new Response(JSON.stringify({ error: 'Forbidden: target URL is not allowed' }), {
+      status: 403,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 
   const headers: Record<string, string> = {};
-  if (event.headers.authorization) {
-    headers['Authorization'] = event.headers.authorization;
-  }
-  if (event.headers['content-type']) {
-    headers['Content-Type'] = event.headers['content-type'];
-  }
-  if (event.headers['x-goog-api-key']) {
-    headers['x-goog-api-key'] = event.headers['x-goog-api-key'];
-  }
+  const auth = req.headers.get('authorization');
+  const contentType = req.headers.get('content-type');
+  const googApiKey = req.headers.get('x-goog-api-key');
+
+  if (auth) headers['Authorization'] = auth;
+  if (contentType) headers['Content-Type'] = contentType;
+  if (googApiKey) headers['x-goog-api-key'] = googApiKey;
 
   try {
-    // Decode body if Netlify base64-encoded it
-    let requestBody: string | undefined = undefined;
-    if (event.httpMethod !== 'GET' && event.body) {
-      requestBody = event.isBase64Encoded
-        ? Buffer.from(event.body, 'base64').toString('utf-8')
-        : event.body;
-    }
+    const body = req.method !== 'GET' ? await req.text() : undefined;
 
     const response = await fetch(targetUrl, {
-      method: event.httpMethod,
+      method: req.method,
       headers,
-      body: requestBody,
+      body,
     });
 
     const responseBody = await response.text();
 
-    return {
-      statusCode: response.status,
+    return new Response(responseBody, {
+      status: response.status,
       headers: {
         ...corsHeaders,
         'Content-Type': response.headers.get('content-type') || 'application/json',
       },
-      body: responseBody,
-    };
+    });
   } catch (error) {
-    return {
-      statusCode: 502,
-      headers: corsHeaders,
-      body: JSON.stringify({ error: 'Proxy request failed', details: String(error) }),
-    };
+    return new Response(JSON.stringify({ error: 'Proxy request failed', details: String(error) }), {
+      status: 502,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 };
