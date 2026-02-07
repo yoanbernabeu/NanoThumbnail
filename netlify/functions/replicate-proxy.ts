@@ -1,3 +1,5 @@
+import type { Handler, HandlerEvent } from '@netlify/functions';
+
 const ALLOWED_ORIGINS = [
   'https://api.replicate.com',
   'https://generativelanguage.googleapis.com',
@@ -9,61 +11,81 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
 
-export default async (req: Request) => {
+export const handler: Handler = async (event: HandlerEvent) => {
   // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response('', { status: 204, headers: corsHeaders });
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers: corsHeaders, body: '' };
   }
 
-  const url = new URL(req.url);
-  const targetUrl = url.searchParams.get('url');
+  const targetUrl = event.queryStringParameters?.url;
 
   if (!targetUrl) {
-    return new Response(JSON.stringify({ error: 'Missing url parameter' }), {
-      status: 400,
+    return {
+      statusCode: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+      body: JSON.stringify({ error: 'Missing url parameter' }),
+    };
   }
 
-  // Security: only allow proxying to whitelisted APIs
-  if (!ALLOWED_ORIGINS.some((origin) => targetUrl.startsWith(origin))) {
-    return new Response(JSON.stringify({ error: 'Forbidden: target URL is not allowed' }), {
-      status: 403,
+  if (!ALLOWED_ORIGINS.some(origin => targetUrl.startsWith(origin))) {
+    return {
+      statusCode: 403,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+      body: JSON.stringify({ error: 'Forbidden: target URL is not allowed' }),
+    };
   }
 
   const headers: Record<string, string> = {};
-  const auth = req.headers.get('authorization');
-  const contentType = req.headers.get('content-type');
-  const googApiKey = req.headers.get('x-goog-api-key');
-
-  if (auth) headers['Authorization'] = auth;
-  if (contentType) headers['Content-Type'] = contentType;
-  if (googApiKey) headers['x-goog-api-key'] = googApiKey;
+  if (event.headers.authorization) {
+    headers['Authorization'] = event.headers.authorization;
+  }
+  if (event.headers['content-type']) {
+    headers['Content-Type'] = event.headers['content-type'];
+  }
+  if (event.headers['x-goog-api-key']) {
+    headers['x-goog-api-key'] = event.headers['x-goog-api-key'];
+  }
 
   try {
-    const body = req.method !== 'GET' ? await req.text() : undefined;
+    // Decode body if Netlify base64-encoded it
+    let requestBody: string | undefined = undefined;
+    if (event.httpMethod !== 'GET' && event.body) {
+      requestBody = event.isBase64Encoded
+        ? Buffer.from(event.body, 'base64').toString('utf-8')
+        : event.body;
+    }
 
     const response = await fetch(targetUrl, {
-      method: req.method,
+      method: event.httpMethod,
       headers,
-      body,
+      body: requestBody,
     });
 
     const responseBody = await response.text();
 
-    return new Response(responseBody, {
-      status: response.status,
+    return {
+      statusCode: response.status,
       headers: {
         ...corsHeaders,
         'Content-Type': response.headers.get('content-type') || 'application/json',
       },
-    });
+      body: responseBody || JSON.stringify({
+        _proxy_debug: {
+          upstreamStatus: response.status,
+          upstreamStatusText: response.statusText,
+          emptyBody: true,
+          targetUrl,
+          method: event.httpMethod,
+          hasBody: !!requestBody,
+          bodyLength: requestBody?.length || 0,
+        }
+      }),
+    };
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Proxy request failed', details: String(error) }), {
-      status: 502,
+    return {
+      statusCode: 502,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+      body: JSON.stringify({ error: 'Proxy request failed', details: String(error) }),
+    };
   }
 };
