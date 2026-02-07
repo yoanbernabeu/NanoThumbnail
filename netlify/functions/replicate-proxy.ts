@@ -21,9 +21,14 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
   const targetUrl = event.queryStringParameters?.url;
 
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+  };
+
   if (!targetUrl) {
     return {
       statusCode: 400,
+      headers: corsHeaders,
       body: JSON.stringify({ error: 'Missing url parameter' }),
     };
   }
@@ -32,6 +37,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (!ALLOWED_ORIGINS.some(origin => targetUrl.startsWith(origin))) {
     return {
       statusCode: 403,
+      headers: corsHeaders,
       body: JSON.stringify({ error: 'Forbidden: target URL is not allowed' }),
     };
   }
@@ -48,10 +54,18 @@ export const handler: Handler = async (event: HandlerEvent) => {
   }
 
   try {
+    // Decode body if Netlify base64-encoded it
+    let requestBody: string | undefined = undefined;
+    if (event.httpMethod !== 'GET' && event.body) {
+      requestBody = event.isBase64Encoded
+        ? Buffer.from(event.body, 'base64').toString('utf-8')
+        : event.body;
+    }
+
     const response = await fetch(targetUrl, {
       method: event.httpMethod,
       headers,
-      body: event.httpMethod !== 'GET' ? event.body : undefined,
+      body: requestBody,
     });
 
     const responseBody = await response.text();
@@ -59,6 +73,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
     return {
       statusCode: response.status,
       headers: {
+        ...corsHeaders,
         'Content-Type': response.headers.get('content-type') || 'application/json',
       },
       body: responseBody,
@@ -66,6 +81,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
   } catch (error) {
     return {
       statusCode: 502,
+      headers: corsHeaders,
       body: JSON.stringify({ error: 'Proxy request failed', details: String(error) }),
     };
   }
