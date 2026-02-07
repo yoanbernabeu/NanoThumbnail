@@ -57,14 +57,14 @@ export async function generateViaGemini(params: {
     },
   };
 
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent`;
-  const proxyUrl = `${state.proxyUrl}${encodeURIComponent(geminiUrl)}`;
+  // Call Gemini API directly (no proxy) — Google's API supports CORS,
+  // and the proxy causes Inactivity Timeout on long image generations.
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${encodeURIComponent(state.apiKey)}`;
 
-  const response = await fetch(proxyUrl, {
+  const response = await fetch(geminiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-goog-api-key': state.apiKey,
     },
     body: JSON.stringify(body),
   });
