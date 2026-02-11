@@ -221,7 +221,17 @@ export async function addToHistory(prompt: string, url: string, base64Data?: str
     state.history.splice(indexToRemove, 1);
   }
 
-  localStorage.setItem('nano_history', JSON.stringify(state.history));
+  // Prepare history for localStorage (strip large base64 data to prevent quota exceeded)
+  const historyForStorage = state.history.map(item => {
+    const storageItem = { ...item };
+    // If url contains base64 data (data:image), replace with placeholder to save space
+    if (storageItem.url && storageItem.url.startsWith('data:')) {
+      storageItem.url = `[STORED_IN_INDEXEDDB_${storageItem.localId || 'local'}]`;
+    }
+    return storageItem;
+  });
+
+  localStorage.setItem('nano_history', JSON.stringify(historyForStorage));
   renderHistory();
 }
 
