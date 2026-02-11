@@ -3,6 +3,7 @@ import { displayResult, addToHistory } from './ui';
 import { t } from './i18n/index';
 import { showErrorModal } from './modules/errors/handler';
 import { generateViaGemini } from './gemini';
+import { generateViaOpenRouter } from './openrouter';
 
 interface PredictionInput {
   prompt: string;
@@ -92,6 +93,29 @@ export async function generateImage(): Promise<void> {
         output_format: 'png',
         safety_filter_level: safety,
         provider: 'gemini',
+      };
+
+      await addToHistory(prompt, dataUri, dataUri, parameters);
+    } else if (state.provider === 'openrouter') {
+      // --- OPENROUTER: synchronous single-request flow ---
+      if (statusText) statusText.innerText = t('app.status_working');
+
+      const dataUri = await generateViaOpenRouter({
+        prompt: enhancedPrompt,
+        aspectRatio,
+        referenceImages: state.referenceImages,
+      });
+
+      if (statusText) statusText.innerText = t('app.status_download');
+
+      await displayResult(dataUri, prompt);
+
+      const parameters: GenerationParameters = {
+        resolution,
+        aspect_ratio: aspectRatio,
+        output_format: 'png',
+        safety_filter_level: safety,
+        provider: 'openrouter',
       };
 
       await addToHistory(prompt, dataUri, dataUri, parameters);

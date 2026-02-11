@@ -16,7 +16,7 @@ export const fr = {
     cta_start: "Commencer maintenant",
     cta_pricing: "Voir les prix",
     badge_free: "Gratuit (Interface)",
-    badge_byok: "BYOK (Replicate / Gemini)",
+    badge_byok: "BYOK (Replicate / Gemini / OpenRouter)",
     badge_new: "NOUVEAU",
     badge_new_desc: "Personas & Titre sur vos miniatures",
     open_source: "Open Source. Aujourd'hui et pour toujours.",
@@ -26,7 +26,7 @@ export const fr = {
     feature_2_title: "100% Gratuit",
     feature_2_desc: "Notre outil est une interface gratuite et open-source. <strong>Aucun abonnement caché</strong>, aucune commission sur vos créations. Vous ne payez que ce que vous consommez.",
     feature_3_title: "Bring Your Own Key",
-    feature_3_desc: "Connectez directement votre compte <strong>Replicate</strong> ou <strong>Google Gemini</strong>. C'est la garantie de payer le prix réel fournisseur et de garder le contrôle total sur vos données et votre API.",
+    feature_3_desc: "Connectez directement votre compte <strong>Replicate</strong>, <strong>Google Gemini</strong>, ou <strong>OpenRouter</strong>. C'est la garantie de payer le prix réel fournisseur et de garder le contrôle total sur vos données et votre API.",
     feature_4_title: "Personas",
     feature_4_desc: "Créez des profils visage (gauche, face, droite) et injectez-les comme références. L'IA reproduit fidèlement <strong>votre visage</strong> sur chaque miniature.",
     feature_5_title: "Remix YouTube",
@@ -54,7 +54,7 @@ export const fr = {
       badge: "MEILLEURE OFFRE",
       pay_per_use: "Payez à l'usage (~0.14€/img)",
       feature_1: "Interface 100% Gratuite",
-      feature_2: "Clé API Replicate ou Gemini (Prix coûtant)",
+      feature_2: "Clé API Replicate, Gemini, ou OpenRouter (Prix coûtant)",
       feature_3: "Vie privée respectée (Local)",
       cta: "Commencer Gratuitement",
       competitors_title: "Concurrents SaaS",
@@ -80,7 +80,7 @@ export const fr = {
     step_3_desc: "Téléchargez votre miniature en PNG/JPG et uploadez-la directement sur YouTube.",
     faq_title: "Questions Fréquentes",
     faq_1_q: "Est-ce vraiment gratuit ?",
-    faq_1_a: "L'interface NanoThumbnail est 100% gratuite. Cependant, la génération d'images utilise l'API Replicate ou Google Gemini qui est payante (environ 0.14$ par image sur Replicate). Vous payez directement le fournisseur.",
+    faq_1_a: "L'interface NanoThumbnail est 100% gratuite. Cependant, la génération d'images utilise l'API Replicate, Google Gemini, ou OpenRouter qui est payante (environ 0.14$ par image sur Replicate). Vous payez directement le fournisseur.",
     faq_2_q: "Ma clé API est-elle sécurisée ?",
     faq_2_a: "Oui. Votre clé est stockée uniquement dans votre navigateur (LocalStorage). Elle n'est jamais envoyée sur nos serveurs (nous n'en avons pas !).",
     faq_3_q: "Puis-je utiliser les images commercialement ?",
@@ -102,7 +102,7 @@ export const fr = {
     },
     cta_final_title: "Prêt à exploser votre CTR ?",
     cta_final_btn: "Créer ma première miniature",
-    footer: "YoanDev - NanoThumbnail © 2025 • Propulsé par Replicate & Google Gemini"
+    footer: "YoanDev - NanoThumbnail © 2025 • Propulsé par Replicate, Google Gemini & OpenRouter"
   },
   app: {
     sidebar_idea: "1. Votre Idée (Prompt)",
@@ -156,10 +156,12 @@ export const fr = {
     label_api: "Clé API Replicate",
     label_api_replicate: "Clé API Replicate",
     label_api_gemini: "Clé API Google Gemini",
+    label_api_openrouter: "Clé API OpenRouter",
     help_api: "Stockée localement dans votre navigateur.",
     get_api_key: "Obtenir une clé API Replicate",
     get_api_key_replicate: "Obtenir une clé API Replicate",
     get_api_key_gemini: "Obtenir une clé API Google AI",
+    get_api_key_openrouter: "Obtenir une clé API OpenRouter",
     label_save_locally: "Sauvegarder les images localement",
     help_save_locally: "Les images seront stockées dans votre navigateur pour éviter leur expiration.",
     btn_cancel: "Annuler",
@@ -222,6 +224,6 @@ export const fr = {
     col_product: "Produit",
     col_resources: "Ressources",
     col_legal: "Légal",
-    copyright: "YoanDev - NanoThumbnail © 2025 • Propulsé par Replicate & Google Gemini"
+    copyright: "YoanDev - NanoThumbnail © 2025 • Propulsé par Replicate, Google Gemini & OpenRouter"
   }
 };
