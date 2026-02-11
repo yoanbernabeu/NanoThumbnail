@@ -100,7 +100,7 @@ export async function generateViaOpenRouter(params: {
   const mappedSize = RESOLUTION_MAP[resolution] || "1K";
 
   const body = {
-    model: "black-forest-labs/flux.2-klein-4b",
+    model: "google/gemini-3-pro-image-preview",
     messages,
     modalities: ["image"],
     image_config: {
