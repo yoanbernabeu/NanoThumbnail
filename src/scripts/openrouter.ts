@@ -7,10 +7,19 @@ interface OpenRouterMessage {
   content: string;
 }
 
+interface OpenRouterImage {
+  index: number;
+  type: string;
+  image_url: {
+    url: string;
+  };
+}
+
 interface OpenRouterResponse {
   choices?: Array<{
     message?: {
       content?: string;
+      images?: OpenRouterImage[];
     };
   }>;
   error?: { message: string; code: string };
@@ -109,39 +118,41 @@ export async function generateViaOpenRouter(params: {
   }
 
   // Extract image data from the response
-  const content = data.choices?.[0]?.message?.content;
+  const message = data.choices?.[0]?.message;
 
-  if (!content) {
-    showErrorModal({
-      statusCode: 500,
-      errorDetails: {
-        message: "No image returned by OpenRouter",
-        response: data as unknown as Record<string, unknown>,
-      },
-    });
-    throw new Error(t("alerts.error_generation"));
+  // Check for images array first (OpenRouter format)
+  if (message?.images && message.images.length > 0) {
+    const imageUrl = message.images[0]?.image_url?.url;
+    if (imageUrl) {
+      return imageUrl;
+    }
   }
 
-  // Check if content is already a data URI
-  if (content.startsWith("data:")) {
-    return content;
-  }
+  // Fall back to content field
+  const content = message?.content;
 
-  // Try to extract base64 data from markdown image format: ![alt](data:image/...;base64,...)
-  const markdownMatch = content.match(/!\[.*?\]\((data:image\/[^)]+)\)/);
-  if (markdownMatch) {
-    return markdownMatch[1];
-  }
+  if (content) {
+    // Check if content is already a data URI
+    if (content.startsWith("data:")) {
+      return content;
+    }
 
-  // If content looks like base64, wrap it
-  if (/^[A-Za-z0-9+/=]+$/.test(content)) {
-    return `data:image/png;base64,${content}`;
+    // Try to extract base64 data from markdown image format: ![alt](data:image/...;base64,...)
+    const markdownMatch = content.match(/!\[.*?\]\((data:image\/[^)]+)\)/);
+    if (markdownMatch) {
+      return markdownMatch[1];
+    }
+
+    // If content looks like base64, wrap it
+    if (/^[A-Za-z0-9+/=]+$/.test(content)) {
+      return `data:image/png;base64,${content}`;
+    }
   }
 
   showErrorModal({
     statusCode: 500,
     errorDetails: {
-      message: "Unexpected response format from OpenRouter",
+      message: "No image returned by OpenRouter",
       response: data as unknown as Record<string, unknown>,
     },
   });
