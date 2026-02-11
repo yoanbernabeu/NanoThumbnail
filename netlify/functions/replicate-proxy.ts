@@ -3,6 +3,7 @@ import type { Handler, HandlerEvent } from '@netlify/functions';
 const ALLOWED_ORIGINS = [
   'https://api.replicate.com',
   'https://generativelanguage.googleapis.com',
+  'https://openrouter.ai',
 ];
 
 const corsHeaders = {

@@ -1,6 +1,6 @@
 // Application state management
 
-export type ApiProvider = 'replicate' | 'gemini';
+export type ApiProvider = 'replicate' | 'gemini' | 'openrouter';
 
 export interface GenerationParameters {
   resolution: string;
@@ -23,6 +23,7 @@ export interface AppState {
   apiKey: string;
   apiKeyReplicate: string;
   apiKeyGemini: string;
+  apiKeyOpenRouter: string;
   proxyUrl: string;
   history: HistoryItem[];
   referenceImages: string[];
@@ -56,12 +57,26 @@ migrateApiKey();
 const provider = (localStorage.getItem('nano_provider') as ApiProvider) || 'replicate';
 const apiKeyReplicate = localStorage.getItem('nano_api_key_replicate') || '';
 const apiKeyGemini = localStorage.getItem('nano_api_key_gemini') || '';
+const apiKeyOpenRouter = localStorage.getItem('nano_api_key_openrouter') || '';
+
+function getActiveApiKey(): string {
+  switch (provider) {
+    case 'gemini':
+      return apiKeyGemini;
+    case 'openrouter':
+      return apiKeyOpenRouter;
+    case 'replicate':
+    default:
+      return apiKeyReplicate;
+  }
+}
 
 export const state: AppState = {
   provider,
-  apiKey: provider === 'gemini' ? apiKeyGemini : apiKeyReplicate,
+  apiKey: getActiveApiKey(),
   apiKeyReplicate,
   apiKeyGemini,
+  apiKeyOpenRouter,
   proxyUrl: '/.netlify/functions/replicate-proxy?url=',
   history: loadHistory(),
   referenceImages: [],

@@ -16,7 +16,7 @@ export const en = {
     cta_start: "Start Now",
     cta_pricing: "See Pricing",
     badge_free: "Free (Interface)",
-    badge_byok: "BYOK (Replicate / Gemini)",
+    badge_byok: "BYOK (Replicate / Gemini / OpenRouter)",
     badge_new: "NEW",
     badge_new_desc: "Personas & Title Overlay",
     open_source: "Open Source. Today and Forever.",
@@ -26,7 +26,7 @@ export const en = {
     feature_2_title: "100% Free",
     feature_2_desc: "Our tool is a free and open-source interface. <strong>No hidden subscriptions</strong>, no commission on your creations. You only pay for what you consume.",
     feature_3_title: "Bring Your Own Key",
-    feature_3_desc: "Connect your <strong>Replicate</strong> or <strong>Google Gemini</strong> account directly. It's the guarantee of paying the real provider price and keeping full control over your data and API.",
+    feature_3_desc: "Connect your <strong>Replicate</strong>, <strong>Google Gemini</strong>, or <strong>OpenRouter</strong> account directly. It's the guarantee of paying the real provider price and keeping full control over your data and API.",
     feature_4_title: "Personas",
     feature_4_desc: "Create face profiles (left, front, right) and inject them as references. The AI faithfully reproduces <strong>your face</strong> in every thumbnail.",
     feature_5_title: "YouTube Remix",
@@ -54,7 +54,7 @@ export const en = {
       badge: "BEST OFFER",
       pay_per_use: "Pay as you go (~$0.14/img)",
       feature_1: "100% Free Interface",
-      feature_2: "Replicate or Gemini API Key (At cost)",
+      feature_2: "Replicate, Gemini, or OpenRouter API Key (At cost)",
       feature_3: "Privacy Respected (Local)",
       cta: "Start for Free",
       competitors_title: "SaaS Competitors",
@@ -80,7 +80,7 @@ export const en = {
     step_3_desc: "Download your thumbnail in PNG/JPG and upload it directly to YouTube.",
     faq_title: "Frequently Asked Questions",
     faq_1_q: "Is it really free?",
-    faq_1_a: "The NanoThumbnail interface is 100% free. However, image generation uses the Replicate or Google Gemini API which is paid (approx $0.14 per image on Replicate). You pay the provider directly.",
+    faq_1_a: "The NanoThumbnail interface is 100% free. However, image generation uses the Replicate, Google Gemini, or OpenRouter API which is paid (approx $0.14 per image on Replicate). You pay the provider directly.",
     faq_2_q: "Is my API key secure?",
     faq_2_a: "Yes. Your key is stored only in your browser (LocalStorage). It is never sent to our servers (we don't have any!).",
     faq_3_q: "Can I use images commercially?",
@@ -102,7 +102,7 @@ export const en = {
     },
     cta_final_title: "Ready to explode your CTR?",
     cta_final_btn: "Create my first thumbnail",
-    footer: "YoanDev - NanoThumbnail © 2025 • Powered by Replicate & Google Gemini"
+    footer: "YoanDev - NanoThumbnail © 2025 • Powered by Replicate, Google Gemini & OpenRouter"
   },
   app: {
     sidebar_idea: "1. Your Idea (Prompt)",
@@ -156,10 +156,12 @@ export const en = {
     label_api: "Replicate API Key",
     label_api_replicate: "Replicate API Key",
     label_api_gemini: "Google Gemini API Key",
+    label_api_openrouter: "OpenRouter API Key",
     help_api: "Stored locally in your browser.",
     get_api_key: "Get a Replicate API Key",
     get_api_key_replicate: "Get a Replicate API Key",
     get_api_key_gemini: "Get a Google AI API Key",
+    get_api_key_openrouter: "Get an OpenRouter API Key",
     label_save_locally: "Save images locally",
     help_save_locally: "Images will be stored in your browser to prevent expiration.",
     btn_cancel: "Cancel",
@@ -220,6 +222,6 @@ export const en = {
     col_product: "Product",
     col_resources: "Resources",
     col_legal: "Legal",
-    copyright: "YoanDev - NanoThumbnail © 2025 • Powered by Replicate & Google Gemini"
+    copyright: "YoanDev - NanoThumbnail © 2025 • Powered by Replicate, Google Gemini & OpenRouter"
   }
 };

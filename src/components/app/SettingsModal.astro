@@ -11,6 +11,7 @@ import GlassPanel from '../ui/GlassPanel.astro';
             <select id="providerSelect" class="input-field">
                 <option value="replicate">Replicate</option>
                 <option value="gemini">Google Gemini</option>
+                <option value="openrouter">OpenRouter</option>
             </select>
         </div>
         <div id="replicateKeyGroup" class="input-group">
@@ -29,6 +30,15 @@ import GlassPanel from '../ui/GlassPanel.astro';
             <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="api-link">
                 <i class="fa-solid fa-external-link-alt"></i>
                 <span data-i18n="modals.get_api_key_gemini">Obtenir une clé API Google AI</span>
+            </a>
+        </div>
+        <div id="openrouterKeyGroup" class="input-group hidden">
+            <label data-i18n="modals.label_api_openrouter">OpenRouter API Key</label>
+            <input type="password" id="apiKeyOpenRouterInput" class="input-field" placeholder="sk-or-...">
+            <small data-i18n="modals.help_api">Stored locally in your browser.</small>
+            <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" class="api-link">
+                <i class="fa-solid fa-external-link-alt"></i>
+                <span data-i18n="modals.get_api_key_openrouter">Get an OpenRouter API Key</span>
             </a>
         </div>
         <div class="input-group checkbox-group">

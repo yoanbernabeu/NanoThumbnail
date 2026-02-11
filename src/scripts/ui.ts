@@ -28,6 +28,7 @@ export function openSettings(): void {
   const providerSelect = document.getElementById('providerSelect') as HTMLSelectElement | null;
   const apiKeyReplicateInput = document.getElementById('apiKeyReplicateInput') as HTMLInputElement | null;
   const apiKeyGeminiInput = document.getElementById('apiKeyGeminiInput') as HTMLInputElement | null;
+  const apiKeyOpenRouterInput = document.getElementById('apiKeyOpenRouterInput') as HTMLInputElement | null;
   const saveLocallyCheckbox = document.getElementById('saveLocallyCheckbox') as HTMLInputElement | null;
   settingsModal = document.getElementById('settingsModal');
 
@@ -43,6 +44,9 @@ export function openSettings(): void {
   if (apiKeyGeminiInput) {
     apiKeyGeminiInput.value = state.apiKeyGemini;
   }
+  if (apiKeyOpenRouterInput) {
+    apiKeyOpenRouterInput.value = state.apiKeyOpenRouter;
+  }
   if (saveLocallyCheckbox) {
     saveLocallyCheckbox.checked = state.saveLocally;
   }
@@ -55,12 +59,20 @@ export function openSettings(): void {
 function toggleProviderKeyGroup(provider: ApiProvider): void {
   const replicateGroup = document.getElementById('replicateKeyGroup');
   const geminiGroup = document.getElementById('geminiKeyGroup');
+  const openrouterGroup = document.getElementById('openrouterKeyGroup');
+  
+  // Hide all groups first
+  replicateGroup?.classList.add('hidden');
+  geminiGroup?.classList.add('hidden');
+  openrouterGroup?.classList.add('hidden');
+  
+  // Show the appropriate group
   if (provider === 'gemini') {
-    replicateGroup?.classList.add('hidden');
     geminiGroup?.classList.remove('hidden');
+  } else if (provider === 'openrouter') {
+    openrouterGroup?.classList.remove('hidden');
   } else {
     replicateGroup?.classList.remove('hidden');
-    geminiGroup?.classList.add('hidden');
   }
 }
 
@@ -75,12 +87,27 @@ export function saveSettings(): void {
   const providerSelect = document.getElementById('providerSelect') as HTMLSelectElement | null;
   const apiKeyReplicateInput = document.getElementById('apiKeyReplicateInput') as HTMLInputElement | null;
   const apiKeyGeminiInput = document.getElementById('apiKeyGeminiInput') as HTMLInputElement | null;
+  const apiKeyOpenRouterInput = document.getElementById('apiKeyOpenRouterInput') as HTMLInputElement | null;
   const saveLocallyCheckbox = document.getElementById('saveLocallyCheckbox') as HTMLInputElement | null;
 
   const provider = (providerSelect?.value || 'replicate') as ApiProvider;
   const replicateKey = apiKeyReplicateInput?.value.trim() || '';
   const geminiKey = apiKeyGeminiInput?.value.trim() || '';
-  const activeKey = provider === 'gemini' ? geminiKey : replicateKey;
+  const openrouterKey = apiKeyOpenRouterInput?.value.trim() || '';
+  
+  let activeKey: string;
+  switch (provider) {
+    case 'gemini':
+      activeKey = geminiKey;
+      break;
+    case 'openrouter':
+      activeKey = openrouterKey;
+      break;
+    case 'replicate':
+    default:
+      activeKey = replicateKey;
+      break;
+  }
 
   if (!activeKey) {
     alert(t('alerts.enter_api_key'));
@@ -94,8 +121,10 @@ export function saveSettings(): void {
   // Save keys
   state.apiKeyReplicate = replicateKey;
   state.apiKeyGemini = geminiKey;
+  state.apiKeyOpenRouter = openrouterKey;
   localStorage.setItem('nano_api_key_replicate', replicateKey);
   localStorage.setItem('nano_api_key_gemini', geminiKey);
+  localStorage.setItem('nano_api_key_openrouter', openrouterKey);
 
   // Update active key shortcut
   state.apiKey = activeKey;
@@ -192,7 +221,17 @@ export async function addToHistory(prompt: string, url: string, base64Data?: str
     state.history.splice(indexToRemove, 1);
   }
 
-  localStorage.setItem('nano_history', JSON.stringify(state.history));
+  // Prepare history for localStorage (strip large base64 data to prevent quota exceeded)
+  const historyForStorage = state.history.map(item => {
+    const storageItem = { ...item };
+    // If url contains base64 data (data:image), replace with placeholder to save space
+    if (storageItem.url && storageItem.url.startsWith('data:')) {
+      storageItem.url = `[STORED_IN_INDEXEDDB_${storageItem.localId || 'local'}]`;
+    }
+    return storageItem;
+  });
+
+  localStorage.setItem('nano_history', JSON.stringify(historyForStorage));
   renderHistory();
 }
 
@@ -1040,21 +1079,23 @@ function clearRemix(): void {
 /* --- PROVIDER-DEPENDENT UI --- */
 export function updateProviderDependentUI(): void {
   const isGemini = state.provider === 'gemini';
+  const isOpenRouter = state.provider === 'openrouter';
+  const isNonReplicate = isGemini || isOpenRouter;
 
-  // Hide format select for Gemini (PNG only)
+  // Hide format select for Gemini and OpenRouter (PNG only)
   const formatGroup = document.getElementById('formatSelect')?.closest('.setting-group') as HTMLElement | null;
   if (formatGroup) {
-    formatGroup.style.display = isGemini ? 'none' : '';
+    formatGroup.style.display = isNonReplicate ? 'none' : '';
   }
 
-  // Hide match_input_image option for Gemini
+  // Hide match_input_image option for Gemini and OpenRouter
   const aspectRatioSelect = document.getElementById('aspectRatioSelect') as HTMLSelectElement | null;
   if (aspectRatioSelect) {
     const matchOption = aspectRatioSelect.querySelector('option[value="match_input_image"]') as HTMLOptionElement | null;
     if (matchOption) {
-      matchOption.style.display = isGemini ? 'none' : '';
+      matchOption.style.display = isNonReplicate ? 'none' : '';
       // If currently selected, switch to 16:9
-      if (isGemini && aspectRatioSelect.value === 'match_input_image') {
+      if (isNonReplicate && aspectRatioSelect.value === 'match_input_image') {
         aspectRatioSelect.value = '16:9';
       }
     }
