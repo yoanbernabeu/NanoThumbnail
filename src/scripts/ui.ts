@@ -1091,10 +1091,10 @@ export function updateProviderDependentUI(): void {
     }
   }
 
-  // Hide resolution select for Gemini and OpenRouter (not applicable)
+  // Hide resolution select for Gemini (not applicable)
   const resolutionGroup = document.getElementById('resolutionSelect')?.closest('.setting-group') as HTMLElement | null;
   if (resolutionGroup) {
-    resolutionGroup.style.display = isNonReplicate ? 'none' : '';
+    resolutionGroup.style.display = isGemini ? 'none' : '';
   }
 }
 

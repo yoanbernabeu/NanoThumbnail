@@ -103,6 +103,7 @@ export async function generateImage(): Promise<void> {
       const dataUri = await generateViaOpenRouter({
         prompt: enhancedPrompt,
         aspectRatio,
+        resolution,
         referenceImages: state.referenceImages,
       });
 

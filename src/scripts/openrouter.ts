@@ -4,7 +4,9 @@ import { showErrorModal } from "./modules/errors/handler";
 
 interface OpenRouterMessage {
   role: "user" | "assistant" | "system";
-  content: string;
+  content:
+    | string
+    | Array<{ type: string; text?: string; image_url?: { url: string } }>;
 }
 
 interface OpenRouterImage {
@@ -25,6 +27,8 @@ interface OpenRouterResponse {
   error?: { message: string; code: string };
 }
 
+// OpenRouter supported aspect ratios and their resolutions
+// https://openrouter.ai/docs/guides/overview/multimodal/image-generation
 const ASPECT_RATIO_MAP: Record<string, string> = {
   "16:9": "16:9",
   "9:16": "9:16",
@@ -33,12 +37,25 @@ const ASPECT_RATIO_MAP: Record<string, string> = {
   match_input_image: "16:9", // Fallback — OpenRouter doesn't support match_input_image
 };
 
+// Resolution mapping from UI values to OpenRouter image_size values
+const RESOLUTION_MAP: Record<string, "1K" | "2K" | "4K"> = {
+  "144p": "1K",
+  "240p": "1K",
+  "360p": "1K",
+  "480p": "1K",
+  "720p": "1K",
+  "1080p": "2K",
+  "1440p": "2K",
+  "2160p": "4K",
+};
+
 export async function generateViaOpenRouter(params: {
   prompt: string;
   aspectRatio: string;
+  resolution: string;
   referenceImages: string[];
 }): Promise<string> {
-  const { prompt, aspectRatio, referenceImages } = params;
+  const { prompt, aspectRatio, resolution, referenceImages } = params;
 
   // Build messages array
   const messages: OpenRouterMessage[] = [];
@@ -50,17 +67,28 @@ export async function generateViaOpenRouter(params: {
       "You are an image generation assistant. Generate high-quality YouTube thumbnails based on the user's prompt.",
   });
 
-  // Build user content with text and images
-  let userContent = prompt;
+  // Build user content - use structured content array for proper image handling
+  const userContent: Array<{
+    type: string;
+    text?: string;
+    image_url?: { url: string };
+  }> = [];
 
-  // Add aspect ratio instruction
-  const mappedRatio = ASPECT_RATIO_MAP[aspectRatio] || "16:9";
-  userContent += `\n\nGenerate the image in ${mappedRatio} aspect ratio.`;
+  // Add the text prompt first
+  userContent.push({
+    type: "text",
+    text: prompt,
+  });
 
-  // Add reference images as data URIs
+  // Add reference images as image_url content parts
   for (const img of referenceImages) {
     // img is a data URI like "data:image/png;base64,..."
-    userContent += `\n\nReference image: ${img}`;
+    userContent.push({
+      type: "image_url",
+      image_url: {
+        url: img,
+      },
+    });
   }
 
   messages.push({
@@ -68,11 +96,16 @@ export async function generateViaOpenRouter(params: {
     content: userContent,
   });
 
+  const mappedRatio = ASPECT_RATIO_MAP[aspectRatio] || "16:9";
+  const mappedSize = RESOLUTION_MAP[resolution] || "1K";
+
   const body = {
     model: "black-forest-labs/flux.2-klein-4b",
     messages,
-    response_format: {
-      type: "image",
+    modalities: ["image"],
+    image_config: {
+      aspect_ratio: mappedRatio,
+      image_size: mappedSize,
     },
   };
 
