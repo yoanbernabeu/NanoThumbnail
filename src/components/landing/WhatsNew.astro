@@ -79,38 +79,60 @@
             </div>
         </div>
 
+        <!-- Multi-generation x4 -->
+        <div class="new-feature-card card-multi-gen">
+            <div class="card-visual">
+                <div class="multi-gen-demo">
+                    <div class="demo-grid-cell">
+                        <div class="demo-cell-gradient g1"></div>
+                    </div>
+                    <div class="demo-grid-cell">
+                        <div class="demo-cell-gradient g2"></div>
+                    </div>
+                    <div class="demo-grid-cell">
+                        <div class="demo-cell-gradient g3"></div>
+                    </div>
+                    <div class="demo-grid-cell selected">
+                        <div class="demo-cell-gradient g4"></div>
+                        <div class="demo-cell-check">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content">
+                <span class="feature-tag tag-amber" data-i18n="landing.whats_new.multi_gen_tag">Comparer & choisir</span>
+                <h3 data-i18n="landing.whats_new.multi_gen_title">G&eacute;n&eacute;ration x4</h3>
+                <p data-i18n="landing.whats_new.multi_gen_desc">G&eacute;n&eacute;rez 4 miniatures en parall&egrave;le avec le m&ecirc;me prompt. Comparez, choisissez la meilleure et t&eacute;l&eacute;chargez en un clic.</p>
+            </div>
+        </div>
+
         <!-- Smart settings -->
         <div class="new-feature-card card-settings">
             <div class="card-visual">
                 <div class="settings-demo">
-                    <div class="demo-panel-line">
+                    <div class="demo-panel-line active-tab">
                         <span class="demo-dot green"></span>
-                        <span class="demo-label">Prompt</span>
-                        <span class="demo-expand"></span>
+                        <span class="demo-label">Cr&eacute;er</span>
                     </div>
                     <div class="demo-panel-line">
-                        <span class="demo-dot green"></span>
-                        <span class="demo-label">Références</span>
-                        <span class="demo-expand"></span>
-                    </div>
-                    <div class="demo-panel-line collapsible">
                         <span class="demo-dot dim"></span>
-                        <span class="demo-label">Paramètres</span>
-                        <span class="demo-chevron">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </span>
+                        <span class="demo-label">R&eacute;f&eacute;rences</span>
                     </div>
-                    <div class="demo-collapsed-items">
-                        <div class="demo-mini-line"></div>
-                        <div class="demo-mini-line short"></div>
-                        <div class="demo-mini-line"></div>
+                    <div class="demo-panel-line">
+                        <span class="demo-dot dim"></span>
+                        <span class="demo-label">Historique</span>
+                    </div>
+                    <div class="demo-shortcut-hint">
+                        <kbd>&#8984;&#9166;</kbd>
+                        <span>G&eacute;n&eacute;rer</span>
                     </div>
                 </div>
             </div>
             <div class="card-content">
                 <span class="feature-tag tag-teal" data-i18n="landing.whats_new.smart_settings_tag">Clean & rapide</span>
-                <h3 data-i18n="landing.whats_new.smart_settings_title">Interface repensée</h3>
-                <p data-i18n="landing.whats_new.smart_settings_desc">Les paramètres avancés sont désormais pliables pour garder l'essentiel visible. Un workflow plus fluide, moins de bruit.</p>
+                <h3 data-i18n="landing.whats_new.smart_settings_title">Interface repens&eacute;e</h3>
+                <p data-i18n="landing.whats_new.smart_settings_desc">Sidebar avec onglets (Cr&eacute;er / R&eacute;f&eacute;rences / Historique), raccourci clavier &#8984;&#9166; et param&egrave;tres toujours accessibles.</p>
             </div>
         </div>
     </div>
@@ -183,10 +205,6 @@
         gap: 1.5rem;
         max-width: 960px;
         margin: 0 auto;
-    }
-
-    .new-feature-card:first-child {
-        grid-row: 1 / 3;
     }
 
     /* --- Cards --- */
@@ -442,14 +460,96 @@
         width: 50%;
     }
 
+    /* --- Multi-gen demo --- */
+    .multi-gen-demo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .demo-grid-cell {
+        aspect-ratio: 16/9;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        position: relative;
+        transition: border-color 0.3s ease;
+    }
+
+    .demo-grid-cell.selected {
+        border-color: var(--primary);
+        box-shadow: 0 0 12px rgba(109, 40, 217, 0.3);
+    }
+
+    .demo-cell-gradient {
+        width: 100%;
+        height: 100%;
+    }
+
+    .demo-cell-gradient.g1 { background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); }
+    .demo-cell-gradient.g2 { background: linear-gradient(135deg, #2d1b69, #1a1a2e, #0f3460); }
+    .demo-cell-gradient.g3 { background: linear-gradient(135deg, #1a1a2e, #533483, #2d1b69); }
+    .demo-cell-gradient.g4 { background: linear-gradient(135deg, #0f3460, #1a1a2e, #533483); }
+
+    .demo-cell-check {
+        position: absolute;
+        bottom: 3px;
+        right: 3px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.5rem;
+        color: white;
+    }
+
+    .feature-tag.tag-amber {
+        color: #fbbf24;
+        background: rgba(251, 191, 36, 0.1);
+        border-color: rgba(251, 191, 36, 0.2);
+    }
+
+    /* --- Updated settings demo --- */
+    .demo-panel-line.active-tab {
+        border-color: rgba(139, 92, 246, 0.3);
+        background: rgba(139, 92, 246, 0.08);
+    }
+
+    .demo-shortcut-hint {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 6px;
+        padding: 8px 14px;
+        background: linear-gradient(135deg, rgba(109, 40, 217, 0.15), rgba(79, 70, 229, 0.1));
+        border: 1px solid rgba(139, 92, 246, 0.25);
+        border-radius: 8px;
+    }
+
+    .demo-shortcut-hint kbd {
+        font-family: inherit;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--accent);
+        background: rgba(0, 0, 0, 0.3);
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .demo-shortcut-hint span {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
     /* --- Responsive --- */
     @media (max-width: 768px) {
         .new-features-grid {
             grid-template-columns: 1fr;
-        }
-
-        .new-feature-card:first-child {
-            grid-row: auto;
         }
 
         .section-header h2 {
