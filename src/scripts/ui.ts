@@ -1,6 +1,6 @@
 import { state, type HistoryItem, type GenerationParameters, type ApiProvider } from './state';
 import { t } from './i18n/index';
-import { saveImage, getImage, getAllImages, deleteImage, saveHistoryItem, getHistory, migrateHistoryFromLocalStorage } from './storage';
+import { saveImage, getImage, getAllImages, deleteImage, saveHistoryItem, getHistory, deleteHistoryItem, migrateHistoryFromLocalStorage } from './storage';
 
 // DOM Elements cache
 let settingsModal: HTMLElement | null = null;
@@ -234,6 +234,11 @@ export async function renderHistory(): Promise<void> {
 
   const imgs = list.querySelectorAll('.history-img');
   imgs.forEach(img => {
+    // Remove broken history items
+    (img as HTMLImageElement).addEventListener('error', () => {
+      const index = parseInt(img.getAttribute('data-index') || '-1');
+      if (index >= 0) removeBrokenHistoryItem(index);
+    });
     img.addEventListener('click', async () => {
       const index = parseInt(img.getAttribute('data-index') || '0');
       if (index >= 0 && index < state.history.length) {
@@ -342,6 +347,23 @@ export async function useAsReference(item: HistoryItem): Promise<void> {
   }
 }
 
+/* --- BROKEN IMAGE CLEANUP --- */
+async function removeBrokenHistoryItem(index: number): Promise<void> {
+  const item = state.history[index];
+  if (!item) return;
+
+  // Remove from IndexedDB
+  try {
+    await deleteHistoryItem(item.localId);
+  } catch { /* ignore */ }
+
+  // Remove from state
+  state.history.splice(index, 1);
+
+  // Re-render both history views
+  renderHistory();
+}
+
 /* --- HISTORY STRIP --- */
 export async function renderHistoryStrip(): Promise<void> {
   const container = document.getElementById('historyStripScroll');
@@ -373,6 +395,14 @@ export async function renderHistoryStrip(): Promise<void> {
   container.innerHTML = itemsWithUrls.map((item, index) =>
     `<img src="${item.resolvedUrl}" class="strip-thumb" data-index="${index}" alt="${escapeHtml(item.prompt)}" title="${escapeHtml(item.prompt)}">`
   ).join('');
+
+  // Remove broken images from strip and history
+  container.querySelectorAll('.strip-thumb').forEach(img => {
+    (img as HTMLImageElement).addEventListener('error', () => {
+      const index = parseInt(img.getAttribute('data-index') || '-1');
+      if (index >= 0) removeBrokenHistoryItem(index);
+    });
+  });
 
   container.querySelectorAll('.strip-thumb').forEach(img => {
     img.addEventListener('click', async () => {
