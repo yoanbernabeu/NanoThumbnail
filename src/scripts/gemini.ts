@@ -24,12 +24,20 @@ const ASPECT_RATIO_MAP: Record<string, string> = {
   'match_input_image': '16:9', // Fallback — Gemini doesn't support match_input_image
 };
 
+// Map model IDs to Gemini API model names
+const GEMINI_MODEL_MAP: Record<string, string> = {
+  'nano-banana-pro': 'gemini-3-pro-image-preview',
+  'nano-banana-2': 'gemini-3.1-flash-image-preview',
+};
+
 export async function generateViaGemini(params: {
   prompt: string;
   aspectRatio: string;
+  model?: string;
   referenceImages: string[];
 }): Promise<string> {
-  const { prompt, aspectRatio, referenceImages } = params;
+  const { prompt, aspectRatio, model, referenceImages } = params;
+  const geminiModel = GEMINI_MODEL_MAP[model || 'nano-banana-pro'] || 'gemini-3-pro-image-preview';
 
   // Build parts array
   const parts: GeminiPart[] = [{ text: prompt }];
@@ -59,7 +67,7 @@ export async function generateViaGemini(params: {
 
   // Call Gemini API directly (no proxy) — Google's API supports CORS,
   // and the proxy causes Inactivity Timeout on long image generations.
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${encodeURIComponent(state.apiKey)}`;
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${encodeURIComponent(state.apiKey)}`;
 
   const response = await fetch(geminiUrl, {
     method: 'POST',

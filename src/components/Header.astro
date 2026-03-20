@@ -1,17 +1,11 @@
 ---
 interface Props {
-    showHistoryBtn?: boolean;
-    showLibraryBtn?: boolean;
     showApiBtn?: boolean;
-    showGithubBtn?: boolean;
     showNavLinks?: boolean;
 }
 
 const {
-    showHistoryBtn = false,
-    showLibraryBtn = false,
     showApiBtn = false,
-    showGithubBtn = false,
     showNavLinks = true,
 } = Astro.props;
 
@@ -45,29 +39,6 @@ const base = import.meta.env.BASE_URL;
             )
         }
         <LangSelect />
-        {
-            showHistoryBtn && (
-                <button
-                    id="historyBtn"
-                    class="btn btn-secondary"
-                    data-action="toggleHistory"
-                >
-                    <i class="fa-solid fa-clock-rotate-left" />
-                </button>
-            )
-        }
-        {
-            showLibraryBtn && (
-                <button
-                    id="libraryBtn"
-                    class="btn btn-secondary"
-                    data-action="toggleLibrary"
-                    title="Bibliothèque"
-                >
-                    <i class="fa-solid fa-folder-open" />
-                </button>
-            )
-        }
         {
             showApiBtn && (
                 <button
@@ -116,6 +87,12 @@ const base = import.meta.env.BASE_URL;
         display: flex;
         gap: 10px;
         align-items: center;
+    }
+
+    .header-actions .btn {
+        height: 38px;
+        padding: 0 16px;
+        font-size: 0.8rem;
     }
 
     .desktop-nav {

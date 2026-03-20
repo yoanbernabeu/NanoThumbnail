@@ -1,6 +1,7 @@
 // Application state management
 
 export type ApiProvider = 'replicate' | 'gemini';
+export type ModelId = 'nano-banana-pro' | 'nano-banana-2';
 
 export interface GenerationParameters {
   resolution: string;
@@ -8,18 +9,21 @@ export interface GenerationParameters {
   output_format: string;
   safety_filter_level: string;
   provider?: ApiProvider;
+  model?: ModelId;
 }
 
 export interface HistoryItem {
   prompt: string;
   url: string;
   date: string;
-  localId?: string; // ID for local IndexedDB storage
+  localId: string;        // Unique ID, also key in IndexedDB history store
+  timestamp: number;       // Unix ms, used for sorting
   parameters?: GenerationParameters;
 }
 
 export interface AppState {
   provider: ApiProvider;
+  model: ModelId;
   apiKey: string;
   apiKeyReplicate: string;
   apiKeyGemini: string;
@@ -27,19 +31,6 @@ export interface AppState {
   history: HistoryItem[];
   referenceImages: string[];
   saveLocally: boolean;
-}
-
-function loadHistory(): HistoryItem[] {
-  try {
-    const stored = localStorage.getItem('nano_history');
-    if (!stored) return [];
-
-    const parsed: HistoryItem[] = JSON.parse(stored);
-    // Filter out items that are not saved locally (no localId)
-    return parsed.filter(item => item.localId);
-  } catch {
-    return [];
-  }
 }
 
 // Migration: move legacy nano_api_key → nano_api_key_replicate
@@ -54,16 +45,18 @@ function migrateApiKey(): void {
 migrateApiKey();
 
 const provider = (localStorage.getItem('nano_provider') as ApiProvider) || 'replicate';
+const model = (localStorage.getItem('nano_model') as ModelId) || 'nano-banana-pro';
 const apiKeyReplicate = localStorage.getItem('nano_api_key_replicate') || '';
 const apiKeyGemini = localStorage.getItem('nano_api_key_gemini') || '';
 
 export const state: AppState = {
   provider,
+  model,
   apiKey: provider === 'gemini' ? apiKeyGemini : apiKeyReplicate,
   apiKeyReplicate,
   apiKeyGemini,
   proxyUrl: '/.netlify/functions/replicate-proxy?url=',
-  history: loadHistory(),
+  history: [],            // Loaded asynchronously from IndexedDB in initApp()
   referenceImages: [],
   saveLocally: localStorage.getItem('nano_save_locally') === 'true'
 };

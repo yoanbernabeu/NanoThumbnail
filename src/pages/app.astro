@@ -2,8 +2,6 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import Sidebar from "@components/app/Sidebar.astro";
 import MainArea from "@components/app/MainArea.astro";
-import HistoryPanel from "@components/app/HistoryPanel.astro";
-import ReferenceLibraryPanel from "@components/app/ReferenceLibraryPanel.astro";
 import SettingsModal from "@components/app/SettingsModal.astro";
 import PersonaModal from "@components/app/PersonaModal.astro";
 import "@styles/errors.css";
@@ -12,18 +10,13 @@ import "@styles/errors.css";
 <BaseLayout
     title="NanoThumbnail - App"
     description="Generate Viral Thumbnails with AI"
-    showHistoryBtn={true}
-    showLibraryBtn={true}
     showApiBtn={true}
-    showGithubBtn={true}
     showNavLinks={false}
 >
     <div id="app-view">
         <Sidebar />
         <MainArea />
     </div>
-    <HistoryPanel />
-    <ReferenceLibraryPanel />
     <SettingsModal />
     <PersonaModal />
 </BaseLayout>
@@ -40,6 +33,11 @@ import "@styles/errors.css";
 </script>
 
 <style>
+    :global(body) {
+        overflow: hidden;
+        height: 100vh;
+    }
+
     #app-view {
         display: flex;
         flex: 1;

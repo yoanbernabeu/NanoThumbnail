@@ -1,101 +1,448 @@
 ---
-// Main area component for displaying results
+// Main area component - canvas with enhanced empty state, loader, and actions
 ---
 
 <main class="main-area">
-    <div class="result-container" id="resultContainer">
-        <div class="result-placeholder" id="placeholder">
-            <i class="fa-solid fa-image" style="font-size: 3rem; opacity: 0.3;"></i>
-            <p data-i18n="app.placeholder_text">Votre création apparaîtra ici</p>
-        </div>
-        
-        <div id="loader" class="hidden" style="text-align:center;">
-            <span class="loader"></span>
-            <p style="margin-top: 1rem; color: var(--accent);" data-i18n="app.status_working">L'IA travaille...</p>
-            <p id="statusText" style="font-size:0.8rem; color: var(--text-muted); white-space: pre-wrap; line-height: 1.5;" data-i18n="app.status_init">Initialisation...</p>
+    <div class="canvas-container" id="resultContainer">
+        <!-- Empty State -->
+        <div class="empty-state" id="placeholder">
+            <div class="empty-state-glow"></div>
+            <div class="empty-state-icon">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <h3 data-i18n="app.empty_title">Cr&eacute;ez votre miniature</h3>
+            <p data-i18n="app.empty_subtitle">D&eacute;crivez votre id&eacute;e et laissez l'IA cr&eacute;er une miniature YouTube percutante</p>
         </div>
 
+        <!-- Loader -->
+        <div id="loader" class="generation-loader hidden">
+            <div class="loader-ring"></div>
+            <p class="loader-title" data-i18n="app.status_working">L'IA travaille...</p>
+            <p id="statusText" class="loader-status" data-i18n="app.status_init">Initialisation...</p>
+        </div>
+
+        <!-- Generated Image (single mode) -->
         <img id="finalImage" class="generated-image hidden" src="" alt="Result">
+
+        <!-- Generated Grid (multi mode) -->
+        <div id="gridResult" class="grid-result hidden">
+            <div class="grid-cell" data-cell="0">
+                <div class="grid-cell-loader"><div class="loader-ring-sm"></div></div>
+                <img class="grid-cell-image hidden" src="" alt="Result 1">
+                <div class="grid-cell-error hidden"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+            <div class="grid-cell" data-cell="1">
+                <div class="grid-cell-loader"><div class="loader-ring-sm"></div></div>
+                <img class="grid-cell-image hidden" src="" alt="Result 2">
+                <div class="grid-cell-error hidden"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+            <div class="grid-cell" data-cell="2">
+                <div class="grid-cell-loader"><div class="loader-ring-sm"></div></div>
+                <img class="grid-cell-image hidden" src="" alt="Result 3">
+                <div class="grid-cell-error hidden"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+            <div class="grid-cell" data-cell="3">
+                <div class="grid-cell-loader"><div class="loader-ring-sm"></div></div>
+                <img class="grid-cell-image hidden" src="" alt="Result 4">
+                <div class="grid-cell-error hidden"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+        </div>
     </div>
-    
+
+    <!-- Actions Bar -->
     <div id="actionsBar" class="actions-bar hidden">
-        <a id="downloadLink" href="#" download="miniature.png" class="btn btn-primary">
-            <i class="fa-solid fa-download"></i> <span data-i18n="app.btn_download">Télécharger</span>
+        <a id="downloadLink" href="#" download="miniature.png" class="action-btn action-primary">
+            <i class="fa-solid fa-download"></i>
+            <span data-i18n="app.btn_download">T&eacute;l&eacute;charger</span>
         </a>
+        <button id="saveResultLibBtn" class="action-btn">
+            <i class="fa-solid fa-bookmark"></i>
+            <span data-i18n="app.btn_save">Sauvegarder</span>
+        </button>
+        <button id="useResultRefBtn" class="action-btn">
+            <i class="fa-solid fa-images"></i>
+            <span data-i18n="app.btn_reference">R&eacute;f&eacute;rence</span>
+        </button>
+    </div>
+
+    <!-- History Strip -->
+    <div class="history-strip" id="historyStrip">
+        <div class="history-strip-scroll" id="historyStripScroll">
+            <!-- Populated by JS -->
+        </div>
     </div>
 </main>
 
 <style>
     .main-area {
         flex: 1;
-        padding: 2rem;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        overflow-y: auto;
+        overflow: hidden;
         position: relative;
+        background:
+            radial-gradient(ellipse at 50% 40%, rgba(109, 40, 217, 0.06) 0%, transparent 60%);
     }
 
-    .result-container {
-        width: 100%;
-        max-width: 1024px;
-        height: 100%;
+    /* --- Canvas Container --- */
+    .canvas-container {
+        flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
+        padding: 2rem;
+        overflow-y: auto;
+        min-height: 0;
     }
 
-    .result-placeholder {
-        color: var(--text-muted);
-        font-size: 1.2rem;
+    /* --- Empty State --- */
+    .empty-state {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 1rem;
+        text-align: center;
+        position: relative;
+        padding: 2rem;
     }
 
+    .empty-state-glow {
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(109, 40, 217, 0.12) 0%, transparent 70%);
+        animation: pulseGlow 4s ease-in-out infinite;
+        pointer-events: none;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -60%);
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% { opacity: 0.4; transform: translate(-50%, -60%) scale(1); }
+        50% { opacity: 1; transform: translate(-50%, -60%) scale(1.15); }
+    }
+
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 24px;
+        background: linear-gradient(145deg, rgba(109, 40, 217, 0.15), rgba(79, 70, 229, 0.1));
+        border: 1px solid rgba(109, 40, 217, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .empty-state-icon i {
+        font-size: 1.8rem;
+        color: var(--accent);
+        opacity: 0.8;
+    }
+
+    .empty-state h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-main);
+        position: relative;
+        z-index: 1;
+    }
+
+    .empty-state p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        max-width: 400px;
+        line-height: 1.5;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* --- Loader --- */
+    .generation-loader {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.25rem;
+        text-align: center;
+    }
+
+    .loader-ring {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        position: relative;
+    }
+
+    .loader-ring::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 3px solid rgba(255, 255, 255, 0.08);
+        border-top-color: var(--primary);
+        border-right-color: var(--accent);
+        animation: spin 1s linear infinite;
+    }
+
+    .loader-ring::after {
+        content: '';
+        position: absolute;
+        inset: 8px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.05);
+        border-bottom-color: var(--primary-hover);
+        animation: spin 1.6s linear infinite reverse;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .loader-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--accent);
+    }
+
+    .loader-status {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        white-space: pre-wrap;
+        line-height: 1.5;
+        max-width: 400px;
+    }
+
+    /* --- Generated Image --- */
     .generated-image {
         max-width: 100%;
-        max-height: 70vh;
+        max-height: 65vh;
         border-radius: var(--radius);
-        box-shadow: var(--shadow);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
         border: 1px solid var(--glass-border);
-        min-height: 300px;
+        min-height: 200px;
         background: #000;
+        animation: imageReveal 0.4s ease-out;
     }
 
-    .actions-bar {
-        margin-top: 1rem;
+    @keyframes imageReveal {
+        from {
+            opacity: 0;
+            transform: scale(0.97);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* --- Grid Result (multi mode) --- */
+    .grid-result {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        width: 100%;
+        max-width: 900px;
+    }
+
+    .grid-result.hidden {
+        display: none;
+    }
+
+    .grid-cell {
+        position: relative;
+        aspect-ratio: 16/9;
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.3);
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: border-color 0.2s ease, transform 0.2s ease;
         display: flex;
-        gap: 10px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .grid-cell:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .grid-cell.selected {
+        border-color: var(--primary);
+        box-shadow: 0 0 20px rgba(109, 40, 217, 0.3);
+    }
+
+    .grid-cell-loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .grid-cell-loader .loader-ring-sm {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        position: relative;
+    }
+
+    .grid-cell-loader .loader-ring-sm::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 3px solid rgba(255, 255, 255, 0.08);
+        border-top-color: var(--primary);
+        border-right-color: var(--accent);
+        animation: spin 1s linear infinite;
+    }
+
+    .grid-cell-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        inset: 0;
+        animation: imageReveal 0.3s ease-out;
+    }
+
+    .grid-cell-image.hidden {
+        display: none;
+    }
+
+    .grid-cell-error {
+        color: rgba(255, 100, 100, 0.6);
+        font-size: 1.5rem;
+    }
+
+    .grid-cell-error.hidden {
+        display: none;
+    }
+
+    /* --- Actions Bar --- */
+    .actions-bar {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        padding: 0.75rem 2rem;
+        flex-shrink: 0;
+        animation: slideUp 0.3s ease-out;
     }
 
     .actions-bar.hidden {
         display: none;
     }
 
-    /* Loader */
-    .loader {
-        width: 48px;
-        height: 48px;
-        border: 5px solid #FFF;
-        border-bottom-color: var(--primary);
-        border-radius: 50%;
-        display: inline-block;
-        box-sizing: border-box;
-        animation: rotation 1s linear infinite;
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes rotation {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-main);
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .action-btn i {
+        font-size: 0.9em;
+    }
+
+    .action-primary {
+        background: linear-gradient(135deg, var(--primary), #4f46e5);
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(109, 40, 217, 0.35);
+    }
+
+    .action-primary:hover {
+        box-shadow: 0 6px 20px rgba(109, 40, 217, 0.5);
+    }
+
+    /* --- History Strip --- */
+    .history-strip {
+        display: none;
+        flex-shrink: 0;
+        border-top: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.25);
+        padding: 10px 16px;
+    }
+
+    .history-strip-scroll {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.1) transparent;
+        padding-bottom: 2px;
+    }
+
+    .history-strip-scroll::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .history-strip-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .history-strip-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+    }
+
+    :global(.strip-thumb) {
+        width: 72px;
+        min-width: 72px;
+        aspect-ratio: 16/9;
+        border-radius: 6px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        opacity: 0.6;
+    }
+
+    :global(.strip-thumb:hover) {
+        opacity: 1;
+        border-color: var(--primary);
+        transform: scale(1.08);
     }
 
     @media (max-width: 900px) {
         .main-area {
-            min-height: 500px;
+            min-height: 450px;
+        }
+
+        .canvas-container {
+            padding: 1rem;
+        }
+
+        .actions-bar {
+            flex-wrap: wrap;
+            padding: 0.75rem 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 0;
         }
     }
 </style>

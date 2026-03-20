@@ -1,227 +1,340 @@
 ---
-// Sidebar component for the app view
+// Sidebar component with tabbed navigation
 ---
 
 <aside class="sidebar">
-    <div class="section">
-        <div class="sidebar-title" data-i18n="app.sidebar_idea">
-            1. Votre Idée (Prompt)
-        </div>
-        <textarea
-            id="promptInput"
-            class="input-field"
-            rows="4"
-            placeholder="Décrivez votre miniature (ex: Visage choqué, fond explosion, texte 'INCROYABLE'...)"
-            data-i18n="app.prompt_placeholder"></textarea>
-        <input
-            type="text"
-            id="titleInput"
-            class="input-field"
-            style="margin-top: 0.5rem;"
-            placeholder="Texte à afficher sur la miniature (optionnel)"
-            data-i18n="app.title_placeholder"
-        />
-    </div>
-
-    <div class="section">
-        <details class="remix-details">
-            <summary class="sidebar-title remix-summary">
-                <span data-i18n="remix.title">Remix</span>
-                <i class="fa-solid fa-chevron-right remix-chevron"></i>
-            </summary>
-
-            <div class="remix-content">
-                <div class="remix-input-row">
-                    <input
-                        type="text"
-                        id="remixUrlInput"
-                        class="input-field"
-                        placeholder="Collez une URL YouTube..."
-                        data-i18n="remix.url_placeholder"
-                    />
-                    <button id="remixLoadBtn" class="btn btn-primary remix-load-btn">
-                        <i class="fa-solid fa-download"></i>
-                        <span data-i18n="remix.btn_load">Charger</span>
-                    </button>
-                </div>
-
-                <div id="remixStatus" class="remix-status hidden"></div>
-
-                <div id="remixPreview" class="remix-preview hidden">
-                    <img id="remixThumbnail" class="remix-thumbnail" alt="YouTube Thumbnail" />
-                    <p id="remixTitle" class="remix-video-title"></p>
-                    <button id="remixClearBtn" class="btn btn-secondary remix-clear-btn">
-                        <i class="fa-solid fa-times"></i>
-                        <span data-i18n="remix.clear">Effacer</span>
-                    </button>
-                </div>
-            </div>
-        </details>
-    </div>
-
-    <div class="section">
-        <div
-            class="sidebar-title"
-            style="display: flex; justify-content: space-between; align-items: center;"
-        >
-            <span data-i18n="app.sidebar_ref"
-                >2. Images de Référence (Optionnel)</span
-            >
-            <span
-                id="imageCount"
-                style="font-size: 0.75rem; color: var(--text-muted);">0/14</span
-            >
-        </div>
-        <div id="previewContainer" class="preview-img-grid">
-            <!-- Images will be rendered here by JS -->
-        </div>
-        <div class="drop-zone" id="dropZone">
-            <i
-                class="fa-solid fa-cloud-arrow-up"
-                style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-muted);"
-            ></i>
-            <p
-                style="font-size: 0.8rem; color: var(--text-muted);"
-                data-i18n="app.drop_text"
-            >
-                Cliquez ou glissez des images ici
-            </p>
-            <p
-                class="drop-zone-max-text"
-                style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem;"
-            >
-                Max 14 images
-            </p>
-            <input
-                type="file"
-                id="fileInput"
-                accept="image/*"
-                multiple
-                hidden
-            />
-        </div>
-        <button id="clearAllBtn" class="btn btn-secondary clear-all-btn">
-            <i class="fa-solid fa-trash"></i>
-            <span data-i18n="app.btn_clear_all">Tout effacer</span>
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="create">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span data-i18n="app.tab_create">Cr&eacute;er</span>
+        </button>
+        <button class="tab-btn" data-tab="references">
+            <i class="fa-solid fa-images"></i>
+            <span data-i18n="app.tab_references">R&eacute;f&eacute;rences</span>
+        </button>
+        <button class="tab-btn" data-tab="history">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span data-i18n="app.tab_history">Historique</span>
         </button>
     </div>
 
-    <div class="section">
-        <details class="settings-details">
-            <summary class="sidebar-title settings-summary">
-                <span data-i18n="app.sidebar_settings">3. Paramètres</span>
-                <i class="fa-solid fa-chevron-right settings-chevron"></i>
-            </summary>
+    <!-- Scrollable Tab Content -->
+    <div class="tab-panels">
+        <!-- Tab: Create -->
+        <div class="tab-content active" id="tab-create">
+            <div class="section">
+                <label class="section-label" data-i18n="app.section_prompt">
+                    Votre prompt
+                </label>
+                <textarea
+                    id="promptInput"
+                    class="input-field"
+                    rows="5"
+                    placeholder="D&eacute;crivez votre miniature (ex: Visage choqu&eacute;, fond explosion, texte 'INCROYABLE'...)"
+                    data-i18n="app.prompt_placeholder"></textarea>
+                <input
+                    type="text"
+                    id="titleInput"
+                    class="input-field"
+                    style="margin-top: 0.5rem;"
+                    placeholder="Texte &agrave; afficher sur la miniature (optionnel)"
+                    data-i18n="app.title_placeholder"
+                />
+            </div>
 
-            <div class="settings-content">
-                <div class="select-row">
-                    <div class="input-group">
-                        <label data-i18n="app.label_resolution">Résolution</label>
-                        <select id="resolutionSelect" class="input-field">
-                            <option value="1K" data-i18n="app.opt_1k"
-                                >1K (Rapide)</option
-                            >
-                            <option value="2K" selected data-i18n="app.opt_2k"
-                                >2K (Standard)</option
-                            >
-                            <option value="4K" data-i18n="app.opt_4k"
-                                >4K (Haut de gamme)</option
-                            >
-                        </select>
+            <div class="section">
+                <details class="remix-details">
+                    <summary class="section-label remix-summary">
+                        <span data-i18n="remix.title">Remix</span>
+                        <i class="fa-solid fa-chevron-right remix-chevron"></i>
+                    </summary>
+                    <div class="remix-content">
+                        <div class="remix-input-row">
+                            <input
+                                type="text"
+                                id="remixUrlInput"
+                                class="input-field"
+                                placeholder="Collez une URL YouTube..."
+                                data-i18n="remix.url_placeholder"
+                            />
+                            <button id="remixLoadBtn" class="btn btn-primary remix-load-btn">
+                                <i class="fa-solid fa-download"></i>
+                                <span data-i18n="remix.btn_load">Charger</span>
+                            </button>
+                        </div>
+                        <div id="remixStatus" class="remix-status hidden"></div>
+                        <div id="remixPreview" class="remix-preview hidden">
+                            <img id="remixThumbnail" class="remix-thumbnail" alt="YouTube Thumbnail" />
+                            <p id="remixTitle" class="remix-video-title"></p>
+                            <button id="remixClearBtn" class="btn btn-secondary remix-clear-btn">
+                                <i class="fa-solid fa-times"></i>
+                                <span data-i18n="remix.clear">Effacer</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label data-i18n="app.label_ratio">Format (Ratio)</label>
-                        <select id="aspectRatioSelect" class="input-field">
-                            <option value="16:9" selected data-i18n="app.opt_16_9"
-                                >16:9 (Youtube)</option
-                            >
-                            <option value="9:16" data-i18n="app.opt_9_16"
-                                >9:16 (Shorts)</option
-                            >
-                            <option value="4:3" data-i18n="app.opt_4_3">4:3</option>
-                            <option value="1:1" data-i18n="app.opt_1_1"
-                                >1:1 (Carré)</option
-                            >
-                            <option value="match_input_image" data-i18n="app.opt_match"
-                                >Match Input</option
-                            >
-                        </select>
+                </details>
+            </div>
+
+            <div class="section">
+                <details class="settings-details" open>
+                    <summary class="section-label settings-summary">
+                        <span data-i18n="app.sidebar_settings">Param&egrave;tres</span>
+                        <i class="fa-solid fa-chevron-right settings-chevron"></i>
+                    </summary>
+                    <div class="settings-content">
+                        <div class="input-group" style="margin-bottom:0.75rem;">
+                            <label data-i18n="app.label_model">Mod&egrave;le</label>
+                            <select id="modelSelect" class="input-field">
+                                <option value="nano-banana-pro" data-i18n="app.opt_model_pro">Nano Banana Pro (Qualit&eacute;)</option>
+                                <option value="nano-banana-2" data-i18n="app.opt_model_2">Nano Banana 2 (Rapide)</option>
+                            </select>
+                        </div>
+                        <div class="select-row">
+                            <div class="input-group">
+                                <label data-i18n="app.label_resolution">R&eacute;solution</label>
+                                <select id="resolutionSelect" class="input-field">
+                                    <option value="1K" data-i18n="app.opt_1k">1K (Rapide)</option>
+                                    <option value="2K" selected data-i18n="app.opt_2k">2K (Standard)</option>
+                                    <option value="4K" data-i18n="app.opt_4k">4K (Haut de gamme)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label data-i18n="app.label_ratio">Format (Ratio)</label>
+                                <select id="aspectRatioSelect" class="input-field">
+                                    <option value="16:9" selected data-i18n="app.opt_16_9">16:9 (Youtube)</option>
+                                    <option value="9:16" data-i18n="app.opt_9_16">9:16 (Shorts)</option>
+                                    <option value="4:3" data-i18n="app.opt_4_3">4:3</option>
+                                    <option value="1:1" data-i18n="app.opt_1_1">1:1 (Carr&eacute;)</option>
+                                    <option value="match_input_image" data-i18n="app.opt_match">Match Input</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="select-row">
+                            <div class="input-group">
+                                <label data-i18n="app.label_format">Format Fichier</label>
+                                <select id="formatSelect" class="input-field">
+                                    <option value="png">PNG</option>
+                                    <option value="jpg">JPG</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label data-i18n="app.label_safety">S&eacute;curit&eacute;</label>
+                                <select id="safetySelect" class="input-field">
+                                    <option value="block_medium_and_above" data-i18n="app.opt_medium">Moyen</option>
+                                    <option value="block_only_high" selected data-i18n="app.opt_permissive">Permissif</option>
+                                    <option value="block_low_and_above" data-i18n="app.opt_strict">Strict</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- Tab: References -->
+        <div class="tab-content" id="tab-references">
+            <div class="section">
+                <div class="section-label" style="display:flex;justify-content:space-between;align-items:center;">
+                    <span data-i18n="app.sidebar_ref">Images de r&eacute;f&eacute;rence</span>
+                    <span id="imageCount" class="badge">0/14</span>
                 </div>
+                <div id="previewContainer" class="preview-img-grid"></div>
+                <div class="drop-zone" id="dropZone">
+                    <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.5rem;margin-bottom:0.5rem;color:var(--text-muted);"></i>
+                    <p style="font-size:0.8rem;color:var(--text-muted);" data-i18n="app.drop_text">
+                        Cliquez ou glissez des images ici
+                    </p>
+                    <p class="drop-zone-max-text" style="font-size:0.7rem;color:var(--text-muted);margin-top:0.3rem;">
+                        Max 14 images
+                    </p>
+                    <input type="file" id="fileInput" accept="image/*" multiple hidden />
+                </div>
+                <button id="clearAllBtn" class="btn btn-secondary clear-all-btn">
+                    <i class="fa-solid fa-trash"></i>
+                    <span data-i18n="app.btn_clear_all">Tout effacer</span>
+                </button>
+            </div>
 
-                <div class="select-row">
-                    <div class="input-group">
-                        <label data-i18n="app.label_format">Format Fichier</label>
-                        <select id="formatSelect" class="input-field">
-                            <option value="png">PNG</option>
-                            <option value="jpg">JPG</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label data-i18n="app.label_safety">Sécurité</label>
-                        <select id="safetySelect" class="input-field">
-                            <option
-                                value="block_medium_and_above"
-                                data-i18n="app.opt_medium">Moyen</option
-                            >
-                            <option
-                                value="block_only_high"
-                                selected
-                                data-i18n="app.opt_permissive">Permissif</option
-                            >
-                            <option
-                                value="block_low_and_above"
-                                data-i18n="app.opt_strict">Strict</option
-                            >
-                        </select>
-                    </div>
+            <div class="tab-divider"></div>
+
+            <div class="section">
+                <div class="section-label" data-i18n="library.title">Biblioth&egrave;que</div>
+                <button id="createPersonaBtn" class="create-persona-btn">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span data-i18n="persona.create">Cr&eacute;er un Persona</span>
+                </button>
+                <div id="libraryList">
+                    <p class="empty-msg" data-i18n="library.empty">
+                        Aucune image sauvegard&eacute;e.
+                    </p>
                 </div>
             </div>
-        </details>
+        </div>
+
+        <!-- Tab: History -->
+        <div class="tab-content" id="tab-history">
+            <div id="historyList">
+                <p class="empty-msg" data-i18n="history.empty">
+                    Aucun historique r&eacute;cent.
+                </p>
+            </div>
+        </div>
     </div>
 
-    <button class="btn btn-primary" id="generateBtn">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-        <span data-i18n="app.btn_generate">Générer Miniature</span>
-    </button>
-
-    <a
-        id="githubStarBtn"
-        href="https://github.com/yoanbernabeu/NanoThumbnail"
-        target="_blank"
-        class="btn btn-secondary github-star-btn"
-    >
-        <i class="fa-brands fa-github" style="color: gold;"></i>
-        <span data-i18n="header.github_star">Star sur GitHub</span>
-    </a>
+    <!-- Sticky Footer -->
+    <div class="sidebar-footer">
+        <div class="count-toggle">
+            <button class="count-btn active" data-count="1">
+                <i class="fa-solid fa-image"></i>
+                <span>1</span>
+            </button>
+            <button class="count-btn" data-count="4">
+                <i class="fa-solid fa-th-large"></i>
+                <span>4</span>
+            </button>
+        </div>
+        <button class="btn btn-primary btn-generate" id="generateBtn">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span data-i18n="app.btn_generate">G&eacute;n&eacute;rer Miniature</span>
+            <kbd class="shortcut-hint" id="shortcutHint"></kbd>
+        </button>
+    </div>
 </aside>
 
 <style>
     .sidebar {
-        width: 380px;
+        width: 400px;
+        height: 100%;
         border-right: 1px solid var(--border);
-        padding: 1.5rem;
-        overflow-y: auto;
         background: rgba(19, 19, 31, 0.5);
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        overflow: hidden;
     }
 
-    .sidebar-title {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+    /* --- Tab Bar --- */
+    .tab-bar {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.2);
+        flex-shrink: 0;
+    }
+
+    .tab-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 12px 8px 10px;
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
         color: var(--text-muted);
-        margin-bottom: 1rem;
-        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
+    .tab-btn i {
+        font-size: 1rem;
+        transition: color 0.2s ease;
+    }
+
+    .tab-btn:hover {
+        color: var(--text-main);
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tab-btn.active {
+        color: var(--accent);
+        border-bottom-color: var(--primary);
+        background: rgba(109, 40, 217, 0.08);
+    }
+
+    .tab-btn.active i {
+        color: var(--accent);
+    }
+
+    /* --- Tab Panels --- */
+    .tab-panels {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        min-height: 0;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(109, 40, 217, 0.3) transparent;
+    }
+
+    .tab-panels::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .tab-panels::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .tab-panels::-webkit-scrollbar-thumb {
+        background: rgba(109, 40, 217, 0.3);
+        border-radius: 3px;
+    }
+
+    .tab-panels::-webkit-scrollbar-thumb:hover {
+        background: rgba(109, 40, 217, 0.5);
+    }
+
+    .tab-content {
+        display: none;
+        padding: 1.25rem;
+        animation: fadeIn 0.2s ease;
+    }
+
+    .tab-content.active {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- Section --- */
     .section {
         display: flex;
         flex-direction: column;
     }
 
+    .section-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+        font-weight: 700;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        color: var(--accent);
+        background: rgba(109, 40, 217, 0.15);
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .tab-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 0.5rem 0;
+    }
+
+    /* --- Settings --- */
     .select-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -236,24 +349,28 @@
     .input-group label {
         display: block;
         margin-bottom: 0.3rem;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: var(--text-muted);
     }
 
     /* Settings details/summary */
-    .settings-details {
+    .settings-details,
+    .remix-details {
         width: 100%;
     }
 
-    .settings-details summary {
+    .settings-details summary,
+    .remix-details summary {
         list-style: none;
     }
 
-    .settings-details summary::-webkit-details-marker {
+    .settings-details summary::-webkit-details-marker,
+    .remix-details summary::-webkit-details-marker {
         display: none;
     }
 
-    .settings-summary {
+    .settings-summary,
+    .remix-summary {
         cursor: pointer;
         display: flex;
         justify-content: space-between;
@@ -261,43 +378,36 @@
         user-select: none;
     }
 
-    .settings-chevron {
-        font-size: 0.7rem;
+    .settings-chevron,
+    .remix-chevron {
+        font-size: 0.65rem;
         transition: transform 0.2s ease;
         color: var(--text-muted);
     }
 
-    .settings-details[open] .settings-chevron {
+    .settings-details[open] .settings-chevron,
+    .remix-details[open] .remix-chevron {
         transform: rotate(90deg);
     }
 
-    .settings-content {
+    .settings-content,
+    .remix-content {
         margin-top: 0.75rem;
     }
 
+    /* --- Clear All Button --- */
     .clear-all-btn {
         display: none;
         margin-top: 0.5rem;
         width: 100%;
+        font-size: 0.85rem;
     }
 
-    .github-star-btn {
-        margin-top: auto;
-        padding: 12px;
-        font-size: 0.9rem;
-        color: var(--text-main);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-
-    /* Image Upload */
+    /* --- Drop Zone --- */
     .drop-zone {
         border: 2px dashed var(--border);
         border-radius: var(--radius);
-        padding: 2rem;
+        padding: 1.5rem;
         text-align: center;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -314,18 +424,18 @@
     }
 
     .drop-zone.compact {
-        padding: 1rem;
+        padding: 0.75rem;
         margin-top: 0;
     }
 
     .drop-zone.compact p {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         margin: 0;
     }
 
     .drop-zone.compact i {
-        font-size: 1.2rem !important;
-        margin-bottom: 0.3rem !important;
+        font-size: 1rem !important;
+        margin-bottom: 0.2rem !important;
     }
 
     .drop-zone.compact .drop-zone-max-text {
@@ -342,49 +452,15 @@
         background: rgba(255, 255, 255, 0.02);
     }
 
-    /* Preview Grid */
+    /* --- Preview Grid --- */
     .preview-img-grid {
         display: none;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
         gap: 0.5rem;
         margin-bottom: 0.5rem;
     }
 
-    /* Remix section */
-    .remix-details {
-        width: 100%;
-    }
-
-    .remix-details summary {
-        list-style: none;
-    }
-
-    .remix-details summary::-webkit-details-marker {
-        display: none;
-    }
-
-    .remix-summary {
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        user-select: none;
-    }
-
-    .remix-chevron {
-        font-size: 0.7rem;
-        transition: transform 0.2s ease;
-        color: var(--text-muted);
-    }
-
-    .remix-details[open] .remix-chevron {
-        transform: rotate(90deg);
-    }
-
-    .remix-content {
-        margin-top: 0.75rem;
-    }
-
+    /* --- Remix --- */
     .remix-input-row {
         display: flex;
         gap: 0.5rem;
@@ -455,10 +531,270 @@
         padding: 0.4rem;
     }
 
+    /* --- Create Persona Button --- */
+    .create-persona-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 10px 16px;
+        margin-bottom: 1rem;
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px dashed rgba(139, 92, 246, 0.4);
+        border-radius: 10px;
+        color: var(--primary-hover);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .create-persona-btn:hover {
+        background: rgba(139, 92, 246, 0.2);
+        border-color: rgba(139, 92, 246, 0.6);
+        transform: translateY(-1px);
+    }
+
+    /* --- Sidebar Footer --- */
+    .sidebar-footer {
+        flex-shrink: 0;
+        padding: 1rem 1.25rem;
+        border-top: 1px solid var(--border);
+        background: rgba(10, 10, 15, 0.6);
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .count-toggle {
+        display: flex;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    .count-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .count-btn:first-child {
+        border-right: 1px solid var(--border);
+    }
+
+    .count-btn:hover {
+        color: var(--text-main);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .count-btn.active {
+        color: var(--accent);
+        background: rgba(109, 40, 217, 0.15);
+    }
+
+    .count-btn i {
+        font-size: 0.85rem;
+    }
+
+    .btn-generate {
+        width: 100%;
+        padding: 14px 24px;
+        font-size: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-generate::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-generate:hover::before {
+        left: 100%;
+    }
+
+    .shortcut-hint {
+        font-size: 0.65rem;
+        font-weight: 500;
+        font-family: inherit;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.7);
+        margin-left: 4px;
+        letter-spacing: 0;
+        text-transform: none;
+    }
+
+    /* --- Empty Message --- */
+    .empty-msg {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    /* --- Global styles for JS-rendered content --- */
+
+    /* History items */
+    :global(.reuse-btn) {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-main);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 7px 10px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 8px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    :global(.reuse-btn:hover) {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+
+    :global(.reuse-btn i) {
+        font-size: 0.85em;
+        color: var(--accent);
+    }
+
+    /* Library items */
+    :global(.library-item) {
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.75rem;
+    }
+
+    :global(.library-img) {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        background: #000;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    :global(.library-actions) {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    :global(.library-btn) {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-main);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 7px 10px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        justify-content: center;
+    }
+
+    :global(.library-btn:hover) {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+
+    :global(.library-btn i) {
+        font-size: 0.85em;
+        color: var(--accent);
+    }
+
+    :global(.library-btn.delete-btn:hover) {
+        background: rgba(220, 38, 38, 0.2);
+        border-color: rgba(220, 38, 38, 0.5);
+    }
+
+    /* Persona items */
+    :global(.library-section-header) {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    :global(.persona-item) {
+        margin-bottom: 1rem;
+        padding: 10px;
+        background: rgba(139, 92, 246, 0.06);
+        border: 1px solid rgba(139, 92, 246, 0.15);
+        border-radius: 10px;
+    }
+
+    :global(.persona-name) {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--primary-hover);
+        margin-bottom: 6px;
+    }
+
+    :global(.persona-grid) {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        margin-bottom: 6px;
+    }
+
+    :global(.persona-thumb) {
+        width: 100%;
+        aspect-ratio: 3/4;
+        object-fit: cover;
+        border-radius: 6px;
+        background: #000;
+    }
+
+    :global(.persona-actions) {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
     @media (max-width: 900px) {
         .sidebar {
             width: 100%;
             height: auto;
+            max-height: 60vh;
             border-right: none;
             border-bottom: 1px solid var(--border);
         }

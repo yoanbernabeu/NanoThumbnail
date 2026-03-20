@@ -2,20 +2,14 @@
 interface Props {
     title?: string;
     description?: string;
-    showHistoryBtn?: boolean;
-    showLibraryBtn?: boolean;
     showApiBtn?: boolean;
-    showGithubBtn?: boolean;
     showNavLinks?: boolean;
 }
 
 const {
     title = "NanoThumbnail",
     description = "Generate Viral Thumbnails with AI. Unleash the power of Google Nano Banana Pro to turn your ideas into striking YouTube thumbnails.",
-    showHistoryBtn = false,
-    showLibraryBtn = false,
     showApiBtn = false,
-    showGithubBtn = false,
     showNavLinks = true,
 } = Astro.props;
 
@@ -97,10 +91,7 @@ import "@styles/global.css";
     </head>
     <body>
         <Header
-            showHistoryBtn={showHistoryBtn}
-            showLibraryBtn={showLibraryBtn}
             showApiBtn={showApiBtn}
-            showGithubBtn={showGithubBtn}
             showNavLinks={showNavLinks}
         />
 

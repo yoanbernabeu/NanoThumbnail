@@ -1,10 +1,8 @@
 import { state, type HistoryItem, type GenerationParameters, type ApiProvider } from './state';
 import { t } from './i18n/index';
-import { saveImage, getImage, getAllImages, deleteImage } from './storage';
+import { saveImage, getImage, getAllImages, deleteImage, saveHistoryItem, getHistory, migrateHistoryFromLocalStorage } from './storage';
 
 // DOM Elements cache
-let historyPanel: HTMLElement | null = null;
-let libraryPanel: HTMLElement | null = null;
 let settingsModal: HTMLElement | null = null;
 
 // Persona constants & types
@@ -22,6 +20,24 @@ let pendingPersonaPhotos: { left: string | null; front: string | null; right: st
   front: null,
   right: null
 };
+
+/* --- TAB NAVIGATION --- */
+export function switchTab(tabName: string): void {
+  const tabs = document.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.tab-content');
+
+  tabs.forEach(tab => {
+    tab.classList.toggle('active', tab.getAttribute('data-tab') === tabName);
+  });
+
+  contents.forEach(content => {
+    content.classList.toggle('active', content.id === `tab-${tabName}`);
+  });
+
+  // Render content when switching to certain tabs
+  if (tabName === 'history') renderHistory();
+  if (tabName === 'references') renderLibrary();
+}
 
 /* --- NAVIGATION --- */
 export function openSettings(): void {
@@ -110,44 +126,15 @@ export function saveSettings(): void {
 }
 
 export function toggleHistory(): void {
-  historyPanel = document.getElementById('historyPanel');
-  libraryPanel = document.getElementById('libraryPanel');
-
-  // Close library panel if open
-  if (libraryPanel?.classList.contains('open')) {
-    libraryPanel.classList.remove('open');
-  }
-
-  if (historyPanel) {
-    historyPanel.classList.toggle('open');
-  }
+  switchTab('history');
 }
 
 export function toggleLibrary(): void {
-  libraryPanel = document.getElementById('libraryPanel');
-  historyPanel = document.getElementById('historyPanel');
-
-  // Close history panel if open
-  if (historyPanel?.classList.contains('open')) {
-    historyPanel.classList.remove('open');
-  }
-
-  if (libraryPanel) {
-    libraryPanel.classList.toggle('open');
-    if (libraryPanel.classList.contains('open')) {
-      renderLibrary();
-    }
-  }
+  switchTab('references');
 }
 
 /* --- HISTORY LOGIC --- */
 export function loadHistoryImage(url: string, prompt: string): void {
-  // Close history panel
-  historyPanel = document.getElementById('historyPanel');
-  if (historyPanel) {
-    historyPanel.classList.remove('open');
-  }
-  // Load the image
   displayResult(url, prompt);
 }
 
@@ -157,42 +144,34 @@ export async function addToHistory(prompt: string, url: string, base64Data?: str
     prompt,
     url,
     date: new Date().toLocaleTimeString(),
-    localId: state.saveLocally ? localId : undefined,
+    localId,
+    timestamp: Date.now(),
     parameters
   };
 
-  // Save image locally if option is enabled and base64 data is provided
-  if (state.saveLocally && base64Data) {
+  // Always save image to IndexedDB when base64 data is available
+  if (base64Data) {
     try {
       await saveImage(localId, base64Data);
     } catch (error) {
       console.error('Failed to save image locally:', error);
-      newItem.localId = undefined;
     }
   }
 
   state.history.unshift(newItem);
 
-  // Smart eviction: if limit reached (10), prioritize removing non-local items
-  if (state.history.length > 10) {
-    // Find index of the last non-local item (starting from the end)
-    let indexToRemove = -1;
-    for (let i = state.history.length - 1; i >= 0; i--) {
-      if (!state.history[i].localId) {
-        indexToRemove = i;
-        break;
-      }
+  // Evict oldest if limit reached
+  if (state.history.length > 30) {
+    const removed = state.history.pop();
+    if (removed) {
+      try {
+        await deleteImage(removed.localId);
+      } catch { /* ignore */ }
     }
-
-    // If no non-local item found, remove the last item (oldest)
-    if (indexToRemove === -1) {
-      indexToRemove = state.history.length - 1;
-    }
-
-    state.history.splice(indexToRemove, 1);
   }
 
-  localStorage.setItem('nano_history', JSON.stringify(state.history));
+  // Persist to IndexedDB
+  await saveHistoryItem(newItem);
   renderHistory();
 }
 
@@ -207,7 +186,8 @@ export async function renderHistory(): Promise<void> {
   if (!list) return;
 
   if (state.history.length === 0) {
-    list.innerHTML = `<p style="color: var(--text-muted);">${t('history.empty')}</p>`;
+    list.innerHTML = `<p class="empty-msg">${t('history.empty')}</p>`;
+    renderHistoryStrip();
     return;
   }
 
@@ -242,7 +222,7 @@ export async function renderHistory(): Promise<void> {
                 <i class="fa-solid fa-rotate-left"></i>
                 <span>${t('history.reuse') || 'Réutiliser'}</span>
             </button>` : ''}
-            
+
             <button class="reuse-btn use-ref-btn" data-index="${index}" title="${t('history.use_reference') || 'Utiliser comme référence'}">
                 <i class="fa-solid fa-image"></i>
                 <span>${t('history.use_reference') || 'Utiliser comme référence'}</span>
@@ -278,7 +258,7 @@ export async function renderHistory(): Promise<void> {
   const reuseBtns = list.querySelectorAll('.reuse-btn:not(.use-ref-btn)');
   reuseBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent triggering the image click
+      e.stopPropagation();
       const index = parseInt(btn.getAttribute('data-index') || '0');
       if (index >= 0 && index < state.history.length) {
         reuseGeneration(state.history[index]);
@@ -297,27 +277,32 @@ export async function renderHistory(): Promise<void> {
       }
     });
   });
+
+  // Also update the history strip
+  renderHistoryStrip();
 }
 
 export function reuseGeneration(item: HistoryItem): void {
   if (!item.parameters) return;
 
   const promptInput = document.getElementById('promptInput') as HTMLTextAreaElement | null;
+  const modelSelect = document.getElementById('modelSelect') as HTMLSelectElement | null;
   const resolutionSelect = document.getElementById('resolutionSelect') as HTMLSelectElement | null;
   const aspectRatioSelect = document.getElementById('aspectRatioSelect') as HTMLSelectElement | null;
   const formatSelect = document.getElementById('formatSelect') as HTMLSelectElement | null;
   const safetySelect = document.getElementById('safetySelect') as HTMLSelectElement | null;
 
   if (promptInput) promptInput.value = item.prompt;
+  if (modelSelect && item.parameters.model) modelSelect.value = item.parameters.model;
   if (resolutionSelect) resolutionSelect.value = item.parameters.resolution;
   if (aspectRatioSelect) aspectRatioSelect.value = item.parameters.aspect_ratio;
   if (formatSelect) formatSelect.value = item.parameters.output_format;
   if (safetySelect) safetySelect.value = item.parameters.safety_filter_level;
 
-  // Close history panel
-  toggleHistory();
+  // Switch to create tab
+  switchTab('create');
 
-  // Scroll to top or focus prompt
+  // Focus prompt
   promptInput?.focus();
 }
 
@@ -348,17 +333,65 @@ export async function useAsReference(item: HistoryItem): Promise<void> {
       state.referenceImages.push(base64Data);
       renderReferenceImages();
 
-      // Close history panel
-      toggleHistory();
-
-      // Scroll to reference section or show feedback
-      const refSection = document.getElementById('previewContainer');
-      refSection?.scrollIntoView({ behavior: 'smooth' });
+      // Switch to references tab to see the added image
+      switchTab('references');
     }
   } catch (error) {
     console.error('Failed to use as reference:', error);
-    alert(t('alerts.error_display')); // Generic error message
+    alert(t('alerts.error_display'));
   }
+}
+
+/* --- HISTORY STRIP --- */
+export async function renderHistoryStrip(): Promise<void> {
+  const container = document.getElementById('historyStripScroll');
+  const strip = document.getElementById('historyStrip');
+  if (!container || !strip) return;
+
+  if (state.history.length === 0) {
+    strip.style.display = 'none';
+    return;
+  }
+
+  strip.style.display = 'block';
+
+  const itemsWithUrls = await Promise.all(
+    state.history.slice(0, 12).map(async (item) => {
+      let imageUrl = item.url;
+      if (item.localId) {
+        try {
+          const localData = await getImage(item.localId);
+          if (localData) imageUrl = localData;
+        } catch {
+          // Fallback
+        }
+      }
+      return { ...item, resolvedUrl: imageUrl };
+    })
+  );
+
+  container.innerHTML = itemsWithUrls.map((item, index) =>
+    `<img src="${item.resolvedUrl}" class="strip-thumb" data-index="${index}" alt="${escapeHtml(item.prompt)}" title="${escapeHtml(item.prompt)}">`
+  ).join('');
+
+  container.querySelectorAll('.strip-thumb').forEach(img => {
+    img.addEventListener('click', async () => {
+      const index = parseInt(img.getAttribute('data-index') || '0');
+      if (index >= 0 && index < state.history.length) {
+        const item = state.history[index];
+        let imageUrl = item.url;
+        if (item.localId) {
+          try {
+            const localData = await getImage(item.localId);
+            if (localData) imageUrl = localData;
+          } catch {
+            // Fallback
+          }
+        }
+        loadHistoryImage(imageUrl, item.prompt);
+      }
+    });
+  });
 }
 
 /* --- PERSONA LOGIC --- */
@@ -498,7 +531,9 @@ export async function addPersonaAsReference(personaId: string): Promise<void> {
     if (left && front && right) {
       state.referenceImages.push(left, front, right);
       renderReferenceImages();
-      toggleLibrary();
+      // Scroll to the top of references to see added images
+      const previewContainer = document.getElementById('previewContainer');
+      previewContainer?.scrollIntoView({ behavior: 'smooth' });
     }
   } catch (error) {
     console.error('Failed to add persona as reference:', error);
@@ -532,7 +567,7 @@ export async function renderLibrary(): Promise<void> {
   const images = await getAllImages(LIBRARY_PREFIX);
 
   if (personas.length === 0 && images.length === 0) {
-    list.innerHTML = `<p class="empty-msg" data-i18n="library.empty">${t('library.empty') || 'Aucune image sauvegardée.'}</p>`;
+    list.innerHTML = `<p class="empty-msg">${t('library.empty') || 'Aucune image sauvegardée.'}</p>`;
     return;
   }
 
@@ -654,7 +689,7 @@ export async function addFromLibrary(id: string): Promise<void> {
     if (base64) {
       state.referenceImages.push(base64);
       renderReferenceImages();
-      toggleLibrary();
+      // Scroll to preview container
       const refSection = document.getElementById('previewContainer');
       refSection?.scrollIntoView({ behavior: 'smooth' });
     }
@@ -839,10 +874,8 @@ export async function displayResult(url: string, prompt: string): Promise<string
       blobUrl = URL.createObjectURL(blob);
       finalSrc = blobUrl;
 
-      // Convert to base64 for local storage if enabled
-      if (state.saveLocally) {
-        base64Data = await blobToBase64(blob);
-      }
+      // Convert to base64 for IndexedDB persistence
+      base64Data = await blobToBase64(blob);
     }
 
     img.src = finalSrc;
@@ -901,6 +934,178 @@ function blobToBase64(blob: Blob): Promise<string> {
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
+}
+
+/* --- GRID MODE --- */
+let selectedGridIndex = 0;
+
+export function showGrid(): void {
+  const grid = document.getElementById('gridResult');
+  const finalImage = document.getElementById('finalImage');
+  const loader = document.getElementById('loader');
+  const actionsBar = document.getElementById('actionsBar');
+
+  if (finalImage) finalImage.classList.add('hidden');
+  if (loader) loader.classList.add('hidden');
+  if (actionsBar) actionsBar.classList.add('hidden');
+
+  if (grid) {
+    grid.classList.remove('hidden');
+    // Reset all cells
+    grid.querySelectorAll('.grid-cell').forEach(cell => {
+      cell.classList.remove('selected');
+      const img = cell.querySelector('.grid-cell-image') as HTMLImageElement;
+      const loaderEl = cell.querySelector('.grid-cell-loader') as HTMLElement;
+      const errorEl = cell.querySelector('.grid-cell-error') as HTMLElement;
+      if (img) { img.classList.add('hidden'); img.src = ''; }
+      if (loaderEl) loaderEl.style.display = 'flex';
+      if (errorEl) errorEl.classList.add('hidden');
+    });
+  }
+}
+
+export function updateGridCell(index: number, imageUrl: string): void {
+  const cell = document.querySelector(`.grid-cell[data-cell="${index}"]`);
+  if (!cell) return;
+
+  const img = cell.querySelector('.grid-cell-image') as HTMLImageElement;
+  const loader = cell.querySelector('.grid-cell-loader') as HTMLElement;
+
+  if (img) {
+    img.src = imageUrl;
+    img.classList.remove('hidden');
+  }
+  if (loader) loader.style.display = 'none';
+}
+
+export function failGridCell(index: number): void {
+  const cell = document.querySelector(`.grid-cell[data-cell="${index}"]`);
+  if (!cell) return;
+
+  const loader = cell.querySelector('.grid-cell-loader') as HTMLElement;
+  const errorEl = cell.querySelector('.grid-cell-error') as HTMLElement;
+
+  if (loader) loader.style.display = 'none';
+  if (errorEl) errorEl.classList.remove('hidden');
+}
+
+export function selectGridCell(index: number): void {
+  selectedGridIndex = index;
+
+  const grid = document.getElementById('gridResult');
+  if (!grid) return;
+
+  grid.querySelectorAll('.grid-cell').forEach(cell => {
+    cell.classList.remove('selected');
+  });
+
+  const cell = grid.querySelector(`.grid-cell[data-cell="${index}"]`);
+  if (cell) cell.classList.add('selected');
+
+  // Show actions bar
+  const actionsBar = document.getElementById('actionsBar');
+  const downloadLink = document.getElementById('downloadLink') as HTMLAnchorElement | null;
+  const img = cell?.querySelector('.grid-cell-image') as HTMLImageElement | null;
+
+  if (img && !img.classList.contains('hidden') && img.src) {
+    if (actionsBar) {
+      actionsBar.classList.remove('hidden');
+      actionsBar.style.display = 'flex';
+    }
+    if (downloadLink) {
+      downloadLink.href = img.src;
+      downloadLink.download = `nano-thumbnail-${Date.now()}.png`;
+    }
+  }
+}
+
+/**
+ * Get the currently active image element (single or selected grid cell)
+ */
+function getActiveImage(): HTMLImageElement | null {
+  // Check if grid mode is active
+  const grid = document.getElementById('gridResult');
+  if (grid && !grid.classList.contains('hidden')) {
+    const cell = grid.querySelector(`.grid-cell[data-cell="${selectedGridIndex}"]`);
+    const img = cell?.querySelector('.grid-cell-image') as HTMLImageElement | null;
+    if (img && !img.classList.contains('hidden') && img.src) return img;
+    return null;
+  }
+  // Single mode
+  const img = document.getElementById('finalImage') as HTMLImageElement | null;
+  if (img && !img.classList.contains('hidden') && img.src) return img;
+  return null;
+}
+
+/* --- RESULT ACTION BAR --- */
+async function saveResultToLibrary(): Promise<void> {
+  const img = getActiveImage();
+  if (!img) return;
+
+  try {
+    let base64: string;
+    if (img.src.startsWith('data:')) {
+      base64 = img.src;
+    } else {
+      const response = await fetch(img.src);
+      const blob = await response.blob();
+      base64 = await blobToBase64(blob);
+    }
+    await saveToLibrary(base64);
+
+    // Refresh library so the image appears immediately
+    await renderLibrary();
+
+    // Visual feedback on button
+    const btn = document.getElementById('saveResultLibBtn');
+    if (btn) {
+      const originalText = btn.querySelector('span');
+      const icon = btn.querySelector('i');
+      if (icon) {
+        icon.classList.remove('fa-bookmark');
+        icon.classList.add('fa-check');
+      }
+      if (originalText) {
+        const prev = originalText.textContent;
+        originalText.textContent = t('library.already_saved') || 'Sauvegardé !';
+        setTimeout(() => {
+          if (icon) {
+            icon.classList.remove('fa-check');
+            icon.classList.add('fa-bookmark');
+          }
+          if (originalText) originalText.textContent = prev;
+        }, 2000);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to save result to library:', error);
+  }
+}
+
+async function useResultAsReference(): Promise<void> {
+  const img = getActiveImage();
+  if (!img) return;
+
+  if (state.referenceImages.length >= 14) {
+    alert(t('alerts.max_images') || 'Maximum 14 images');
+    return;
+  }
+
+  try {
+    let base64: string;
+    if (img.src.startsWith('data:')) {
+      base64 = img.src;
+    } else {
+      const response = await fetch(img.src);
+      const blob = await response.blob();
+      base64 = await blobToBase64(blob);
+    }
+    state.referenceImages.push(base64);
+    renderReferenceImages();
+    switchTab('references');
+  } catch (error) {
+    console.error('Failed to use result as reference:', error);
+  }
 }
 
 /* --- REMIX LOGIC --- */
@@ -1042,7 +1247,7 @@ export function updateProviderDependentUI(): void {
   const isGemini = state.provider === 'gemini';
 
   // Hide format select for Gemini (PNG only)
-  const formatGroup = document.getElementById('formatSelect')?.closest('.setting-group') as HTMLElement | null;
+  const formatGroup = document.getElementById('formatSelect')?.closest('.input-group') as HTMLElement | null;
   if (formatGroup) {
     formatGroup.style.display = isGemini ? 'none' : '';
   }
@@ -1053,7 +1258,6 @@ export function updateProviderDependentUI(): void {
     const matchOption = aspectRatioSelect.querySelector('option[value="match_input_image"]') as HTMLOptionElement | null;
     if (matchOption) {
       matchOption.style.display = isGemini ? 'none' : '';
-      // If currently selected, switch to 16:9
       if (isGemini && aspectRatioSelect.value === 'match_input_image') {
         aspectRatioSelect.value = '16:9';
       }
@@ -1061,17 +1265,27 @@ export function updateProviderDependentUI(): void {
   }
 
   // Hide resolution select for Gemini (not applicable)
-  const resolutionGroup = document.getElementById('resolutionSelect')?.closest('.setting-group') as HTMLElement | null;
+  const resolutionGroup = document.getElementById('resolutionSelect')?.closest('.input-group') as HTMLElement | null;
   if (resolutionGroup) {
     resolutionGroup.style.display = isGemini ? 'none' : '';
   }
 }
 
 /* --- INIT APP --- */
-export function initApp(): void {
+export async function initApp(): Promise<void> {
   // Check if API key exists, if not show settings
   if (!state.apiKey) {
     openSettings();
+  }
+
+  // Migrate localStorage history to IndexedDB (one-time)
+  await migrateHistoryFromLocalStorage();
+
+  // Load history from IndexedDB
+  try {
+    state.history = await getHistory();
+  } catch (error) {
+    console.error('Failed to load history from IndexedDB:', error);
   }
 
   // Render history
@@ -1079,6 +1293,25 @@ export function initApp(): void {
 
   // Apply provider-dependent UI
   updateProviderDependentUI();
+
+  // Restore model selection
+  const modelSelect = document.getElementById('modelSelect') as HTMLSelectElement | null;
+  if (modelSelect) {
+    modelSelect.value = state.model;
+    modelSelect.addEventListener('change', () => {
+      state.model = modelSelect.value as import('./state').ModelId;
+      localStorage.setItem('nano_model', state.model);
+    });
+  }
+
+  // Tab navigation
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabName = btn.getAttribute('data-tab');
+      if (tabName) switchTab(tabName);
+    });
+  });
 
   // Image Upload Logic Listeners
   const dropZone = document.getElementById('dropZone');
@@ -1131,30 +1364,10 @@ export function initApp(): void {
     saveSettingsBtn.addEventListener('click', saveSettings);
   }
 
-  // History panel buttons
-  const historyBtn = document.getElementById('historyBtn');
-  const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+  // API button
   const apiBtn = document.getElementById('apiBtn');
-
-  if (historyBtn) {
-    historyBtn.addEventListener('click', toggleHistory);
-  }
-  if (closeHistoryBtn) {
-    closeHistoryBtn.addEventListener('click', toggleHistory);
-  }
   if (apiBtn) {
     apiBtn.addEventListener('click', openSettings);
-  }
-
-  // Library panel buttons
-  const libraryBtn = document.getElementById('libraryBtn');
-  const closeLibraryBtn = document.getElementById('closeLibraryBtn');
-
-  if (libraryBtn) {
-    libraryBtn.addEventListener('click', toggleLibrary);
-  }
-  if (closeLibraryBtn) {
-    closeLibraryBtn.addEventListener('click', toggleLibrary);
   }
 
   // Clear all images button
@@ -1199,6 +1412,59 @@ export function initApp(): void {
       }
     });
   }
+
+  // Result action bar buttons
+  const saveResultLibBtn = document.getElementById('saveResultLibBtn');
+  const useResultRefBtn = document.getElementById('useResultRefBtn');
+
+  if (saveResultLibBtn) {
+    saveResultLibBtn.addEventListener('click', saveResultToLibrary);
+  }
+  if (useResultRefBtn) {
+    useResultRefBtn.addEventListener('click', useResultAsReference);
+  }
+
+  // Count toggle (1 / 4 images)
+  const countBtns = document.querySelectorAll('.count-btn');
+  const savedCount = localStorage.getItem('nano_gen_count') || '1';
+  countBtns.forEach(btn => {
+    const count = btn.getAttribute('data-count');
+    btn.classList.toggle('active', count === savedCount);
+    btn.addEventListener('click', () => {
+      countBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      localStorage.setItem('nano_gen_count', count || '1');
+    });
+  });
+
+  // Grid cell click → select
+  const gridCells = document.querySelectorAll('.grid-cell');
+  gridCells.forEach(cell => {
+    cell.addEventListener('click', () => {
+      const index = parseInt(cell.getAttribute('data-cell') || '0');
+      const img = cell.querySelector('.grid-cell-image') as HTMLImageElement | null;
+      if (img && !img.classList.contains('hidden')) {
+        selectGridCell(index);
+      }
+    });
+  });
+
+  // Keyboard shortcut: Cmd+Enter (Mac) / Ctrl+Enter (Windows/Linux) to generate
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const shortcutHint = document.getElementById('shortcutHint');
+  if (shortcutHint) {
+    shortcutHint.textContent = isMac ? '⌘↵' : 'Ctrl↵';
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      const btn = document.getElementById('generateBtn') as HTMLButtonElement | null;
+      if (btn && !btn.disabled) {
+        btn.click();
+      }
+    }
+  });
 
   // Listen for language changes to re-render dynamic content
   window.addEventListener('languageChanged', () => {
