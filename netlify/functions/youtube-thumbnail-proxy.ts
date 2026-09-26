@@ -1,17 +1,15 @@
 import type { Handler, HandlerEvent } from '@netlify/functions';
+import { corsHeaders, isAllowedRequest } from '../lib/origin';
 
 export const handler: Handler = async (event: HandlerEvent) => {
-  // Handle CORS preflight
+  const cors = corsHeaders(event.headers.origin, 'GET, OPTIONS', 'Content-Type');
+
   if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 204,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      },
-      body: '',
-    };
+    return { statusCode: 204, headers: cors, body: '' };
+  }
+
+  if (!isAllowedRequest(event.headers)) {
+    return { statusCode: 403, headers: cors, body: JSON.stringify({ error: 'Origin not allowed' }) };
   }
 
   const videoId = event.queryStringParameters?.videoId;
@@ -19,7 +17,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
   if (!videoId || !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
     return {
       statusCode: 400,
-      headers: { 'Access-Control-Allow-Origin': '*' },
+      headers: cors,
       body: JSON.stringify({ error: 'Missing or invalid videoId parameter' }),
     };
   }
@@ -39,8 +37,8 @@ export const handler: Handler = async (event: HandlerEvent) => {
       return {
         statusCode: 200,
         headers: {
+          ...cors,
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
         },
         body: JSON.stringify({ base64: `data:image/jpeg;base64,${base64}` }),
       };
@@ -51,7 +49,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
 
   return {
     statusCode: 404,
-    headers: { 'Access-Control-Allow-Origin': '*' },
+    headers: cors,
     body: JSON.stringify({ error: 'Thumbnail not found' }),
   };
 };

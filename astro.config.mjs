@@ -1,25 +1,22 @@
 import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
+import tailwindcss from '@tailwindcss/vite';
 
-// Determine base path: "/" for Netlify and local dev, "/NanoThumbnail/" for GitHub Pages
-const isNetlify = process.env.NETLIFY === 'true';
+// Base path: "/" for Netlify and local dev, "/NanoThumbnail/" for GitHub Pages
 const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
 const basePath = isGitHubPages ? '/NanoThumbnail/' : '/';
 
 // https://astro.build/config
 export default defineConfig({
-  // Static output by default (no SSR)
   output: 'static',
-  
-  // Base path configuration
   base: basePath,
-  
+  integrations: [react()],
   build: {
     assets: 'assets'
   },
-  
   vite: {
+    plugins: [tailwindcss()],
     build: {
-      // Ensure CSS is properly handled
       cssCodeSplit: true
     }
   }
