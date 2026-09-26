@@ -215,7 +215,8 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
     apiKey: string;
     /** Post-process the raw model output (region edits merge it back into the original). */
     finalize?: (blob: Blob) => Promise<Blob>;
-    autoSelect: boolean;
+    /** Shared by the jobs of one batch: the first result to arrive gets shown. */
+    batch: { shown: boolean };
   }): Promise<void> {
     const job: Job = {
       id: db.uid('j_'),
@@ -260,8 +261,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
       // The user may have switched project meanwhile: only show it if still relevant.
       if (generation.projectId === get().projectId) {
         set({ generations: [generation, ...get().generations] });
-        if (opts.autoSelect && (!get().selectedId || get().selectedId === opts.parentId || opts.kind !== 'generate')) {
-          set({ selectedId: generation.id, view: get().view === 'compare' ? 'image' : get().view });
+        if (!opts.batch.shown) {
+          opts.batch.shown = true;
+          set({ selectedId: generation.id, maskMode: false, hasMask: false, view: get().view === 'compare' ? 'image' : get().view });
         }
       }
       set({ jobs: get().jobs.filter((j) => j.id !== job.id) });
@@ -421,6 +423,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
       });
       const params = settings.params();
       if (get().view === 'compare') set({ view: 'image' });
+      const batch = { shown: false };
 
       await Promise.all(
         Array.from({ length: settings.count }, () =>
@@ -432,7 +435,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
             params,
             videoTitle: brief.videoTitle || undefined,
             apiKey,
-            autoSelect: true,
+            batch,
           }),
         ),
       );
@@ -465,7 +468,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
           videoTitle: source.videoTitle,
           apiKey,
           finalize: (edited) => mergeWithMask(source.blob, edited, mask),
-          autoSelect: true,
+          batch: { shown: false },
         });
         return;
       }
@@ -481,7 +484,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
         parentId: source.id,
         videoTitle: source.videoTitle,
         apiKey,
-        autoSelect: true,
+        batch: { shown: false },
       });
     },
 

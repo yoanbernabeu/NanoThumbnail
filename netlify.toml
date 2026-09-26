@@ -3,33 +3,41 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
 
 [functions]
   directory = "netlify/functions"
 
-# Cache headers pour les assets statiques
+# Security headers (the CSP itself is emitted by Astro as a <meta> tag with script hashes)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Content-Security-Policy = "frame-ancestors 'none'"
+
+# Content-hashed build output: cache forever
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Service worker and manifest must always be revalidated, or updates never ship
 [[headers]]
-  for = "/*.webp"
+  for = "/sw.js"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "no-cache"
 
 [[headers]]
-  for = "/*.png"
+  for = "/manifest.webmanifest"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "no-cache"
+    Content-Type = "application/manifest+json"
 
+# Un-hashed public images (icons, samples): cache a week
 [[headers]]
-  for = "/*.js"
+  for = "/icons/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "public, max-age=604800"

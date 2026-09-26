@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from './ui/alert-dialog';
-import { Popover, PopoverAnchor, PopoverContent } from './ui/popover';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
 import { useWorkspace } from '../stores/workspace';
 import { useSettings, type Theme } from '../stores/settings';
 import { useUI } from '../stores/ui';
@@ -42,9 +42,7 @@ function ProjectSwitcher() {
 
   return (
     <>
-      <Popover open={renaming} onOpenChange={setRenaming}>
-        <DropdownMenu>
-          <PopoverAnchor asChild>
+      <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="max-w-56 gap-2 font-medium">
                 <Folder className="text-muted-foreground" />
@@ -52,7 +50,6 @@ function ProjectSwitcher() {
                 <ChevronsUpDown className="text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
-          </PopoverAnchor>
           <DropdownMenuContent align="start" className="w-64">
             <DropdownMenuLabel className="text-xs text-muted-foreground">{t('topbar.projects')}</DropdownMenuLabel>
             <div className="max-h-72 overflow-y-auto">
@@ -70,7 +67,7 @@ function ProjectSwitcher() {
             <DropdownMenuItem
               onSelect={() => {
                 setName(current?.name ?? '');
-                setTimeout(() => setRenaming(true), 0);
+                setRenaming(true);
               }}
             >
               <Pencil /> {t('topbar.renameProject')}
@@ -79,23 +76,33 @@ function ProjectSwitcher() {
               <Trash2 /> {t('topbar.deleteProject')}
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
-        <PopoverContent align="start" className="w-72">
+      </DropdownMenu>
+
+      <Dialog open={renaming} onOpenChange={setRenaming}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t('topbar.renameProject')}</DialogTitle>
+          </DialogHeader>
           <form
+            id="rename-project"
             onSubmit={(e) => {
               e.preventDefault();
               renameProject(name);
               setRenaming(false);
             }}
-            className="flex gap-2"
           >
             <Input autoFocus value={name} onChange={(e) => setName(e.target.value)} aria-label={t('topbar.renameProject')} />
-            <Button type="submit" size="sm">
+          </form>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setRenaming(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button type="submit" form="rename-project">
               {t('common.save')}
             </Button>
-          </form>
-        </PopoverContent>
-      </Popover>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>

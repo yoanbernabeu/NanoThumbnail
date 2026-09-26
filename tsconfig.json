@@ -12,9 +12,6 @@
       "@layouts/*": [
         "src/layouts/*"
       ],
-      "@scripts/*": [
-        "src/scripts/*"
-      ],
       "@styles/*": [
         "src/styles/*"
       ],
@@ -29,7 +26,9 @@
   },
   "include": [
     "src/**/*",
-    "astro.config.mjs"
+    "netlify/**/*",
+    "astro.config.mjs",
+    "vitest.config.ts"
   ],
   "exclude": [
     "node_modules",

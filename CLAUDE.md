@@ -4,76 +4,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NanoThumbnail is a free, open-source web application for creating YouTube thumbnails using AI. It uses Google's Nano Banana Pro model via Replicate API with a BYOK (Bring Your Own Key) model - users provide their own API key.
+NanoThumbnail is a free, open-source, local-first studio to generate, edit and test YouTube thumbnails with Google's Nano Banana models (Pro / 2), BYOK via Replicate or Google Gemini.
 
-**Stack**: Astro 5.0 (static site generation), TypeScript 5.3, deployed on Netlify.
+**Stack**: Astro 7 (static), React 19 island for `/app`, shadcn/ui + Radix + Tailwind v4, Zustand, IndexedDB (`idb`), Vitest. Deployed on Netlify.
 
-## Development Commands
+## Commands
 
 ```bash
-npm run dev      # Start dev server on http://localhost:4321
-npm run build    # Production build → dist/
-npm run preview  # Preview production build locally
+npm run dev        # http://localhost:4321 (Gemini works; Replicate needs `netlify dev` for the proxy)
+npm run build      # → dist/
+npm test           # Vitest
+npm run typecheck  # tsc --noEmit (src + netlify)
+npm run check      # typecheck + test + build (CI)
 ```
 
 ## Architecture
 
-### Key Directories
+- `src/app/` — the studio, a single React island (`<App client:only="react" />` in `src/pages/app.astro`).
+  - `stores/workspace.ts` — core state & actions: projects, generations (with `parentId` lineage), jobs (abortable), brief, refs, personas, brand kit, edit/region-edit, score/rank.
+  - `stores/settings.ts` — provider, keys (localStorage or sessionStorage), output params, theme, lang. Keys: `nt_prefs`, `nt_key_<provider>`, `nano_lang`.
+  - `lib/providers.ts` — Replicate (via proxy, `Prefer: wait`, backoff polling, cancel on abort) and Gemini (direct, `x-goog-api-key`). `generateImage`, `generateText`, `generateJSON`.
+  - `lib/prompt.ts` — prompt builder following Google's Nano Banana guidance (declared image roles, identity lock, "change only X" edits). Covered by tests.
+  - `lib/ai.ts` — critique, ranking, concepts, channel style analysis (Gemini 3 Flash).
+  - `lib/images.ts` — canvas helpers: reference downscaling, YouTube export (1280×720 ≤ 2 MB), mask highlight/merge for region edits.
+  - `lib/db.ts` — IndexedDB `NanoThumbnail` (stores Blobs). `lib/migrate.ts` imports v1 data (`NanoThumbnailDB`) once.
+  - `lib/styles.ts` — 14 style presets.
+  - `i18n/` — typed dictionaries; `useT()` in components, `t()` elsewhere. `fr.ts` must satisfy the `en.ts` shape.
+  - `components/ui/` — shadcn components (generated; `cn` comes from `@/app/lib/utils`).
+- `src/components/site/Landing.astro` + `src/site/i18n.ts` — static landing, pre-rendered in fr (`/`) and en (`/en/`), no client JS.
+- `netlify/functions/replicate-proxy.ts` — relays only create/poll/cancel Replicate routes, only for the site origin (`netlify/lib/origin.ts`). Tested.
+- `public/sw.js` — service worker (network-first pages, cache-first hashed assets). Bump `VERSION` when changing its logic.
 
-- `src/components/app/` - Main application UI (Sidebar, MainArea, HistoryPanel, ReferenceLibraryPanel, SettingsModal)
-- `src/components/landing/` - Landing page sections (Hero, Features, Pricing, FAQ, etc.)
-- `src/scripts/` - Client-side TypeScript logic
-- `src/pages/` - Astro pages (index.astro = landing, app.astro = main app)
+## Conventions
 
-### Core Scripts (`src/scripts/`)
-
-| File | Purpose |
-|------|---------|
-| `api.ts` | Replicate API integration, polling logic, generation flow |
-| `state.ts` | State interfaces (AppState, HistoryItem, GenerationParameters) |
-| `storage.ts` | IndexedDB wrapper for local image persistence |
-| `ui.ts` | DOM manipulation, panel management, event handlers (729 lines) |
-| `i18n/index.ts` | i18n system with auto-detection and language switching |
-
-### API Integration Flow
-
-1. User provides Replicate API key (stored in localStorage as `nano_api_key`)
-2. Generation request goes through CORS proxy (`corsproxy.io`) to Replicate
-3. Polling loop checks prediction status every 1 second until complete
-4. Results stored in history (localStorage + optional IndexedDB for images)
-
-### State & Storage
-
-- **localStorage keys**: `nano_api_key`, `nano_lang`, `nano_save_locally`, `nano_history`
-- **IndexedDB**: `NanoThumbnailDB` database, `images` store (when "Save Locally" enabled)
-
-### Internationalization
-
-- Supported: English (en), French (fr)
-- Translation files: `src/scripts/i18n/en.ts`, `src/scripts/i18n/fr.ts`
-- Usage: `t('app.status_working')` or `data-i18n` attribute on DOM elements
-- Detection priority: URL param → localStorage → browser lang → default (en)
-
-To add a new language: create `src/scripts/i18n/{lang}.ts`, import in `index.ts`, add to supported languages array.
-
-### Path Aliases (tsconfig.json)
-
-```
-@/* → src/*
-@components/* → src/components/*
-@scripts/* → src/scripts/*
-```
-
-## Important Patterns
-
-- **No backend**: All API calls are client-side through CORS proxy
-- **Glassmorphism UI**: CSS variables defined in `src/styles/global.css`
-- **Error handling**: Custom modal with JSON syntax highlighting via PrismJS
-- **Landing pages**: Pure Astro components (no client-side JS)
-- **App page**: Astro + client-side TypeScript for interactivity
-
-## Deployment
-
-- **Platform**: Netlify
-- **Config**: `netlify.toml` (Node.js v20, aggressive caching for static assets)
-- **Base path**: `/` for Netlify, `/NanoThumbnail/` for GitHub Pages (configurable in `astro.config.mjs`)
+- Adding UI text: add the key to both `src/app/i18n/en.ts` and `fr.ts` (typecheck enforces parity).
+- New shadcn components: `npx shadcn@latest add <name>`; check the import of `cn` afterwards, and note that a stale `deno.lock` in the repo makes the CLI try to use Deno.
+- CSP is emitted by Astro (`security.csp` in `astro.config.mjs`). Any new external origin (image CDN, API) must be added to `img-src`/`connect-src` there.
+- Don't put API keys in URLs; don't cache anything under `/.netlify/` in the service worker.

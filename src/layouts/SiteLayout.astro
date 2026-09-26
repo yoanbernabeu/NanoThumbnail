@@ -1,0 +1,62 @@
+---
+import '@styles/tailwind.css';
+import type { SiteLang } from '@/site/i18n';
+
+interface Props {
+  lang: SiteLang;
+  title: string;
+  description: string;
+  /** Path of the equivalent page in each language, for hreflang. */
+  alternates?: Partial<Record<SiteLang, string>>;
+}
+
+const { lang, title, description, alternates } = Astro.props;
+const site = 'https://nanothumbnail.com';
+const base = import.meta.env.BASE_URL;
+const canonical = new URL(Astro.url.pathname, site).href;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {
+      alternates &&
+        Object.entries(alternates).map(([l, path]) => <link rel="alternate" hreflang={l} href={new URL(path, site).href} />)
+    }
+    {alternates?.en && <link rel="alternate" hreflang="x-default" href={new URL(alternates.en, site).href} />}
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="manifest" href={`${base}manifest.webmanifest`} />
+    <meta name="theme-color" content="#18181b" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${site}/og.webp`} />
+    <meta property="og:locale" content={lang === 'fr' ? 'fr_FR' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${site}/og.webp`} />
+
+    <script is:inline>
+      (function () {
+        try {
+          var theme = JSON.parse(localStorage.getItem('nt_prefs') || '{}').theme || 'system';
+          var dark = theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-dvh">
+    <slot />
+  </body>
+</html>

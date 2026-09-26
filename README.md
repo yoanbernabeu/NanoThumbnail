@@ -1,142 +1,102 @@
 # NanoThumbnail
 
-NanoThumbnail is a free, open-source web application designed to create viral YouTube thumbnails using AI. It supports two providers: **Replicate** (Google Nano Banana Pro model) and **Google Gemini** (gemini-3-pro-image-preview) to transform simple prompts into high-quality, expressive images.
+NanoThumbnail is a free, open-source studio to **generate, edit and test YouTube thumbnails** with Google's Nano Banana models (Nano Banana Pro and Nano Banana 2). It runs entirely in your browser: bring your own **Replicate** or **Google Gemini** key, your images stay on your device.
 
-![NanoThumbnail Preview](image.webp)
+![NanoThumbnail Studio](public/assets/studio.webp)
 
 ## Features
 
--   **Nano Banana Pro Integration**: Uses Google's latest model, optimized for text rendering and photorealism.
--   **BYOK (Bring Your Own Key)**: Connect your own Replicate or Google Gemini API key. You pay the provider directly, ensuring privacy and the lowest cost.
--   **100% Free Interface**: No monthly subscriptions or hidden fees for the UI.
--   **Reference Images**: Upload up to 14 reference images to guide the AI generation.
--   **Customizable Output**: Configure resolution (1K/2K/4K), aspect ratio (16:9, 9:16, 4:3, 1:1), output format (PNG/JPG), and safety filter level.
--   **Generation History**: Keep track of your recent creations (stored locally).
--   **Internationalization**: Fully translated in English 🇺🇸 and French 🇫🇷.
--   **Privacy Focused**: API keys and history are stored locally in your browser (LocalStorage).
+**Create**
+- **Brief-driven generation**: video title, scene, on-thumbnail text (rendered by the AI, or clean space left to add it yourself), 1–4 variants, 1K/2K/4K, 16:9, 9:16, 4:3 or 1:1.
+- **14 proven styles**: reaction + object, versus, before/after, tech tutorial, cinematic documentary, hyper-saturated, 3D clay…
+- **Concept assistant**: three genuinely different angles from your title.
+- **People**: save up to 5 people (front/profile photos plus expressions); their identity is preserved.
+- **Brand kit**: colours, typography, logo, and a style profile distilled from your own best thumbnails.
+- **References & YouTube remix**: up to 14 reference images, or paste a YouTube URL to pull its thumbnail and title.
 
-## Tech Stack
+**Iterate**
+- **Conversational edits**: “make the face more surprised” changes only that. Every version is kept, with its lineage.
+- **Area edits**: paint a mask, describe the change; pixels outside the mask are preserved exactly.
+- **AI critique**: small-size legibility, contrast, focal point, emotion, curiosity, mobile readability, with one-click suggested edits. (A critique based on best practices — not a CTR prediction.)
 
--   **Framework**: [Astro](https://astro.build/) v5.0 (Static Site Generation)
--   **Language**: TypeScript
--   **Styling**: Custom CSS with Glassmorphism UI
--   **Icons**: Font Awesome
--   **Font**: Plus Jakarta Sans (Google Fonts)
--   **API**: [Replicate](https://replicate.com/) (Google Nano Banana Pro model) or [Google Gemini](https://aistudio.google.com/) (gemini-3-pro-image-preview)
--   **CORS Proxy**: [corsproxy.io](https://corsproxy.io/)
--   **Hosting**: [Netlify](https://netlify.com/)
+**Test**
+- **Feed preview**: home, search, up next, mobile and TV, light and dark, among your competitors' real thumbnails.
+- **Safe zones**: duration badge, hover icons, progress bar, Shorts UI.
+- **Compare & rank** variants side by side, then **export for YouTube Studio's Test & Compare** (1280×720, under 2 MB).
 
-## Project Structure
+**Local-first**
+- Projects, images, people and brand kit live in IndexedDB. No account, no database.
+- Installable PWA; the library works offline.
+- One-click zip backup and restore.
+- API key stored in the browser, or for the current session only.
+
+## How it works
+
+- **Gemini** is called directly from the browser (Google's API supports CORS). The key is sent in the `x-goog-api-key` header.
+- **Replicate** has no browser CORS support, so calls go through a small Netlify function (`netlify/functions/replicate-proxy.ts`). It only accepts requests from the site's own origin, only relays the three Replicate routes the app needs (create, poll, cancel), and never stores or logs anything.
+- Reference images are downscaled client-side before upload, so requests stay small.
+- Prompts are built as structured natural language following Google's Nano Banana prompting guidance (declared image roles, identity locks, “change only X, keep everything else” edits), see `src/app/lib/prompt.ts`.
+- Critique, ranking, concepts and style analysis use Gemini 3 Flash (directly with a Gemini key, or `google/gemini-3-flash` on Replicate).
+
+## Tech stack
+
+- [Astro 7](https://astro.build/) — static site, CSP with script hashes
+- React 19 island for the studio (`/app`), [shadcn/ui](https://ui.shadcn.com/) + Radix, Tailwind CSS v4, Lucide icons, Zustand
+- IndexedDB via `idb`, zip via `fflate`
+- Vitest, GitHub Actions
+- Netlify (static hosting + one function)
+
+## Project structure
 
 ```
 src/
-├── components/
-│   ├── app/                 # Application components
-│   │   ├── Sidebar.astro    # Prompt input, image upload, settings
-│   │   ├── MainArea.astro   # Result display area
-│   │   ├── HistoryPanel.astro
-│   │   └── SettingsModal.astro
-│   ├── landing/             # Landing page sections
-│   │   ├── Hero.astro
-│   │   ├── Features.astro
-│   │   ├── Problem.astro
-│   │   ├── Steps.astro
-│   │   ├── FAQ.astro
-│   │   └── CTA.astro
-│   ├── ui/                  # Reusable UI components
-│   ├── Header.astro
-│   ├── Footer.astro
-│   └── LangSelect.astro
-├── layouts/
-│   ├── BaseLayout.astro     # Main layout with meta tags, fonts, icons
-│   └── LegalLayout.astro    # Layout for legal pages
-├── pages/
-│   ├── index.astro          # Landing page
-│   ├── app.astro            # Main application
-│   ├── legal-notice.astro
-│   ├── privacy-policy.astro
-│   └── terms-of-service.astro
-├── scripts/
-│   ├── api.ts               # Replicate/Gemini API integration & polling
-│   ├── state.ts             # Application state management
-│   ├── ui.ts                # UI logic (history, image upload, settings)
-│   ├── i18n/                # Internationalization
-│   │   ├── index.ts         # i18n system (auto-detection, switching)
-│   │   ├── en.ts            # English translations
-│   │   └── fr.ts            # French translations
-│   └── modules/
-│       └── errors/          # Error handling & modal
-└── styles/
-    ├── global.css           # Global styles & CSS variables
-    ├── errors.css
-    └── legal.css
+├── app/                    # Studio (React island mounted on /app)
+│   ├── App.tsx             # Layout, shortcuts, dialogs
+│   ├── components/         # brief/, canvas/, iterate/, dialogs/, ui/ (shadcn)
+│   ├── stores/             # Zustand: workspace, settings, ui
+│   ├── lib/                # providers, prompt, ai, images, db, backup, migrate…
+│   └── i18n/               # en.ts, fr.ts (typed: a missing key fails the build)
+├── components/site/        # Landing page (static Astro, no JS)
+├── site/i18n.ts            # Landing copy (fr on /, en on /en/)
+├── layouts/                # SiteLayout, AppLayout, LegalLayout
+├── pages/                  # index, en/index, app, legal pages
+└── styles/tailwind.css     # Design tokens (light/dark)
+netlify/
+├── functions/              # replicate-proxy, youtube-thumbnail-proxy
+└── lib/origin.ts           # Origin allowlist
+public/                     # sw.js, manifest, icons, images
 ```
 
-## Getting Started
+## Getting started
 
-### Prerequisites
+Prerequisites: Node.js 22+, and a [Replicate](https://replicate.com/account/api-tokens) or [Google Gemini](https://aistudio.google.com/apikey) API key.
 
--   Node.js (v18 or higher)
--   npm
--   A [Replicate](https://replicate.com/) API key and/or a [Google Gemini](https://aistudio.google.com/apikey) API key
+```bash
+git clone https://github.com/yoanbernabeu/NanoThumbnail.git
+cd NanoThumbnail
+npm install
+npm run dev          # http://localhost:4321
+```
 
-### Installation
-
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/yoanbernabeu/NanoThumbnail.git
-    cd NanoThumbnail
-    ```
-
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-
-3.  Start the development server:
-    ```bash
-    npm run dev
-    ```
-
-4.  Open your browser at `http://localhost:4321`
-
-### Available Scripts
+With `astro dev`, Gemini works out of the box. To use Replicate locally, run `netlify dev` so the proxy function is available.
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build locally |
+| `npm run dev` | Development server |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Preview the production build |
+| `npm test` | Unit tests (Vitest) |
+| `npm run typecheck` | TypeScript check |
+| `npm run check` | Typecheck + tests + build (what CI runs) |
 
-## Building for Production
+## Upgrading from v1
 
-```bash
-npm run build
-```
-
-The output will be in the `dist/` directory.
-
-### Deployment
-
-The project is configured for deployment on **Netlify** with the `netlify.toml` configuration file.
-
-## How It Works
-
-1. **User enters a prompt** describing the desired thumbnail
-2. **Optional**: Upload reference images to guide the generation
-3. **Configure settings**: resolution, aspect ratio, format, safety level
-4. **API call**: The prompt is enhanced and sent to Replicate (Nano Banana Pro) or Google Gemini, depending on the selected provider
-5. **Polling** (Replicate only): The app polls the API until the generation is complete. Gemini returns the image in a single request
-6. **Display**: The generated image is fetched via CORS proxy and displayed
-7. **Download**: User can download the thumbnail in the selected format
+Nothing to do: on first launch, v1 history, reference library and personas are imported into the new storage (the v1 database is left untouched), and API keys are carried over.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).
 
 ## Author
 
-**Yoan Bernabeu**
-
--   Website: [YoanDev.co](https://yoandev.co)
--   Twitter: [@yOyO38](https://twitter.com/yOyO38)
+**Yoan Bernabeu** — [YoanDev.co](https://yoandev.co) · [@yOyO38](https://twitter.com/yOyO38)
