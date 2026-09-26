@@ -22,6 +22,7 @@ export const en = {
     deleteProject: 'Delete project',
     deleteProjectConfirm: 'Delete “{name}” and all its images? This cannot be undone.',
     untitled: 'Untitled project',
+    importedV1: 'v1 history',
     commands: 'Commands',
     settings: 'Settings',
     keyMissing: 'Add your API key',
@@ -126,6 +127,7 @@ export const en = {
     competitorsHint: 'Paste YouTube URLs of videos from your niche to see yours among them',
     addCompetitor: 'Add',
     darkFeed: 'Dark feed',
+    noTitle: 'Your video title appears here (fill it in the brief)',
   },
   iterate: {
     title: 'Iterate',

@@ -1,6 +1,7 @@
 import { openDB } from 'idb';
 import { putGeneration, putLibraryImage, putPersona, putProject, uid } from './db';
 import { dataUrlToBlob, dimensions } from './images';
+import { t } from '../i18n';
 import type { AspectRatio, GenerationParams, Persona, PersonaPhoto, Resolution } from './types';
 
 /**
@@ -52,7 +53,7 @@ export async function migrateFromV1(): Promise<{ imported: number } | null> {
     if (withImages.length) {
       const now = Date.now();
       const projectId = uid('p_');
-      await putProject({ id: projectId, name: 'v1', createdAt: now, updatedAt: now });
+      await putProject({ id: projectId, name: t('topbar.importedV1'), createdAt: now, updatedAt: now });
       for (const h of withImages) {
         const blob = await dataUrlToBlob(byId.get(h.localId)!);
         const { width, height } = await dimensions(blob);

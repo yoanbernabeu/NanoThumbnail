@@ -1,55 +1,8 @@
 ---
-import BaseLayout from "@layouts/BaseLayout.astro";
-import Sidebar from "@components/app/Sidebar.astro";
-import MainArea from "@components/app/MainArea.astro";
-import SettingsModal from "@components/app/SettingsModal.astro";
-import PersonaModal from "@components/app/PersonaModal.astro";
-import "@styles/errors.css";
+import AppLayout from '@layouts/AppLayout.astro';
+import App from '@/app/App';
 ---
 
-<BaseLayout
-    title="NanoThumbnail - App"
-    description="Generate Viral Thumbnails with AI"
-    showApiBtn={true}
-    showNavLinks={false}
->
-    <div id="app-view">
-        <Sidebar />
-        <MainArea />
-    </div>
-    <SettingsModal />
-    <PersonaModal />
-</BaseLayout>
-
-<script>
-    import { initApp } from "@scripts/ui";
-    import { initGenerateButton } from "@scripts/api";
-
-    // Initialize app when DOM is ready
-    document.addEventListener("DOMContentLoaded", () => {
-        initApp();
-        initGenerateButton();
-    });
-</script>
-
-<style>
-    :global(body) {
-        overflow: hidden;
-        height: 100vh;
-    }
-
-    #app-view {
-        display: flex;
-        flex: 1;
-        overflow: hidden;
-        height: calc(100vh - 73px);
-    }
-
-    @media (max-width: 900px) {
-        #app-view {
-            flex-direction: column;
-            height: auto;
-            overflow: visible;
-        }
-    }
-</style>
+<AppLayout title="NanoThumbnail — Studio" description="Create, iterate and test YouTube thumbnails with AI. Local-first, bring your own key.">
+  <App client:only="react" />
+</AppLayout>

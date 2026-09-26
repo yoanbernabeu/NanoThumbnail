@@ -24,6 +24,7 @@ export const fr: Dict = {
     deleteProject: 'Supprimer le projet',
     deleteProjectConfirm: 'Supprimer « {name} » et toutes ses images ? Action irréversible.',
     untitled: 'Projet sans titre',
+    importedV1: 'Historique v1',
     commands: 'Commandes',
     settings: 'Paramètres',
     keyMissing: 'Ajoutez votre clé API',
@@ -128,6 +129,7 @@ export const fr: Dict = {
     competitorsHint: 'Collez des URL de vidéos de votre niche pour voir la vôtre au milieu',
     addCompetitor: 'Ajouter',
     darkFeed: 'Fil sombre',
+    noTitle: 'Le titre de votre vidéo s’affiche ici (à remplir dans le brief)',
   },
   iterate: {
     title: 'Itérer',
