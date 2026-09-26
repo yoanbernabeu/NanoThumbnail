@@ -4,25 +4,35 @@ NanoThumbnail is a free, open-source studio to **generate, edit and test YouTube
 
 ![NanoThumbnail Studio](src/assets/landing/en-studio.webp)
 
+**Live:** [nanothumbnail.com](https://nanothumbnail.com) · [Studio](https://nanothumbnail.com/app/) · [English](https://nanothumbnail.com/en/) / [Français](https://nanothumbnail.com/)
+
+| Generate | Edit | Edit again |
+|---|---|---|
+| ![Generation](src/assets/landing/step-1.webp) | ![Accent switched to orange](src/assets/landing/step-2.webp) | ![Text changed to 1M](src/assets/landing/step-3.webp) |
+| “Tech tutorial” style, text “0 → 100K” | “Switch every blue accent to bright orange” | “Replace ‘100K’ with ‘1M’, same style” |
+
 ## Features
 
 **Create**
 - **Brief-driven generation**: video title, scene, on-thumbnail text (rendered by the AI, or clean space left to add it yourself), 1–4 variants, 1K/2K/4K, 16:9, 9:16, 4:3 or 1:1.
 - **14 proven styles**: reaction + object, versus, before/after, tech tutorial, cinematic documentary, hyper-saturated, 3D clay…
-- **Concept assistant**: three genuinely different angles from your title.
+- **Concept assistant**: three genuinely different angles from your title, written in your language.
 - **People**: save up to 5 people (front/profile photos plus expressions); their identity is preserved.
 - **Brand kit**: colours, typography, logo, and a style profile distilled from your own best thumbnails.
 - **References & YouTube remix**: up to 14 reference images, or paste a YouTube URL to pull its thumbnail and title.
 
 **Iterate**
 - **Conversational edits**: “make the face more surprised” changes only that. Every version is kept, with its lineage.
-- **Area edits**: paint a mask, describe the change; pixels outside the mask are preserved exactly.
+- **Area edits**: paint a mask, describe the change; the model gets the clean image plus a marked copy as a location guide, and pixels outside the mask are merged back untouched.
 - **AI critique**: small-size legibility, contrast, focal point, emotion, curiosity, mobile readability, with one-click suggested edits. (A critique based on best practices — not a CTR prediction.)
 
 **Test**
 - **Feed preview**: home, search, up next, mobile and TV, light and dark, among your competitors' real thumbnails.
 - **Safe zones**: duration badge, hover icons, progress bar, Shorts UI.
 - **Compare & rank** variants side by side, then **export for YouTube Studio's Test & Compare** (1280×720, under 2 MB).
+
+**Keyboard-first**
+- `⌘K` command palette, `⌘↵` generate, `F` feed preview, `Z` safe zones, `M` mask, `Esc` leave mask.
 
 **Local-first**
 - Projects, images, people and brand kit live in IndexedDB. No account, no database.
@@ -38,9 +48,16 @@ NanoThumbnail is a free, open-source studio to **generate, edit and test YouTube
 - Prompts are built as structured natural language following Google's Nano Banana prompting guidance (declared image roles, identity locks, “change only X, keep everything else” edits), see `src/app/lib/prompt.ts`.
 - Critique, ranking, concepts and style analysis use Gemini 3 Flash (directly with a Gemini key, or `google/gemini-3-flash` on Replicate).
 
+## Landing, SEO & GEO
+
+- Static landing pre-rendered in French (`/`) and English (`/en/`), zero client JS, real studio screenshots per language.
+- Lighthouse 100 / 100 / 100 / 100 (performance, accessibility, best practices, SEO) on mobile and desktop.
+- Open Graph image per language, `hreflang`, JSON-LD (`WebApplication`, `FAQPage`, `WebSite`, `Person`), `sitemap.xml`.
+- Agent-readable: [`/llms.txt`](https://nanothumbnail.com/llms.txt) and [`/llms-full.txt`](https://nanothumbnail.com/llms-full.txt) are generated at build time from the landing copy; `robots.txt` explicitly allows AI crawlers.
+
 ## Tech stack
 
-- [Astro 7](https://astro.build/) — static site, CSP with script hashes
+- [Astro 7](https://astro.build/) — static site, CSP with script hashes, responsive images via `astro:assets`
 - React 19 island for the studio (`/app`), [shadcn/ui](https://ui.shadcn.com/) + Radix, Tailwind CSS v4, Lucide icons, Zustand
 - IndexedDB via `idb`, zip via `fflate`
 - Vitest, GitHub Actions
@@ -56,15 +73,16 @@ src/
 │   ├── stores/             # Zustand: workspace, settings, ui
 │   ├── lib/                # providers, prompt, ai, images, db, backup, migrate…
 │   └── i18n/               # en.ts, fr.ts (typed: a missing key fails the build)
+├── assets/                 # Landing images and screenshots (fr-*/en-*), optimised at build
 ├── components/site/        # Landing page (static Astro, no JS)
-├── site/i18n.ts            # Landing copy (fr on /, en on /en/)
-├── layouts/                # SiteLayout, AppLayout, LegalLayout
-├── pages/                  # index, en/index, app, legal pages
-└── styles/tailwind.css     # Design tokens (light/dark)
+├── site/                   # Landing copy (i18n.ts) and llms.txt generator (llms.ts)
+├── layouts/                # SiteLayout (SEO, JSON-LD), AppLayout, LegalLayout
+├── pages/                  # index, en/index, app, legal pages, sitemap.xml, llms.txt, llms-full.txt
+└── styles/                 # tokens.css (light/dark), tailwind.css (studio), site.css (landing, inlined)
 netlify/
 ├── functions/              # replicate-proxy, youtube-thumbnail-proxy
 └── lib/origin.ts           # Origin allowlist
-public/                     # sw.js, manifest, icons, images
+public/                     # sw.js, manifest, icons, og-{fr,en}.jpg, robots.txt
 ```
 
 ## Getting started
