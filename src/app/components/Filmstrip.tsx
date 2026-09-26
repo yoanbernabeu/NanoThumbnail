@@ -106,7 +106,7 @@ export function Filmstrip() {
             </Button>
           </div>
         ) : (
-          generations.length > 1 && <span className="ml-auto hidden text-muted-foreground lg:inline">{t('filmstrip.exportHint')} · Shift+clic</span>
+          generations.length > 1 && <span className="ml-auto hidden text-muted-foreground lg:inline">{t('filmstrip.exportHint')} · {t('filmstrip.shiftClick')}</span>
         )}
       </div>
       <div className="flex h-[6.5rem] gap-2 overflow-x-auto px-3 pt-1 pb-3">

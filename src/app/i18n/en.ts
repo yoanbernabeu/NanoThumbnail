@@ -180,6 +180,7 @@ export const en = {
     exportHint: 'Select up to 3 thumbnails to A/B test with YouTube Studio’s Test & Compare',
     exported: 'Exported — upload them in YouTube Studio › Test & Compare',
     favoritesOnly: 'Favourites only',
+    shiftClick: 'Shift+click',
   },
   persona: {
     title: 'People',

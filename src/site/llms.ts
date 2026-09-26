@@ -57,7 +57,9 @@ function section(lang: SiteLang): string {
     lines.push(`### ${row.eyebrow}: ${row.title}`, '', row.text, '', ...row.points.map((p) => `- ${p}`), '');
   }
   lines.push(`### ${c.feed.eyebrow}: ${c.feed.title}`, '', c.feed.text, '');
-  lines.push(`### ${c.bento.title}`, '');
+  lines.push(`### ${c.extras.title}`, '');
+  for (const item of c.extras.items) lines.push(`- **${item.title}** — ${item.text}`);
+  lines.push('', `### ${c.bento.title}`, '');
   for (const item of Object.values(c.bento.items)) lines.push(`- **${item.title}** — ${item.text}`);
   lines.push('', `### ${lang === 'fr' ? 'Styles prédéfinis' : 'Style presets'}`, '');
   for (const s of STYLES) lines.push(`- **${s.name[lang]}** (${s.hint[lang]})`);

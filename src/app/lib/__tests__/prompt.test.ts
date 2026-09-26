@@ -71,8 +71,11 @@ describe('edit prompts', () => {
     expect(buildEditPrompt('x', [{ kind: 'persona', name: 'Alex' }])).toContain('- Image 2: photos of Alex');
   });
 
-  it('region edits reference the magenta marking', () => {
-    expect(buildRegionEditPrompt('add a hat')).toContain('Within the marked area only: add a hat');
+  it('region edits edit the clean image and use the marked copy only as a guide', () => {
+    const p = buildRegionEditPrompt('add a hat');
+    expect(p).toContain('Edit image 1');
+    expect(p).toContain('Image 2 is the same thumbnail with a translucent magenta overlay');
+    expect(p).toContain('within the area marked in image 2: add a hat');
   });
 });
 

@@ -168,9 +168,9 @@ export function buildEditPrompt(instruction: string, extraRoles: ImageRole[] = [
 
 export function buildRegionEditPrompt(instruction: string): string {
   return [
-    'Image 1 is a thumbnail in which one area is marked with a translucent magenta overlay.',
-    `Within the marked area only: ${instruction.trim()}`,
-    'Remove the magenta marking completely so the result looks natural. Keep everything outside the marked area exactly the same, preserving the original style, lighting, composition and aspect ratio.',
+    'Edit image 1 (the thumbnail). Image 2 is the same thumbnail with a translucent magenta overlay that only marks WHERE to edit — it is a location guide, not part of the design.',
+    `In image 1, within the area marked in image 2: ${instruction.trim()}`,
+    'Match the surrounding style exactly (same typography, colours, stroke, shadow and lighting). Do not use magenta or pink anywhere unless the instruction asks for it. Keep everything outside the marked area exactly the same, preserving the original composition and aspect ratio.',
   ].join('\n\n');
 }
 

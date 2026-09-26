@@ -182,6 +182,7 @@ export const fr: Dict = {
     exportHint: 'Sélectionnez jusqu’à 3 miniatures à tester avec « Tester et comparer » de YouTube Studio',
     exported: 'Exporté — importez-les dans YouTube Studio › Tester et comparer',
     favoritesOnly: 'Favoris uniquement',
+    shiftClick: 'Maj+clic',
   },
   persona: {
     title: 'Personnes',

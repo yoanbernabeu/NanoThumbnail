@@ -266,8 +266,8 @@ export function CanvasArea() {
         )}
 
         {ws.maskMode && ws.view === 'image' && (
-          <p className="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 rounded-full bg-foreground px-3 py-1 text-xs text-background shadow">
-            {t('canvas.maskHint')} <Kbd className="ml-1">Esc</Kbd>
+          <p className="pointer-events-none absolute top-3 left-1/2 flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2 rounded-full bg-foreground px-3 py-1 text-xs whitespace-nowrap text-background shadow">
+            <span className="truncate">{t('canvas.maskHint')}</span> <Kbd className="shrink-0">Esc</Kbd>
           </p>
         )}
 

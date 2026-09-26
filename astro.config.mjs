@@ -40,6 +40,15 @@ export default defineConfig({
   markdown: { syntaxHighlight: false },
   vite: {
     plugins: [tailwindcss()],
+    // Pre-bundle the studio's deps up front: otherwise Vite re-optimizes them
+    // mid-session (e.g. after a build) and the island fails with "Outdated Optimize Dep".
+    optimizeDeps: {
+      include: [
+        'react', 'react-dom', 'react-dom/client', 'react/jsx-runtime', 'react/jsx-dev-runtime',
+        'radix-ui', 'lucide-react', 'sonner', 'cmdk', 'react-resizable-panels', 'zustand',
+        'idb', 'fflate', 'clsx', 'tailwind-merge', 'class-variance-authority',
+      ],
+    },
     build: {
       cssCodeSplit: true
     }

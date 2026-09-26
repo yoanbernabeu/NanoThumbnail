@@ -462,7 +462,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
           kind: 'region',
           prompt: instruction,
           fullPrompt: buildRegionEditPrompt(instruction),
-          images: [highlighted],
+          // Clean image first (what gets edited), marked copy second (where to edit):
+          // sending only the marked copy lets the magenta tint bleed into the result.
+          images: [source.blob, highlighted],
           params,
           parentId: source.id,
           videoTitle: source.videoTitle,

@@ -107,7 +107,7 @@ Creator's rough idea: "${input.idea || '(none)'}"
 
 Propose 3 thumbnail concepts that take genuinely different angles (e.g. emotional reaction vs. result/transformation vs. mystery/object). For each:
 - name: 2-4 words
-- brief: a vivid scene description for an image model (subject, action, emotion, composition, background, lighting), 2-3 sentences, written in English
+- brief: a vivid scene description for an image model (subject, action, emotion, composition, background, lighting), 2-3 sentences, written in ${LANG_NAME[input.lang]}
 - overlayText: 0-4 words to display on the thumbnail, in ${LANG_NAME[input.lang]}, complementing the title without repeating it; empty string if the image should speak alone
 - why: one sentence in ${LANG_NAME[input.lang]} on why it would get clicks
 - styleId: the best matching id from this list, or "" : ${input.styles.map((s) => `${s.id} (${s.name})`).join(', ')}
