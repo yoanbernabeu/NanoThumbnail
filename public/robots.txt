@@ -1,0 +1,22 @@
+# NanoThumbnail — open-source AI studio for YouTube thumbnails.
+# Search engines and AI assistants are welcome. For a machine-readable summary,
+# see /llms.txt (short) and /llms-full.txt (complete). The studio runs client-side.
+
+User-agent: *
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+Allow: /
+Disallow: /.netlify/
+
+Sitemap: https://nanothumbnail.com/sitemap.xml

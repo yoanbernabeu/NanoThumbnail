@@ -1,0 +1,9 @@
+/* Landing + legal pages stylesheet: only scans the static site, so it stays small enough to inline. */
+@import 'tailwindcss' source(none);
+@import '@fontsource-variable/geist';
+@import './tokens.css';
+
+@source '../components/site';
+@source '../layouts/SiteLayout.astro';
+@source '../layouts/LegalLayout.astro';
+@source '../pages';

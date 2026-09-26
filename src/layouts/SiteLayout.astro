@@ -1,6 +1,11 @@
 ---
-import '@styles/tailwind.css';
-import type { SiteLang } from '@/site/i18n';
+import '@styles/site.css';
+import { site as copy, type SiteLang } from '@/site/i18n';
+import pkg from '../../package.json';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+const studioShots = import.meta.glob<{ default: ImageMetadata }>('../assets/landing/*-studio.webp', { eager: true });
 
 interface Props {
   lang: SiteLang;
@@ -8,12 +13,77 @@ interface Props {
   description: string;
   /** Path of the equivalent page in each language, for hreflang. */
   alternates?: Partial<Record<SiteLang, string>>;
+  /** Home pages get structured data (JSON-LD) and preload the hero image. */
+  home?: boolean;
+  noindex?: boolean;
 }
 
-const { lang, title, description, alternates } = Astro.props;
-const site = 'https://nanothumbnail.com';
+const { lang, title, description, alternates, home = false, noindex = false } = Astro.props;
+const SITE = 'https://nanothumbnail.com';
 const base = import.meta.env.BASE_URL;
-const canonical = new URL(Astro.url.pathname, site).href;
+const canonical = new URL(Astro.url.pathname, SITE).href;
+const ogImage = `${SITE}/og-${lang}.jpg`;
+const c = copy[lang];
+const github = 'https://github.com/yoanbernabeu/NanoThumbnail';
+const studioShot = studioShots[`../assets/landing/${lang}-studio.webp`]?.default;
+const screenshot = studioShot ? new URL((await getImage({ src: studioShot, width: 1512 })).src, SITE).href : undefined;
+
+const jsonLd = home && {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${SITE}/#author`,
+      name: 'Yoan Bernabeu',
+      url: 'https://yoandev.co',
+      sameAs: ['https://github.com/yoanbernabeu', 'https://twitter.com/yOyO38'],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE}/#website`,
+      url: `${SITE}/`,
+      name: 'NanoThumbnail',
+      inLanguage: ['fr', 'en'],
+      publisher: { '@id': `${SITE}/#author` },
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': `${SITE}/#app`,
+      name: 'NanoThumbnail',
+      url: `${SITE}/app/`,
+      description: c.meta.description,
+      applicationCategory: 'MultimediaApplication',
+      applicationSubCategory: 'YouTube thumbnail generator',
+      operatingSystem: 'Web browser',
+      browserRequirements: 'Requires JavaScript and IndexedDB',
+      softwareVersion: pkg.version,
+      isAccessibleForFree: true,
+      license: 'https://opensource.org/licenses/MIT',
+      codeRepository: github,
+      inLanguage: ['fr', 'en'],
+      image: ogImage,
+      screenshot,
+      author: { '@id': `${SITE}/#author` },
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      featureList: [
+        c.iterate.eyebrow,
+        ...c.rows.map((r) => r.eyebrow),
+        c.feed.eyebrow,
+        ...Object.values(c.bento.items).map((i) => i.title),
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${canonical}#faq`,
+      inLanguage: lang,
+      mainEntity: c.faq.items.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -23,26 +93,45 @@ const canonical = new URL(Astro.url.pathname, site).href;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
+    <meta name="author" content="Yoan Bernabeu" />
+    <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
-    {
-      alternates &&
-        Object.entries(alternates).map(([l, path]) => <link rel="alternate" hreflang={l} href={new URL(path, site).href} />)
-    }
-    {alternates?.en && <link rel="alternate" hreflang="x-default" href={new URL(alternates.en, site).href} />}
+    {alternates && Object.entries(alternates).map(([l, path]) => <link rel="alternate" hreflang={l} href={new URL(path, SITE).href} />)}
+    {alternates?.en && <link rel="alternate" hreflang="x-default" href={new URL(alternates.en, SITE).href} />}
+
+    <!-- Machine-readable summaries for LLMs and AI agents (https://llmstxt.org) -->
+    <link rel="alternate" type="text/markdown" title="llms.txt" href={`${base}llms.txt`} />
+    <link rel="alternate" type="text/markdown" title="llms-full.txt" href={`${base}llms-full.txt`} />
+    <link rel="sitemap" type="application/xml" href={`${base}sitemap.xml`} />
+
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={`${base}icons/icon-192.png`} />
     <link rel="manifest" href={`${base}manifest.webmanifest`} />
-    <meta name="theme-color" content="#18181b" />
+    <meta name="theme-color" content="#18181b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
 
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NanoThumbnail" />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={`${site}/og.webp`} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={c.alts.og} />
     <meta property="og:locale" content={lang === 'fr' ? 'fr_FR' : 'en_US'} />
+    <meta property="og:locale:alternate" content={lang === 'fr' ? 'en_US' : 'fr_FR'} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@yOyO38" />
+    <meta name="twitter:creator" content="@yOyO38" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={`${site}/og.webp`} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={c.alts.og} />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
     <script is:inline>
       (function () {

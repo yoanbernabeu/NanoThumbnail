@@ -6,6 +6,6 @@ import { site } from '@/site/i18n';
 const base = import.meta.env.BASE_URL;
 ---
 
-<SiteLayout lang="en" title={site.en.meta.title} description={site.en.meta.description} alternates={{ fr: base, en: `${base}en/` }}>
+<SiteLayout lang="en" title={site.en.meta.title} description={site.en.meta.description} alternates={{ fr: base, en: `${base}en/` }} home>
   <Landing lang="en" />
 </SiteLayout>

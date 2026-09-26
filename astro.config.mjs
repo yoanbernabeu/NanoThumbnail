@@ -32,7 +32,9 @@ export default defineConfig({
     },
   },
   build: {
-    assets: 'assets'
+    assets: 'assets',
+    // Inline CSS in the HTML: removes a render-blocking request (the site sheet is small).
+    inlineStylesheets: 'always'
   },
   // No Markdown code blocks on this site; Shiki's inline styles would conflict with the CSP.
   markdown: { syntaxHighlight: false },

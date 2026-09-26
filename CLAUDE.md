@@ -31,7 +31,8 @@ npm run check      # typecheck + test + build (CI)
   - `lib/styles.ts` — 14 style presets.
   - `i18n/` — typed dictionaries; `useT()` in components, `t()` elsewhere. `fr.ts` must satisfy the `en.ts` shape.
   - `components/ui/` — shadcn components (generated; `cn` comes from `@/app/lib/utils`).
-- `src/components/site/Landing.astro` + `src/site/i18n.ts` — static landing, pre-rendered in fr (`/`) and en (`/en/`), no client JS.
+- `src/components/site/Landing.astro` + `src/site/i18n.ts` — static landing, pre-rendered in fr (`/`) and en (`/en/`), no client JS. Images live in `src/assets/` and go through `<Image>` (responsive srcset). Styles: `src/styles/site.css` (scans only the site, inlined) vs `tailwind.css` (studio); shared tokens in `tokens.css`.
+- SEO/GEO: `SiteLayout.astro` (Open Graph per language `public/og-{fr,en}.jpg`, hreflang, JSON-LD WebApplication + FAQPage), `src/pages/sitemap.xml.ts`, `src/pages/llms.txt.ts` and `llms-full.txt.ts` (generated from `src/site/i18n.ts` via `src/site/llms.ts`), `public/robots.txt` (AI crawlers allowed). Landing currently scores 100/100/100/100 on Lighthouse (mobile and desktop).
 - `netlify/functions/replicate-proxy.ts` — relays only create/poll/cancel Replicate routes, only for the site origin (`netlify/lib/origin.ts`). Tested.
 - `public/sw.js` — service worker (network-first pages, cache-first hashed assets). Bump `VERSION` when changing its logic.
 

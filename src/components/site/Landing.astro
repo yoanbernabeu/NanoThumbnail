@@ -1,27 +1,29 @@
 ---
 import {
   ArrowRight,
+  ArrowDown,
   Check,
   ChevronDown,
+  Download,
   GitBranch,
   HardDrive,
   KeyRound,
-  LayoutGrid,
   MonitorSmartphone,
   Palette,
-  PanelsTopLeft,
   Sparkles,
-  SquareDashedMousePointer,
-  Swords,
+  Type,
   Users,
   WandSparkles,
-  Download,
   X,
   Zap,
-  ChartNoAxesColumn,
+  Layers,
+  Search,
 } from '@lucide/astro';
 import { site, type SiteLang } from '@/site/i18n';
+import { STYLES } from '@/app/lib/styles';
 import Github from './GithubIcon.astro';
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 
 interface Props {
   lang: SiteLang;
@@ -30,32 +32,38 @@ interface Props {
 const { lang } = Astro.props;
 const c = site[lang];
 const base = import.meta.env.BASE_URL;
-const appHref = `${base}app/${lang === 'en' ? '?lang=en' : '?lang=fr'}`;
+const landingImages = import.meta.glob<{ default: ImageMetadata }>('../../assets/landing/*.webp', { eager: true });
+const sampleImages = import.meta.glob<{ default: ImageMetadata }>('../../assets/samples/*.webp', { eager: true });
+const img = (name: string) => landingImages[`../../assets/landing/${name}`].default;
+const shot = (name: string) => img(`${lang}-${name}.webp`);
+const sample = (n: number) => sampleImages[`../../assets/samples/sample${n}.webp`].default;
+const appHref = `${base}app/?lang=${lang}`;
 const otherLangHref = lang === 'fr' ? `${base}en/` : base;
 const github = 'https://github.com/yoanbernabeu/NanoThumbnail';
 
-const featureIcons = {
-  wand: WandSparkles,
-  mask: SquareDashedMousePointer,
-  feed: PanelsTopLeft,
-  score: ChartNoAxesColumn,
-  ab: Swords,
-  people: Users,
-  brand: Palette,
-  sparkles: Sparkles,
-  palette: LayoutGrid,
-} as const;
-const localIcons = [HardDrive, KeyRound, MonitorSmartphone, Download];
-const samples = [1, 2, 3, 4, 5, 6].map((n) => `${base}assets/sample${n}.webp`);
+const marquee = [sample(1), img('step-3.webp'), sample(2), sample(4), img('variant-b.webp'), sample(3), sample(5), img('step-1.webp'), sample(6)];
+const feedCards = [
+  { src: sample(4), title: 'Symfony Masterclass', ch: 'YoanDev' },
+  { src: img('step-3.webp'), title: c.feed.yourTitle, ch: c.feed.channel, mine: true },
+  { src: sample(2), title: '125 projets en 1 an', ch: 'YoanDev' },
+  { src: sample(5), title: 'Lofi generator', ch: 'YoanDev' },
+  { src: sample(1), title: 'Single-file Symfony', ch: 'YoanDev' },
+  { src: sample(3), title: 'JoliMediaBundle', ch: 'YoanDev' },
+];
+const rowImages: Record<string, ImageMetadata> = { mask: shot('mask'), score: shot('score'), compare: shot('compare') };
 
 const btn =
-  'inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50';
-const btnPrimary = `${btn} bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-5`;
-const btnOutline = `${btn} border bg-background hover:bg-accent h-10 px-5`;
+  'inline-flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50';
+const btnPrimary = `${btn} bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90 hover:shadow-primary/40 h-11 px-6`;
+const btnOutline = `${btn} border bg-background/60 backdrop-blur hover:bg-accent h-11 px-6`;
+const chip = 'rounded-2xl border bg-card/85 p-3 shadow-2xl shadow-black/20 backdrop-blur-md';
+const eyebrow = 'text-sm font-medium text-primary';
+const h2 = 'text-3xl font-semibold tracking-tight text-balance sm:text-5xl';
+const circumference = 2 * Math.PI * 16;
 ---
 
 <!-- Nav -->
-<header class="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-md">
+<header class="sticky top-0 z-50 bg-background/70 backdrop-blur-xl">
   <nav class="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4 sm:px-6">
     <a href={lang === 'fr' ? base : `${base}en/`} class="flex items-center gap-2 font-semibold tracking-tight">
       <span class="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -75,34 +83,39 @@ const btnOutline = `${btn} border bg-background hover:bg-accent h-10 px-5`;
       <a href={github} class="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground" aria-label={c.nav.github}>
         <Github class="size-4" />
       </a>
-      <a href={appHref} class={`${btn} ml-2 h-8 bg-primary px-3 text-primary-foreground hover:bg-primary/90`}>{c.nav.open}</a>
+      <a href={appHref} class={`${btn} ml-2 h-8 rounded-lg bg-primary px-3 text-primary-foreground hover:bg-primary/90`}>{c.nav.open}</a>
     </div>
   </nav>
 </header>
 
-<main>
-  <!-- Hero -->
-  <section class="relative overflow-hidden">
-    <div
-      aria-hidden="true"
-      class="pointer-events-none absolute inset-x-0 -top-40 h-[36rem] bg-[radial-gradient(ellipse_at_top,color-mix(in_oklch,var(--primary)_22%,transparent),transparent_65%)]"
-    >
+<main class="overflow-x-clip">
+  <!-- ─── Hero ─────────────────────────────────────────── -->
+  <section class="relative">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -top-14 overflow-hidden">
+      <div class="absolute top-[-10rem] left-1/2 h-[40rem] w-[70rem] -translate-x-1/2 rounded-full bg-primary/25 blur-[140px]"></div>
+      <div class="absolute top-[18rem] left-[12%] h-72 w-72 rounded-full bg-sky-500/20 blur-[110px]"></div>
+      <div class="absolute top-[22rem] right-[10%] h-80 w-80 rounded-full bg-fuchsia-500/20 blur-[120px]"></div>
+      <div
+        class="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_70%)] bg-[size:56px_56px] opacity-60"
+      >
+      </div>
     </div>
-    <div class="relative mx-auto max-w-6xl px-4 pt-20 pb-16 text-center sm:px-6 sm:pt-28">
+
+    <div class="relative mx-auto max-w-6xl px-4 pt-16 text-center sm:px-6 sm:pt-24">
       <a
         href="#features"
-        class="inline-flex items-center gap-2 rounded-full border bg-card/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur hover:text-foreground"
+        class="inline-flex items-center gap-2 rounded-full border bg-card/60 py-1 pr-3 pl-1 text-xs font-medium text-muted-foreground backdrop-blur hover:text-foreground"
       >
-        <span class="size-1.5 rounded-full bg-primary"></span>
+        <span class="rounded-full bg-primary px-2 py-0.5 text-[11px] text-primary-foreground">v2</span>
         {c.hero.badge}
         <ArrowRight class="size-3" />
       </a>
-      <h1 class="mx-auto mt-6 max-w-4xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
+      <h1 class="mx-auto mt-6 max-w-5xl text-5xl leading-[1.02] font-semibold tracking-tighter text-balance sm:text-7xl">
         {c.hero.title}{' '}
-        <span class="text-primary sm:block">{c.hero.titleAccent}</span>
+        <span class="bg-gradient-to-r from-primary via-fuchsia-500 to-sky-400 bg-clip-text text-transparent sm:block">{c.hero.titleAccent}</span>
       </h1>
-      <p class="mx-auto mt-5 max-w-2xl text-base text-pretty text-muted-foreground sm:text-lg">{c.hero.subtitle}</p>
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <p class="mx-auto mt-6 max-w-2xl text-base text-pretty text-muted-foreground sm:text-lg">{c.hero.subtitle}</p>
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
         <a href={appHref} class={btnPrimary}>{c.hero.cta} <ArrowRight class="size-4" /></a>
         <a href={github} class={btnOutline}><Github class="size-4" /> {c.hero.secondary}</a>
       </div>
@@ -116,65 +129,153 @@ const btnOutline = `${btn} border bg-background hover:bg-accent h-10 px-5`;
           ))
         }
       </ul>
+    </div>
 
-      <div class="relative mx-auto mt-14 max-w-5xl">
-        <div class="overflow-hidden rounded-xl border bg-card shadow-2xl shadow-primary/10 ring-1 ring-black/5">
-          <div class="flex h-8 items-center gap-1.5 border-b bg-muted/50 px-3">
-            <span class="size-2.5 rounded-full bg-foreground/15"></span>
-            <span class="size-2.5 rounded-full bg-foreground/15"></span>
-            <span class="size-2.5 rounded-full bg-foreground/15"></span>
+    <!-- Stage: the thumbnail with the studio's UI floating around it -->
+    <div class="relative mx-auto mt-16 max-w-4xl px-6 sm:mt-20">
+      <div class="relative">
+        <div aria-hidden="true" class="absolute -inset-6 rounded-[2rem] bg-gradient-to-r from-sky-500/30 via-primary/30 to-fuchsia-500/30 blur-2xl"></div>
+        <Image
+          src={img('step-3.webp')}
+          alt={c.alts.hero}
+          widths={[480, 768, 1024, 1280]}
+          sizes="(min-width: 896px) 848px, calc(100vw - 48px)"
+          loading="eager"
+          fetchpriority="high"
+          class="relative aspect-video w-full rounded-2xl object-cover shadow-2xl ring-1 ring-white/10"
+        />
+
+        <!-- Score -->
+        <div class={`${chip} absolute -top-6 -left-4 hidden items-center gap-3 sm:flex lg:-left-20 motion-safe:animate-float`}>
+          <svg viewBox="0 0 40 40" class="size-11 -rotate-90">
+            <circle cx="20" cy="20" r="16" fill="none" stroke-width="4" class="stroke-muted"></circle>
+            <circle
+              cx="20"
+              cy="20"
+              r="16"
+              fill="none"
+              stroke-width="4"
+              stroke-linecap="round"
+              class="stroke-success"
+              stroke-dasharray={circumference}
+              stroke-dashoffset={circumference * (1 - 0.72)}></circle>
+          </svg>
+          <div class="text-left">
+            <p class="text-xs text-muted-foreground">{c.hero.chips.score}</p>
+            <p class="tabular text-lg leading-none font-semibold">72<span class="text-sm text-muted-foreground">/100</span></p>
           </div>
-          <img
-            src={`${base}assets/studio.webp`}
-            alt=""
-            width="1500"
-            height="800"
-            class="block w-full"
-            fetchpriority="high"
-          />
+        </div>
+
+        <!-- Style -->
+        <div class={`${chip} absolute top-10 -right-4 hidden items-center gap-2.5 sm:flex lg:-right-20 motion-safe:animate-float [animation-delay:1.5s]`}>
+          <span class="flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary"><Palette class="size-4" /></span>
+          <div class="text-left">
+            <p class="text-xs text-muted-foreground">{c.hero.chips.style}</p>
+            <p class="text-sm font-medium">{c.hero.chips.styleValue}</p>
+          </div>
+        </div>
+
+        <!-- Edit conversation -->
+        <div class={`${chip} absolute -bottom-10 -left-4 hidden w-64 space-y-2 text-left sm:block lg:-left-24 motion-safe:animate-float [animation-delay:3s]`}>
+          <p class="ml-auto w-fit rounded-xl rounded-br-sm bg-primary px-3 py-1.5 text-sm text-primary-foreground">{c.hero.chips.edit}</p>
+          <p class="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span class="flex size-4 items-center justify-center rounded-full bg-success text-white"><Check class="size-3" /></span>
+            {c.hero.chips.editDone}
+          </p>
+        </div>
+
+        <!-- Variants -->
+        <div class={`${chip} absolute -right-4 -bottom-8 hidden sm:block lg:-right-16 motion-safe:animate-float [animation-delay:4.5s]`}>
+          <div class="grid grid-cols-2 gap-1.5">
+            {
+              [img('step-1.webp'), img('variant-b.webp'), img('step-2.webp'), img('step-3.webp')].map((src, i) => (
+                <Image src={src} alt="" width={160} class:list={['aspect-video w-20 rounded-md object-cover', i === 3 && 'ring-2 ring-primary']} />
+              ))
+            }
+          </div>
+          <p class="mt-2 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+            <span>{c.hero.chips.variants}</span><span class="font-medium text-foreground">{c.hero.chips.model}</span>
+          </p>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- Features -->
-  <section id="features" class="scroll-mt-16 border-t bg-sidebar py-24">
-    <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <div class="mx-auto max-w-2xl text-center">
-        <p class="text-sm font-medium text-primary">{c.features.eyebrow}</p>
-        <h2 class="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{c.features.title}</h2>
-        <p class="mt-4 text-pretty text-muted-foreground">{c.features.subtitle}</p>
-      </div>
-      <div class="mt-14 grid gap-px overflow-hidden rounded-xl border bg-border sm:grid-cols-2 lg:grid-cols-3">
+    <!-- Marquee -->
+    <div class="relative mt-24 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
+      <div class="flex w-max gap-4 motion-safe:animate-marquee hover:[animation-play-state:paused]">
         {
-          c.features.items.map((f) => {
-            const Icon = featureIcons[f.icon as keyof typeof featureIcons];
-            return (
-              <div class="bg-card p-6">
-                <span class="flex size-9 items-center justify-center rounded-lg border bg-background text-primary">
-                  <Icon class="size-4" />
-                </span>
-                <h3 class="mt-4 font-medium">{f.title}</h3>
-                <p class="mt-1.5 text-sm text-muted-foreground">{f.desc}</p>
-              </div>
-            );
-          })
+          [...marquee, ...marquee].map((src, i) => (
+            <Image
+              src={src}
+              alt=""
+              widths={[320, 640]}
+              sizes="(min-width: 640px) 320px, 256px"
+              aria-hidden={i >= marquee.length ? 'true' : undefined}
+              class="aspect-video w-64 rounded-xl object-cover shadow-lg ring-1 ring-border sm:w-80"
+            />
+          ))
         }
       </div>
     </div>
   </section>
 
-  <!-- Workflow -->
-  <section class="py-24">
+  <!-- ─── Studio ───────────────────────────────────────── -->
+  <section id="features" class="scroll-mt-16 py-28">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <h2 class="text-center text-3xl font-semibold tracking-tight sm:text-4xl">{c.workflow.title}</h2>
-      <ol class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class={eyebrow}>{c.studio.eyebrow}</p>
+        <h2 class={`mt-3 ${h2}`}>{c.studio.title}</h2>
+        <p class="mt-5 text-lg text-pretty text-muted-foreground">{c.studio.subtitle}</p>
+      </div>
+      <div class="relative mt-14">
+        <div aria-hidden="true" class="absolute inset-x-10 -bottom-10 h-40 rounded-full bg-primary/25 blur-3xl"></div>
+        <div class="relative overflow-hidden rounded-2xl border bg-card shadow-2xl ring-1 ring-black/5">
+          <div class="flex h-9 items-center gap-1.5 border-b bg-muted/60 px-4">
+            <span class="size-3 rounded-full bg-[#ff5f57]"></span>
+            <span class="size-3 rounded-full bg-[#febc2e]"></span>
+            <span class="size-3 rounded-full bg-[#28c840]"></span>
+            <span class="mx-auto hidden rounded-md bg-background/70 px-16 py-0.5 text-xs text-muted-foreground sm:block">nanothumbnail.com/app</span>
+          </div>
+          <Image src={shot('studio')} alt={c.alts.studio} quality={70} widths={[640, 1024, 1512]} sizes="(min-width: 1152px) 1152px, 100vw" class="block w-full" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Iterate story ────────────────────────────────── -->
+  <section class="relative border-y bg-sidebar py-28">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class={eyebrow}>{c.iterate.eyebrow}</p>
+        <h2 class={`mt-3 ${h2}`}>{c.iterate.title}</h2>
+        <p class="mt-5 text-lg text-pretty text-muted-foreground">{c.iterate.subtitle}</p>
+      </div>
+      <ol class="mt-16 grid items-start gap-6 md:grid-cols-3">
         {
-          c.workflow.steps.map((s, i) => (
-            <li class="relative rounded-xl border bg-card p-5">
-              <span class="tabular font-mono text-xs text-muted-foreground">0{i + 1}</span>
-              <h3 class="mt-2 font-medium">{s.title}</h3>
-              <p class="mt-1 text-sm text-muted-foreground">{s.desc}</p>
+          c.iterate.steps.map((step, i) => (
+            <li class="relative">
+              <div class="overflow-hidden rounded-xl shadow-xl ring-1 ring-border">
+                <Image src={img(`step-${i + 1}.webp`)} alt={c.alts.steps[i]} widths={[400, 800]} sizes="(min-width: 768px) 368px, 100vw" class="aspect-video w-full object-cover" />
+              </div>
+              <div class="mt-4 flex items-start gap-3">
+                <span class="tabular flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                  {i + 1}
+                </span>
+                <div>
+                  <p class="text-xs font-medium tracking-wide text-muted-foreground uppercase">{step.label}</p>
+                  <p class="mt-0.5 font-medium">{step.text}</p>
+                </div>
+              </div>
+              {i < 2 && (
+                <span class="absolute top-[28%] -right-5 z-10 hidden size-8 items-center justify-center rounded-full border bg-background text-primary shadow md:flex">
+                  <ArrowRight class="size-4" />
+                </span>
+              )}
+              {i < 2 && (
+                <span class="mx-auto mt-4 flex size-8 items-center justify-center rounded-full border bg-background text-primary md:hidden">
+                  <ArrowDown class="size-4" />
+                </span>
+              )}
             </li>
           ))
         }
@@ -182,59 +283,247 @@ const btnOutline = `${btn} border bg-background hover:bg-accent h-10 px-5`;
     </div>
   </section>
 
-  <!-- Gallery -->
-  <section class="border-t bg-sidebar py-24">
+  <!-- ─── Feature rows ─────────────────────────────────── -->
+  <section class="py-28">
+    <div class="mx-auto max-w-6xl space-y-28 px-4 sm:px-6">
+      {
+        c.rows.map((row, i) => (
+          <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+            <div class:list={[i % 2 === 1 && 'lg:order-2']}>
+              <p class={eyebrow}>{row.eyebrow}</p>
+              <h3 class="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{row.title}</h3>
+              <p class="mt-4 text-lg text-pretty text-muted-foreground">{row.text}</p>
+              <ul class="mt-6 space-y-2.5">
+                {row.points.map((p) => (
+                  <li class="flex items-center gap-2.5">
+                    <span class="flex size-5 items-center justify-center rounded-full bg-primary/15 text-primary">
+                      <Check class="size-3" />
+                    </span>
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div class="relative">
+              <div aria-hidden="true" class="absolute -inset-6 rounded-[2rem] bg-primary/15 blur-3xl" />
+              {row.key === 'score' ? (
+                <div class="relative flex items-center">
+                  <Image src={img('step-1.webp')} alt="" widths={[400, 800]} sizes="(min-width: 1024px) 400px, 72vw" class="aspect-video w-[72%] rounded-xl object-cover shadow-2xl ring-1 ring-border" />
+                  <Image src={rowImages.score} alt={c.alts.score} widths={[340]} sizes="280px" class="-ml-[22%] w-[50%] rounded-xl border bg-card shadow-2xl ring-1 ring-black/10" />
+                </div>
+              ) : (
+                <Image src={rowImages[row.key]} alt={row.key === 'mask' ? c.alts.mask : c.alts.compare} quality={70} widths={[560, 1120]} sizes="(min-width: 1024px) 544px, 100vw" class="relative w-full rounded-xl border shadow-2xl ring-1 ring-black/10" />
+              )}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ─── Feed preview ─────────────────────────────────── -->
+  <section class="border-y bg-sidebar py-28">
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
-      <div class="text-center">
-        <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl">{c.gallery.title}</h2>
-        <p class="mt-3 text-muted-foreground">{c.gallery.subtitle}</p>
+      <div class="mx-auto max-w-3xl text-center">
+        <p class={eyebrow}>{c.feed.eyebrow}</p>
+        <h2 class={`mt-3 ${h2}`}>{c.feed.title}</h2>
+        <p class="mt-5 text-lg text-pretty text-muted-foreground">{c.feed.text}</p>
       </div>
-      <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+      <div class="mt-14 grid items-end gap-8 lg:grid-cols-[1fr_auto]">
+        <!-- Desktop feed -->
+        <div class="overflow-hidden rounded-2xl border bg-[#0f0f0f] shadow-2xl">
+          <div class="flex items-center gap-3 border-b border-white/10 px-4 py-3">
+            <div class="flex gap-1.5 overflow-hidden">
+              {
+                c.feed.tabs.map((tab, i) => (
+                  <span class:list={['shrink-0 rounded-lg px-3 py-1 text-xs', i === 0 ? 'bg-white text-black' : 'bg-white/10 text-white/80']}>{tab}</span>
+                ))
+              }
+            </div>
+            <span class="ml-auto hidden items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs text-white/50 sm:flex">
+              <Search class="size-3" /> YouTube
+            </span>
+          </div>
+          <div class="grid gap-x-4 gap-y-6 p-5 sm:grid-cols-2 md:grid-cols-3" style="font-family: Roboto, Arial, sans-serif">
+            {
+              feedCards.map((card) => (
+                <div>
+                  <div class:list={['relative overflow-hidden rounded-xl', card.mine && 'ring-2 ring-primary ring-offset-2 ring-offset-[#0f0f0f]']}>
+                    <Image src={card.src} alt="" widths={[320, 640]} sizes="(min-width: 768px) 260px, 50vw" class="aspect-video w-full object-cover" />
+                    <span class="absolute right-1.5 bottom-1.5 rounded bg-black/80 px-1 text-[11px] font-medium text-white">12:34</span>
+                  </div>
+                  <div class="mt-2.5 flex gap-2.5">
+                    <span class:list={['size-8 shrink-0 rounded-full', card.mine ? 'bg-primary' : 'bg-white/15']} />
+                    <div class="min-w-0">
+                      <p class="line-clamp-2 text-sm leading-5 font-medium text-[#f1f1f1]">{card.title}</p>
+                      <p class="mt-0.5 text-xs text-[#aaa]">
+                        {card.ch} · {c.feed.meta}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="mx-auto hidden w-[260px] overflow-hidden rounded-[2.4rem] border-[9px] border-neutral-900 bg-[#0f0f0f] shadow-2xl sm:block">
+          <div class="space-y-4 pb-5">
+            {
+              [feedCards[1], feedCards[0], feedCards[2]].map((card) => (
+                <div>
+                  <Image src={card.src} alt="" widths={[260, 520]} sizes="242px" class="aspect-video w-full object-cover" />
+                  <div class="flex gap-2 px-2.5 pt-2" style="font-family: Roboto, Arial, sans-serif">
+                    <span class:list={['size-6 shrink-0 rounded-full', card.mine ? 'bg-primary' : 'bg-white/15']} />
+                    <p class="line-clamp-2 text-[11px] leading-4 text-[#f1f1f1]">{card.title}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Bento ────────────────────────────────────────── -->
+  <section class="py-28">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h2 class={`text-center ${h2}`}>{c.bento.title}</h2>
+      <div class="mt-14 grid auto-rows-[minmax(11rem,auto)] gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- People -->
+        <div class="flex flex-col justify-between rounded-2xl border bg-card p-6 lg:col-span-2">
+          <div class="flex items-center gap-3">
+            {
+              [img('step-1.webp'), img('variant-b.webp'), img('step-2.webp'), img('step-3.webp')].map((src) => (
+                <div class="aspect-square w-20 overflow-hidden rounded-2xl ring-1 ring-border">
+                  <Image src={src} alt="" width={288} class="h-full w-auto max-w-none" />
+                </div>
+              ))
+            }
+            <span class="flex size-10 items-center justify-center rounded-full bg-success/15 text-success"><Check class="size-5" /></span>
+          </div>
+          <div class="mt-6">
+            <p class="flex items-center gap-2 font-medium"><Users class="size-4 text-primary" /> {c.bento.items.people.title}</p>
+            <p class="mt-1 text-sm text-muted-foreground">{c.bento.items.people.text}</p>
+          </div>
+        </div>
+
+        <!-- Brand kit -->
+        <div class="flex flex-col justify-between rounded-2xl border bg-card p-6">
+          <div class="flex items-center gap-2">
+            {['#6e56cf', '#f43f5e', '#facc15', '#0ea5e9'].map((color) => <span class="size-9 rounded-lg ring-1 ring-black/10" style={`background:${color}`} />)}
+            <span class="ml-1 text-3xl font-black tracking-tight">Aa</span>
+          </div>
+          <div class="mt-6">
+            <p class="flex items-center gap-2 font-medium"><Palette class="size-4 text-primary" /> {c.bento.items.brand.title}</p>
+            <p class="mt-1 text-sm text-muted-foreground">{c.bento.items.brand.text}</p>
+          </div>
+        </div>
+
+        <!-- Concepts -->
+        <div class="flex flex-col justify-between rounded-2xl border bg-card p-6">
+          <div class="space-y-1.5">
+            {
+              c.bento.items.concepts.samples.map((s, i) => (
+                <div class:list={['flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm', i === 0 && 'border-primary/50 bg-primary/10']}>
+                  <Sparkles class="size-3.5 text-primary" />
+                  {s}
+                </div>
+              ))
+            }
+          </div>
+          <div class="mt-6">
+            <p class="font-medium">{c.bento.items.concepts.title}</p>
+            <p class="mt-1 text-sm text-muted-foreground">{c.bento.items.concepts.text}</p>
+          </div>
+        </div>
+
+        <!-- Styles -->
+        <div class="flex flex-col justify-between rounded-2xl border bg-card p-6 lg:col-span-2">
+          <div class="flex flex-wrap gap-1.5">
+            {
+              STYLES.map((s, i) => (
+                <span class:list={['rounded-full border px-2.5 py-1 text-xs', i === 11 ? 'border-primary bg-primary text-primary-foreground' : 'text-muted-foreground']}>
+                  {s.name[lang]}
+                </span>
+              ))
+            }
+          </div>
+          <div class="mt-6">
+            <p class="flex items-center gap-2 font-medium"><Layers class="size-4 text-primary" /> {c.bento.items.styles.title}</p>
+            <p class="mt-1 text-sm text-muted-foreground">{c.bento.items.styles.text}</p>
+          </div>
+        </div>
+
+        <!-- Text -->
+        <div class="flex flex-col justify-between rounded-2xl border bg-card p-6">
+          <div class="flex items-center gap-2">
+            <span class="rounded-md bg-yellow-400 px-2 py-1 text-sm font-black text-black uppercase">WOW !</span>
+            <span class="h-8 flex-1 rounded-md border-2 border-dashed"></span>
+          </div>
+          <div class="mt-6">
+            <p class="flex items-center gap-2 font-medium"><Type class="size-4 text-primary" /> {c.bento.items.text.title}</p>
+            <p class="mt-1 text-sm text-muted-foreground">{c.bento.items.text.text}</p>
+          </div>
+        </div>
+
+        <!-- Local -->
+        <div class="flex flex-col justify-between rounded-2xl border bg-card p-6">
+          <HardDrive class="size-8 text-primary" />
+          <div class="mt-6">
+            <p class="font-medium">{c.bento.items.local.title}</p>
+            <p class="mt-1 text-sm text-muted-foreground">{c.bento.items.local.text}</p>
+          </div>
+        </div>
+
+        <!-- PWA -->
+        <div class="flex flex-col justify-between rounded-2xl border bg-card p-6 lg:col-span-2">
+          <MonitorSmartphone class="size-8 text-primary" />
+          <div class="mt-6">
+            <p class="font-medium">{c.bento.items.pwa.title}</p>
+            <p class="mt-1 text-sm text-muted-foreground">{c.bento.items.pwa.text}</p>
+          </div>
+        </div>
+
+        <!-- Keys -->
+        <div class="flex flex-col justify-between rounded-2xl border bg-card p-6 lg:col-span-2">
+          <KeyRound class="size-8 text-primary" />
+          <div class="mt-6">
+            <p class="font-medium">{c.bento.items.keys.title}</p>
+            <p class="mt-1 text-sm text-muted-foreground">{c.bento.items.keys.text}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <dl class="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-4">
         {
-          samples.map((src) => (
-            <img src={src} alt="" loading="lazy" decoding="async" class="aspect-video w-full rounded-lg border object-cover shadow-sm" />
+          c.stats.map((s) => (
+            <div class="flex flex-col-reverse bg-card px-6 py-8 text-center">
+              <dt class="mt-1 text-sm text-muted-foreground">{s.label}</dt>
+              <dd class="tabular text-4xl font-semibold tracking-tight">{s.value}</dd>
+            </div>
           ))
         }
-      </div>
+      </dl>
     </div>
   </section>
 
-  <!-- Local-first -->
-  <section class="py-24">
-    <div class="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-[1fr_1.4fr] lg:items-center">
-      <div>
-        <h2 class="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{c.local.title}</h2>
-        <p class="mt-4 text-pretty text-muted-foreground">{c.local.subtitle}</p>
-      </div>
-      <div class="grid gap-4 sm:grid-cols-2">
-        {
-          c.local.items.map((item, i) => {
-            const Icon = localIcons[i];
-            return (
-              <div class="rounded-xl border bg-card p-5">
-                <Icon class="size-5 text-primary" />
-                <h3 class="mt-3 font-medium">{item.title}</h3>
-                <p class="mt-1 text-sm text-muted-foreground">{item.desc}</p>
-              </div>
-            );
-          })
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing -->
-  <section id="pricing" class="scroll-mt-16 border-t bg-sidebar py-24">
+  <!-- ─── Pricing ──────────────────────────────────────── -->
+  <section id="pricing" class="scroll-mt-16 border-t bg-sidebar py-28">
     <div class="mx-auto max-w-4xl px-4 sm:px-6">
       <div class="text-center">
-        <h2 class="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{c.pricing.title}</h2>
-        <p class="mt-3 text-muted-foreground">{c.pricing.subtitle}</p>
+        <h2 class={h2}>{c.pricing.title}</h2>
+        <p class="mt-4 text-lg text-muted-foreground">{c.pricing.subtitle}</p>
       </div>
       <div class="mt-12 grid gap-4 md:grid-cols-2">
-        <div class="rounded-xl border-2 border-primary bg-card p-6 shadow-lg shadow-primary/10">
+        <div class="relative rounded-2xl border-2 border-primary bg-card p-7 shadow-2xl shadow-primary/15">
           <p class="font-medium">{c.pricing.ours.name}</p>
           <p class="mt-3 flex items-baseline gap-2">
-            <span class="text-4xl font-semibold tracking-tight">{c.pricing.ours.price}</span>
+            <span class="text-5xl font-semibold tracking-tight">{c.pricing.ours.price}</span>
             <span class="text-sm text-muted-foreground">{c.pricing.ours.unit}</span>
           </p>
           <p class="mt-2 text-xs text-muted-foreground">{c.pricing.ours.note}</p>
@@ -250,10 +539,10 @@ const btnOutline = `${btn} border bg-background hover:bg-accent h-10 px-5`;
           </ul>
           <a href={appHref} class={`${btnPrimary} mt-8 w-full`}>{c.pricing.ours.cta}</a>
         </div>
-        <div class="rounded-xl border bg-card/60 p-6">
+        <div class="rounded-2xl border bg-card/50 p-7">
           <p class="font-medium text-muted-foreground">{c.pricing.theirs.name}</p>
           <p class="mt-3 flex items-baseline gap-2">
-            <span class="text-4xl font-semibold tracking-tight text-muted-foreground">{c.pricing.theirs.price}</span>
+            <span class="text-5xl font-semibold tracking-tight text-muted-foreground">{c.pricing.theirs.price}</span>
             <span class="text-sm text-muted-foreground">{c.pricing.theirs.unit}</span>
           </p>
           <ul class="mt-8 space-y-2.5 text-sm text-muted-foreground">
@@ -271,14 +560,14 @@ const btnOutline = `${btn} border bg-background hover:bg-accent h-10 px-5`;
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section id="faq" class="scroll-mt-16 py-24">
+  <!-- ─── FAQ ──────────────────────────────────────────── -->
+  <section id="faq" class="scroll-mt-16 py-28">
     <div class="mx-auto max-w-3xl px-4 sm:px-6">
-      <h2 class="text-center text-3xl font-semibold tracking-tight sm:text-4xl">{c.faq.title}</h2>
-      <div class="mt-10 divide-y rounded-xl border bg-card">
+      <h2 class={`text-center ${h2}`}>{c.faq.title}</h2>
+      <div class="mt-10 divide-y rounded-2xl border bg-card">
         {
           c.faq.items.map((item) => (
-            <details class="group px-5 py-4 [&_summary::-webkit-details-marker]:hidden">
+            <details class="group px-6 py-5 [&_summary::-webkit-details-marker]:hidden">
               <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium">
                 {item.q}
                 <ChevronDown class="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
@@ -291,18 +580,24 @@ const btnOutline = `${btn} border bg-background hover:bg-accent h-10 px-5`;
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="px-4 pb-24 sm:px-6">
-    <div class="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border bg-card px-6 py-16 text-center">
+  <!-- ─── CTA ──────────────────────────────────────────── -->
+  <section class="px-4 pb-28 sm:px-6">
+    <div class="relative mx-auto max-w-6xl overflow-hidden rounded-3xl border bg-card px-6 py-20 text-center">
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,color-mix(in_oklch,var(--primary)_18%,transparent),transparent_70%)]"
+        class="absolute inset-0 grid grid-cols-3 gap-3 p-3 opacity-30 [mask-image:radial-gradient(ellipse_at_center,transparent_25%,black_75%)] sm:grid-cols-4"
       >
+        {
+          [sample(1), img('step-3.webp'), sample(2), sample(3), sample(4), img('variant-b.webp'), sample(5), sample(6)].map((src) => (
+            <Image src={src} alt="" width={320} class="aspect-video w-full rounded-lg object-cover" />
+          ))
+        }
       </div>
       <div class="relative">
-        <h2 class="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{c.cta.title}</h2>
-        <p class="mt-3 text-muted-foreground">{c.cta.subtitle}</p>
-        <a href={appHref} class={`${btnPrimary} mt-8`}>{c.cta.button} <ArrowRight class="size-4" /></a>
+        <WandSparkles class="mx-auto size-10 text-primary" />
+        <h2 class={`mt-4 ${h2}`}>{c.cta.title}</h2>
+        <p class="mt-4 text-lg text-muted-foreground">{c.cta.subtitle}</p>
+        <a href={appHref} class={`${btnPrimary} mt-9`}>{c.cta.button} <ArrowRight class="size-4" /></a>
       </div>
     </div>
   </section>
@@ -319,6 +614,7 @@ const btnOutline = `${btn} border bg-background hover:bg-accent h-10 px-5`;
       <a href={`${base}privacy-policy/`} class="hover:text-foreground">{c.footer.privacy}</a>
       <a href={`${base}terms-of-service/`} class="hover:text-foreground">{c.footer.terms}</a>
       <a href={github} class="hover:text-foreground">GitHub</a>
+      <a href={`${base}app/`} class="flex items-center gap-1 hover:text-foreground"><Download class="size-3.5" /> App</a>
     </nav>
   </div>
 </footer>
