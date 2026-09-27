@@ -4,6 +4,7 @@ import { site as copy, type SiteLang } from '@/site/i18n';
 import pkg from '../../package.json';
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import geistLatin from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
 
 const studioShots = import.meta.glob<{ default: ImageMetadata }>('../assets/landing/*-studio.webp', { eager: true });
 
@@ -105,6 +106,8 @@ const jsonLd = home && {
     <link rel="alternate" type="text/markdown" title="llms-full.txt" href={`${base}llms-full.txt`} />
     <link rel="sitemap" type="application/xml" href={`${base}sitemap.xml`} />
 
+    <!-- Preloaded so the hero text doesn't reflow (and push the hero image) when the web font swaps in. -->
+    <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={`${base}icons/icon-192.png`} />
     <link rel="manifest" href={`${base}manifest.webmanifest`} />

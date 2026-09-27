@@ -100,6 +100,12 @@
 
   --animate-marquee: marquee 60s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
+  /* Hero edit loop (12 s): generated → edit 1 → edit 2. Each layer/bubble owns a slice of the cycle. */
+  --animate-hero-step-2: hero-step-2 12s ease-in-out infinite;
+  --animate-hero-step-3: hero-step-3 12s ease-in-out infinite;
+  --animate-hero-bubble-1: hero-bubble-1 12s ease-in-out infinite;
+  --animate-hero-bubble-2: hero-bubble-2 12s ease-in-out infinite;
+  --animate-reveal: reveal linear both;
 
   @keyframes marquee {
     from { transform: translateX(0); }
@@ -108,6 +114,30 @@
   @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
+  }
+  @keyframes hero-step-2 {
+    0%, 27% { opacity: 0; }
+    33%, 94% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes hero-step-3 {
+    0%, 60% { opacity: 0; }
+    66%, 94% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes hero-bubble-1 {
+    0%, 20% { opacity: 0; transform: translateY(6px); }
+    25%, 58% { opacity: 1; transform: translateY(0); }
+    62%, 100% { opacity: 0; transform: translateY(-6px); }
+  }
+  @keyframes hero-bubble-2 {
+    0%, 54% { opacity: 0; transform: translateY(6px); }
+    60%, 94% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-6px); }
+  }
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }
 
