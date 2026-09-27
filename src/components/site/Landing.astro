@@ -96,6 +96,7 @@ const circumference = 2 * Math.PI * 16;
     <div class="hidden items-center gap-5 text-sm text-muted-foreground md:flex">
       <a href="#features" class="hover:text-foreground">{c.nav.features}</a>
       <a href="#gallery" class="hover:text-foreground">{c.nav.gallery}</a>
+      <a href="#agents" class="hover:text-foreground">{c.nav.agents}</a>
       <a href="#pricing" class="hover:text-foreground">{c.nav.pricing}</a>
       <a href="#faq" class="hover:text-foreground">{c.nav.faq}</a>
     </div>
@@ -590,6 +591,73 @@ const circumference = 2 * Math.PI * 16;
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- ─── AI agents (MCP) ──────────────────────────────── -->
+  <section id="agents" class="relative scroll-mt-16 border-t bg-sidebar py-28">
+    <div class="mx-auto grid max-w-6xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+      <div class="min-w-0">
+        <p class={eyebrow}>{c.agents.eyebrow}</p>
+        <h2 class={`mt-3 ${h2}`}>{c.agents.title}</h2>
+        <p class="mt-5 text-lg text-pretty text-muted-foreground">{c.agents.text}</p>
+        <ul class="mt-6 space-y-2.5">
+          {
+            c.agents.points.map((p) => (
+              <li class="flex items-start gap-2.5">
+                <span class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                  <Check class="size-3" />
+                </span>
+                {p}
+              </li>
+            ))
+          }
+        </ul>
+        <div class="mt-8 space-y-2">
+          <p class="text-sm font-medium">{c.agents.install}</p>
+          <code class="block overflow-x-auto rounded-lg border bg-background px-3 py-2.5 font-mono text-xs whitespace-nowrap sm:text-sm">claude mcp add nanothumbnail -- npx -y nanothumbnail-mcp</code>
+          <p class="pt-2 text-sm font-medium">{c.agents.skill}</p>
+          <code class="block overflow-x-auto rounded-lg border bg-background px-3 py-2.5 font-mono text-xs whitespace-nowrap sm:text-sm">npx skills add yoanbernabeu/NanoThumbnail --skill nanothumbnail</code>
+          <p class="pt-2 text-sm text-pretty text-muted-foreground">{c.agents.then}</p>
+        </div>
+      </div>
+
+      <div class="relative min-w-0 pb-10">
+        <div aria-hidden="true" class="absolute -inset-6 rounded-[2rem] bg-primary/15 blur-3xl" />
+        <!-- Agent session (illustration) -->
+        <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0d0d10] font-mono text-xs leading-relaxed text-white/85 shadow-2xl sm:text-[13px]">
+          <div class="flex items-center gap-1.5 border-b border-white/10 px-4 py-3" aria-hidden="true">
+            <span class="size-2.5 rounded-full bg-white/15" /><span class="size-2.5 rounded-full bg-white/15" /><span class="size-2.5 rounded-full bg-white/15" />
+            <span class="ml-3 text-white/40">claude</span>
+          </div>
+          <div class="space-y-4 p-5 pb-40 sm:pb-52">
+            <p><span class="text-white/40">❯ </span>{c.agents.chat.prompt}</p>
+            <ul class="space-y-1">
+              {
+                c.agents.chat.tools.map((tool) => {
+                  const [name, detail] = tool.split(/\s{2,}/);
+                  return (
+                    <li class="flex gap-2">
+                      <span class="text-primary">⏺</span>
+                      <span class="min-w-0">
+                        <span class="text-white">{name}</span> <span class="text-white/50">{detail}</span>
+                      </span>
+                    </li>
+                  );
+                })
+              }
+            </ul>
+            <p class="flex gap-2 text-white"><span class="text-success">⏺</span><span class="font-sans text-sm">{c.agents.chat.answer}</span></p>
+          </div>
+        </div>
+        <Image
+          src={galleryImg('tech')}
+          alt={c.alts.agents}
+          widths={[400, 800]}
+          sizes="(min-width: 1024px) 340px, 60vw"
+          class="absolute right-3 bottom-0 aspect-video w-[62%] rotate-2 rounded-xl object-cover shadow-2xl ring-1 ring-white/20 sm:w-[55%]"
+        />
+      </div>
     </div>
   </section>
 

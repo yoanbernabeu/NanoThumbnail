@@ -23,6 +23,7 @@ Key facts:
 - Output: 16:9, 9:16, 4:3 or 1:1; 1K, 2K or 4K; 1 to 4 variants per generation.
 - Main workflow: brief → generate → iterate (conversational edits, masked area edits) → test (feed preview, AI critique, side-by-side ranking, export for YouTube Studio "Test & Compare").
 - The AI score is a best-practice critique, not a CTR prediction.
+- AI agents (Claude Code, Claude Desktop, Cursor, any MCP client) can drive the studio through the \`nanothumbnail-mcp\` MCP server (\`claude mcp add nanothumbnail -- npx -y nanothumbnail-mcp\`): brief, generate, edit, score, rank, export. It relays over a local WebSocket to the studio open in the browser; keys and images stay there. Companion skill: \`npx skills add yoanbernabeu/NanoThumbnail --skill nanothumbnail\`.
 
 ## Pages
 
@@ -57,6 +58,7 @@ function section(lang: SiteLang): string {
     lines.push(`### ${row.eyebrow}: ${row.title}`, '', row.text, '', ...row.points.map((p) => `- ${p}`), '');
   }
   lines.push(`### ${c.feed.eyebrow}: ${c.feed.title}`, '', c.feed.text, '');
+  lines.push(`### ${c.agents.eyebrow}: ${c.agents.title}`, '', c.agents.text, '', ...c.agents.points.map((p) => `- ${p}`), '');
   lines.push(`### ${c.extras.title}`, '');
   for (const item of c.extras.items) lines.push(`- **${item.title}** — ${item.text}`);
   lines.push('', `### ${c.bento.title}`, '');

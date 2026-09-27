@@ -8,7 +8,7 @@ const fr = {
     description:
       'Générez, retouchez et testez vos miniatures YouTube avec Nano Banana. Gratuit, open source, local-first : votre clé, vos images, votre navigateur.',
   },
-  nav: { features: 'Fonctionnalités', gallery: 'Galerie', pricing: 'Prix', faq: 'FAQ', open: 'Ouvrir le studio', github: 'GitHub', switchLang: 'English' },
+  nav: { features: 'Fonctionnalités', gallery: 'Galerie', pricing: 'Prix', faq: 'FAQ', agents: 'Agents IA', open: 'Ouvrir le studio', github: 'GitHub', switchLang: 'English' },
   hero: {
     badge: 'Propulsé par Nano Banana Pro et Nano Banana 2',
     title: 'La miniature parfaite,',
@@ -126,6 +126,32 @@ const fr = {
       keys: { title: 'Votre clé, vos règles', text: 'Replicate, Gemini ou OpenRouter, mémorisée ou juste pour la session.' },
     },
   },
+  agents: {
+    eyebrow: 'Nouveau · Agents IA (MCP)',
+    title: 'Laissez Claude faire vos miniatures.',
+    text: 'Branchez Claude Code, Claude Desktop, Cursor ou tout agent compatible MCP : il pilote le studio ouvert dans votre navigateur, du brief à l’export, pendant que vous regardez.',
+    points: [
+      'Brief, génération, retouches par zone, score, classement, export',
+      'Chaque action s’affiche en direct dans le studio : vous gardez la main',
+      'Vos clés et vos images ne quittent pas votre navigateur',
+      'Une skill lui apprend les règles d’une miniature qui se clique',
+    ],
+    install: 'Connectez votre agent',
+    skill: 'Ajoutez la skill (conseillé)',
+    then: 'Puis demandez-lui « ouvre le studio NanoThumbnail » et cliquez sur Autoriser.',
+    chat: {
+      prompt: 'Fais une miniature pour ma vidéo « Apprendre Rust en 10 minutes », avec moi dessus.',
+      tools: [
+        'new_project  « Apprendre Rust en 10 minutes »',
+        'set_people   1 personne',
+        'generate     style tech · nano-banana-2',
+        'score_thumbnail  → 71/100',
+        'edit_thumbnail   « titre plus gros » · zone du haut',
+        'export_thumbnail → miniature-youtube.jpg',
+      ],
+      answer: 'C’est prêt : le titre se lit sur mobile et le coin de la durée est libre. Exportée en 1280×720, prête pour YouTube Studio.',
+    },
+  },
   start: {
     eyebrow: 'Démarrer',
     title: 'Prêt en 2 minutes',
@@ -176,6 +202,10 @@ const fr = {
         a: 'Le studio est gratuit et open source. La génération passe par votre compte Replicate, Google Gemini ou OpenRouter, que vous payez directement : quelques centimes par image selon le modèle et la résolution.',
       },
       {
+        q: 'Un agent IA comme Claude peut-il utiliser NanoThumbnail ?',
+        a: 'Oui. Ajoutez le serveur MCP à votre agent (claude mcp add nanothumbnail -- npx -y nanothumbnail-mcp) : il pilote le studio ouvert dans votre navigateur — brief, génération, retouches, score, export — via une connexion locale. Vos clés et vos images ne quittent pas le navigateur, et chaque action s’affiche en direct.',
+      },
+      {
         q: 'Ma clé API est-elle en sécurité ?',
         a: 'Elle est stockée uniquement dans votre navigateur (ou seulement pour la session). Gemini et OpenRouter sont appelés directement depuis votre navigateur. Replicate n’autorise pas ces appels : les requêtes transitent par une petite fonction Netlify qui les relaie sans rien stocker ni journaliser — le code est public.',
       },
@@ -211,6 +241,7 @@ const fr = {
   },
   cta: { title: 'Votre prochaine miniature commence ici.', subtitle: 'Collez votre clé, écrivez un brief, générez. C’est tout.', button: 'Ouvrir le studio' },
   alts: {
+    agents: 'Miniature « Rust en 10 min » générée dans NanoThumbnail',
     hero: 'Miniature YouTube générée avec NanoThumbnail : une créatrice stupéfaite montre un smartphone minuscule, une grosse flèche rouge pointe vers lui, texte jaune « MINI ?! »',
     studio: 'Capture du studio NanoThumbnail : brief à gauche, miniature au centre, historique des versions et retouches rapides à droite',
     steps: ['Version générée : texte « MINI ?! » sombre, sans flèche', 'Première retouche : une flèche rouge pointe vers le téléphone', 'Deuxième retouche : le texte passe en jaune vif avec un contour noir'],
@@ -233,7 +264,7 @@ const en: Dict = {
     description:
       'Generate, edit and test YouTube thumbnails with Nano Banana. Free, open source, local-first: your key, your images, your browser.',
   },
-  nav: { features: 'Features', gallery: 'Gallery', pricing: 'Pricing', faq: 'FAQ', open: 'Open the studio', github: 'GitHub', switchLang: 'Français' },
+  nav: { features: 'Features', gallery: 'Gallery', pricing: 'Pricing', faq: 'FAQ', agents: 'AI agents', open: 'Open the studio', github: 'GitHub', switchLang: 'Français' },
   hero: {
     badge: 'Powered by Nano Banana Pro and Nano Banana 2',
     title: 'The perfect thumbnail,',
@@ -350,6 +381,32 @@ const en: Dict = {
       keys: { title: 'Your key, your rules', text: 'Replicate, Gemini or OpenRouter, remembered or just for the session.' },
     },
   },
+  agents: {
+    eyebrow: 'New · AI agents (MCP)',
+    title: 'Let Claude make your thumbnails.',
+    text: 'Connect Claude Code, Claude Desktop, Cursor or any MCP-capable agent: it drives the studio open in your browser, from brief to export, while you watch.',
+    points: [
+      'Brief, generation, area edits, scoring, ranking, export',
+      'Every action shows up live in the studio: you stay in control',
+      'Your keys and images never leave your browser',
+      'A skill teaches it what makes a thumbnail get clicked',
+    ],
+    install: 'Connect your agent',
+    skill: 'Add the skill (recommended)',
+    then: 'Then ask it to “open the NanoThumbnail studio” and click Allow.',
+    chat: {
+      prompt: 'Make a thumbnail for my video “Learn Rust in 10 minutes”, with me in it.',
+      tools: [
+        'new_project  “Learn Rust in 10 minutes”',
+        'set_people   1 person',
+        'generate     style tech · nano-banana-2',
+        'score_thumbnail  → 71/100',
+        'edit_thumbnail   “bigger title” · top area',
+        'export_thumbnail → youtube-thumbnail.jpg',
+      ],
+      answer: 'Done: the title reads on a phone and the duration corner is clear. Exported at 1280×720, ready for YouTube Studio.',
+    },
+  },
   start: {
     eyebrow: 'Get started',
     title: 'Ready in 2 minutes',
@@ -400,6 +457,10 @@ const en: Dict = {
         a: 'The studio is free and open source. Generation runs on your Replicate, Google Gemini or OpenRouter account, which you pay directly: a few cents per image depending on model and resolution.',
       },
       {
+        q: 'Can an AI agent like Claude use NanoThumbnail?',
+        a: 'Yes. Add the MCP server to your agent (claude mcp add nanothumbnail -- npx -y nanothumbnail-mcp): it drives the studio open in your browser — brief, generation, edits, scoring, export — over a local connection. Your keys and images never leave the browser, and every action shows up live.',
+      },
+      {
         q: 'Is my API key safe?',
         a: 'It’s stored only in your browser (or only for the session). Gemini and OpenRouter are called directly from your browser. Replicate doesn’t allow browser calls, so requests go through a tiny Netlify function that relays them without storing or logging anything — the code is public.',
       },
@@ -435,6 +496,7 @@ const en: Dict = {
   },
   cta: { title: 'Your next thumbnail starts here.', subtitle: 'Paste your key, write a brief, generate. That’s it.', button: 'Open the studio' },
   alts: {
+    agents: '“Rust in 10 min” thumbnail generated in NanoThumbnail',
     hero: 'YouTube thumbnail made with NanoThumbnail: an amazed creator shows a tiny smartphone, a big red arrow points at it, yellow text “MINI ?!”',
     studio: 'NanoThumbnail studio screenshot: brief on the left, thumbnail in the middle, version history and quick edits on the right',
     steps: ['Generated version: dark “MINI ?!” text, no arrow', 'First edit: a red arrow points at the phone', 'Second edit: the text turns bright yellow with a black outline'],
