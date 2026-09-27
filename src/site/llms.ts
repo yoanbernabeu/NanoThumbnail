@@ -15,7 +15,7 @@ export function llmsTxt(): string {
 
 > ${c.meta.description}
 
-NanoThumbnail is a free, MIT-licensed web app (a "studio") to create YouTube thumbnails with Google's Nano Banana image models (Nano Banana Pro and Nano Banana 2). It is bring-your-own-key: users paste a Replicate or Google Gemini API key and pay the provider directly. There is no account and no server-side storage: projects, images, people and brand kit are stored in the browser (IndexedDB). The interface is available in English and French.
+NanoThumbnail is a free, MIT-licensed web app (a "studio") to create YouTube thumbnails with Google's Nano Banana image models (Nano Banana Pro and Nano Banana 2). It is bring-your-own-key: users paste a Replicate, Google Gemini or OpenRouter API key and pay the provider directly. There is no account and no server-side storage: projects, images, people and brand kit are stored in the browser (IndexedDB). The interface is available in English and French.
 
 Key facts:
 - Price: the studio is free. Image generation costs roughly $0.07 (Nano Banana 2, 1K) to $0.15 (Nano Banana Pro) per image at the provider.

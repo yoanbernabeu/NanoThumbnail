@@ -3,7 +3,7 @@ import LegalLayout from '@layouts/LegalLayout.astro';
 ---
 
 <LegalLayout title="Privacy Policy">
-  <p class="text-sm italic">Last updated: September 26, 2026</p>
+  <p class="text-sm italic">Last updated: September 27, 2026</p>
 
   <p>Protecting your personal data is a priority for NanoThumbnail. This privacy policy explains how we handle data when you use our thumbnail generator.</p>
 
@@ -11,18 +11,19 @@ import LegalLayout from '@layouts/LegalLayout.astro';
 
   <p>NanoThumbnail operates on a decentralized model ("Client-Side").</p>
 
-  <h3>API Keys (Replicate, Google Gemini)</h3>
+  <h3>API Keys (Replicate, Google Gemini, OpenRouter)</h3>
 
   <p>
     <strong>Storage:</strong> Your API keys are stored exclusively in your browser, either in local storage (LocalStorage) or, if you choose "This session only", in session storage, which is cleared when the tab is closed.<br>
     <strong>Google Gemini:</strong> requests are sent directly from your browser to Google's API.<br>
+    <strong>OpenRouter:</strong> requests are sent directly from your browser to OpenRouter's API, which routes them to Google's models.<br>
     <strong>Replicate:</strong> Replicate does not accept requests from web browsers, so requests (including your key, in the Authorization header) are relayed by a serverless function hosted on Netlify. This function only forwards requests to Replicate's API and returns the response; it does not store or log your key, prompts or images. Its source code is public.<br>
     <strong>No user database:</strong> NanoThumbnail has no accounts and no database.
   </p>
 
   <h3>Generated Data (Prompts, Images, People, Brand Kit)</h3>
 
-  <p>Your projects, generated images, reference images, saved people (face photos) and brand kit are stored locally in your browser (IndexedDB). They never leave your device, except when sent to the AI provider you selected in order to generate or analyse an image. We invite you to consult the privacy policies of <a href="https://replicate.com/privacy" target="_blank" rel="noopener noreferrer">Replicate</a> and <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google</a> to understand how they process this data.</p>
+  <p>Your projects, generated images, reference images, saved people (face photos) and brand kit are stored locally in your browser (IndexedDB). They never leave your device, except when sent to the AI provider you selected in order to generate or analyse an image. We invite you to consult the privacy policies of <a href="https://replicate.com/privacy" target="_blank" rel="noopener noreferrer">Replicate</a> , <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google</a> and <a href="https://openrouter.ai/privacy" target="_blank" rel="noopener noreferrer">OpenRouter</a> to understand how they process this data.</p>
 
   <p>Photos of people you save are processed only on your device and by your chosen provider. Only upload photos of people who have agreed to it.</p>
 
