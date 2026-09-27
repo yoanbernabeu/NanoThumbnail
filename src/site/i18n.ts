@@ -123,7 +123,7 @@ const fr = {
       text: { title: 'Texte net ou espace libre', text: 'L’IA écrit le texte, ou laisse la place propre pour l’ajouter vous-même.' },
       local: { title: '100 % local', text: 'Projets, versions et visages restent dans votre navigateur. Sauvegarde zip en un clic.' },
       pwa: { title: 'Installable', text: 'Une vraie app, même hors ligne pour consulter votre bibliothèque.' },
-      keys: { title: 'Votre clé, vos règles', text: 'Replicate ou Gemini, mémorisée ou juste pour la session.' },
+      keys: { title: 'Votre clé, vos règles', text: 'Replicate, Gemini ou OpenRouter, mémorisée ou juste pour la session.' },
     },
   },
   start: {
@@ -131,11 +131,11 @@ const fr = {
     title: 'Prêt en 2 minutes',
     subtitle: 'NanoThumbnail utilise votre propre clé d’API : vous payez les images directement au fournisseur, sans intermédiaire.',
     steps: [
-      { title: 'Créez une clé d’API', text: 'Chez Google AI Studio (Gemini) ou chez Replicate. Quelques clics, avec votre compte Google ou GitHub.' },
+      { title: 'Créez une clé d’API', text: 'Chez Google AI Studio (Gemini), Replicate ou OpenRouter. Quelques clics, avec votre compte Google ou GitHub.' },
       { title: 'Collez-la dans le studio', text: 'Elle reste dans votre navigateur, mémorisée ou seulement pour la session.' },
       { title: 'Écrivez un brief, générez', text: 'Quatre variantes en une trentaine de secondes. Retouchez, comparez, exportez.' },
     ],
-    links: { gemini: 'Clé Google AI Studio', replicate: 'Clé Replicate' },
+    links: { gemini: 'Clé Google AI Studio', replicate: 'Clé Replicate', openrouter: 'Clé OpenRouter' },
     cost: 'Environ 0,07 à 0,15 $ par image : 100 miniatures coûtent 7 à 15 $.',
   },
   maker: {
@@ -147,13 +147,13 @@ const fr = {
   },
   pricing: {
     title: 'Payez les images, pas un abonnement',
-    subtitle: 'NanoThumbnail est gratuit. Vous réglez directement Replicate ou Google, au prix coûtant.',
+    subtitle: 'NanoThumbnail est gratuit. Vous réglez directement Replicate, Google ou OpenRouter, au prix coûtant.',
     ours: {
       name: 'NanoThumbnail',
       price: 'Gratuit',
       unit: 'pour toujours',
       note: 'Vous payez seulement les images, au fournisseur : environ 0,07 $ (Nano Banana 2, 1K) à 0,15 $ (Nano Banana Pro).',
-      features: ['Toutes les fonctionnalités', 'Votre clé Replicate ou Gemini', 'Aucune commission', 'Données locales'],
+      features: ['Toutes les fonctionnalités', 'Votre clé Replicate, Gemini ou OpenRouter', 'Aucune commission', 'Données locales'],
       cta: 'Commencer',
     },
     theirs: {
@@ -173,11 +173,11 @@ const fr = {
       },
       {
         q: 'C’est vraiment gratuit ?',
-        a: 'Le studio est gratuit et open source. La génération passe par votre compte Replicate ou Google Gemini, que vous payez directement : quelques centimes par image selon le modèle et la résolution.',
+        a: 'Le studio est gratuit et open source. La génération passe par votre compte Replicate, Google Gemini ou OpenRouter, que vous payez directement : quelques centimes par image selon le modèle et la résolution.',
       },
       {
         q: 'Ma clé API est-elle en sécurité ?',
-        a: 'Elle est stockée uniquement dans votre navigateur (ou seulement pour la session). Gemini est appelé directement depuis votre navigateur. Replicate n’autorise pas ces appels : les requêtes transitent par une petite fonction Netlify qui les relaie sans rien stocker ni journaliser — le code est public.',
+        a: 'Elle est stockée uniquement dans votre navigateur (ou seulement pour la session). Gemini et OpenRouter sont appelés directement depuis votre navigateur. Replicate n’autorise pas ces appels : les requêtes transitent par une petite fonction Netlify qui les relaie sans rien stocker ni journaliser — le code est public.',
       },
       {
         q: 'Où sont mes images ?',
@@ -185,7 +185,7 @@ const fr = {
       },
       {
         q: 'Faut-il une carte bancaire ?',
-        a: 'Oui, chez le fournisseur : la génération d’images n’est pas incluse dans l’offre gratuite de l’API Gemini, il faut activer la facturation sur le projet Google de votre clé. Replicate facture aussi à l’usage. Comptez environ 0,07 à 0,15 $ par image.',
+        a: 'Oui, chez le fournisseur : la génération d’images n’est pas incluse dans l’offre gratuite de l’API Gemini, il faut activer la facturation sur le projet Google de votre clé. Replicate facture aussi à l’usage, OpenRouter fonctionne avec des crédits prépayés. Comptez environ 0,07 à 0,15 $ par image.',
       },
       {
         q: 'Combien de temps pour une miniature ?',
@@ -205,7 +205,7 @@ const fr = {
       },
       {
         q: 'Puis-je utiliser les images commercialement ?',
-        a: 'En général oui, mais les conditions dépendent du fournisseur (Replicate, Google). Vérifiez leurs CGU.',
+        a: 'En général oui, mais les conditions dépendent du fournisseur (Replicate, Google, OpenRouter). Vérifiez leurs CGU.',
       },
     ],
   },
@@ -347,7 +347,7 @@ const en: Dict = {
       text: { title: 'Crisp text or clean space', text: 'The AI writes the text, or leaves clean space for you to add it.' },
       local: { title: '100% local', text: 'Projects, versions and faces stay in your browser. One-click zip backup.' },
       pwa: { title: 'Installable', text: 'A real app, even offline to browse your library.' },
-      keys: { title: 'Your key, your rules', text: 'Replicate or Gemini, remembered or just for the session.' },
+      keys: { title: 'Your key, your rules', text: 'Replicate, Gemini or OpenRouter, remembered or just for the session.' },
     },
   },
   start: {
@@ -355,11 +355,11 @@ const en: Dict = {
     title: 'Ready in 2 minutes',
     subtitle: 'NanoThumbnail runs on your own API key: you pay the provider directly for images, with no middleman.',
     steps: [
-      { title: 'Create an API key', text: 'On Google AI Studio (Gemini) or on Replicate. A few clicks with your Google or GitHub account.' },
+      { title: 'Create an API key', text: 'On Google AI Studio (Gemini), Replicate or OpenRouter. A few clicks with your Google or GitHub account.' },
       { title: 'Paste it in the studio', text: 'It stays in your browser, remembered or just for the session.' },
       { title: 'Write a brief, generate', text: 'Four variants in about thirty seconds. Edit, compare, export.' },
     ],
-    links: { gemini: 'Google AI Studio key', replicate: 'Replicate key' },
+    links: { gemini: 'Google AI Studio key', replicate: 'Replicate key', openrouter: 'OpenRouter key' },
     cost: 'About $0.07 to $0.15 per image: 100 thumbnails cost $7 to $15.',
   },
   maker: {
@@ -371,13 +371,13 @@ const en: Dict = {
   },
   pricing: {
     title: 'Pay for images, not a subscription',
-    subtitle: 'NanoThumbnail is free. You pay Replicate or Google directly, at cost.',
+    subtitle: 'NanoThumbnail is free. You pay Replicate, Google or OpenRouter directly, at cost.',
     ours: {
       name: 'NanoThumbnail',
       price: 'Free',
       unit: 'forever',
       note: 'You only pay for images, to the provider: about $0.07 (Nano Banana 2, 1K) to $0.15 (Nano Banana Pro).',
-      features: ['Every feature', 'Your Replicate or Gemini key', 'No markup', 'Local data'],
+      features: ['Every feature', 'Your Replicate, Gemini or OpenRouter key', 'No markup', 'Local data'],
       cta: 'Get started',
     },
     theirs: {
@@ -397,11 +397,11 @@ const en: Dict = {
       },
       {
         q: 'Is it really free?',
-        a: 'The studio is free and open source. Generation runs on your Replicate or Google Gemini account, which you pay directly: a few cents per image depending on model and resolution.',
+        a: 'The studio is free and open source. Generation runs on your Replicate, Google Gemini or OpenRouter account, which you pay directly: a few cents per image depending on model and resolution.',
       },
       {
         q: 'Is my API key safe?',
-        a: 'It’s stored only in your browser (or only for the session). Gemini is called directly from your browser. Replicate doesn’t allow browser calls, so requests go through a tiny Netlify function that relays them without storing or logging anything — the code is public.',
+        a: 'It’s stored only in your browser (or only for the session). Gemini and OpenRouter are called directly from your browser. Replicate doesn’t allow browser calls, so requests go through a tiny Netlify function that relays them without storing or logging anything — the code is public.',
       },
       {
         q: 'Where are my images?',
@@ -409,7 +409,7 @@ const en: Dict = {
       },
       {
         q: 'Do I need a credit card?',
-        a: 'Yes, with the provider: image generation isn’t part of the Gemini API free tier, so billing must be enabled on your key’s Google project. Replicate also bills per use. Expect about $0.07 to $0.15 per image.',
+        a: 'Yes, with the provider: image generation isn’t part of the Gemini API free tier, so billing must be enabled on your key’s Google project. Replicate also bills per use, OpenRouter uses prepaid credits. Expect about $0.07 to $0.15 per image.',
       },
       {
         q: 'How long does a thumbnail take?',
@@ -429,7 +429,7 @@ const en: Dict = {
       },
       {
         q: 'Can I use the images commercially?',
-        a: 'Generally yes, but terms depend on the provider (Replicate, Google). Check their terms.',
+        a: 'Generally yes, but terms depend on the provider (Replicate, Google, OpenRouter). Check their terms.',
       },
     ],
   },
