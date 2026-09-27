@@ -3,7 +3,7 @@ import { dataUrlToBlob, fetchBlob } from './images';
 
 /**
  * Provider layer. Replicate has no browser CORS support, so its calls go through
- * our own Netlify function; Gemini supports CORS and is called directly.
+ * our own Netlify function; Gemini and OpenRouter support CORS and are called directly.
  */
 
 export const PROXY_URL = '/.netlify/functions/replicate-proxy?url=';
@@ -20,6 +20,13 @@ const GEMINI_IMAGE_MODELS: Record<ModelId, string> = {
 };
 const GEMINI_TEXT_MODEL = 'gemini-3.6-flash';
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
+
+const OPENROUTER_IMAGE_MODELS: Record<ModelId, string> = {
+  'nano-banana-pro': 'google/gemini-3-pro-image',
+  'nano-banana-2': 'google/gemini-3.1-flash-image',
+};
+const OPENROUTER_TEXT_MODEL = 'google/gemini-3.6-flash';
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 /** Hard ceiling for one generation. Nano Banana Pro at 4K can take a couple of minutes. */
 const GENERATION_TIMEOUT_MS = 5 * 60_000;
@@ -265,16 +272,111 @@ async function geminiText(req: TextRequest, signal: AbortSignal): Promise<string
   return data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
 }
 
+// ─── OpenRouter ──────────────────────────────────────────
+// OpenAI-compatible chat completions. Port of the v1 contribution by @przxmus (PR #4).
+
+type OpenRouterContent = Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }>;
+interface OpenRouterResponse {
+  choices?: Array<{
+    finish_reason?: string;
+    message?: { content?: string | null; images?: Array<{ image_url?: { url?: string } }> };
+  }>;
+  error?: { message?: string; code?: number | string };
+}
+
+function openRouterContent(prompt: string, images: string[] = []): OpenRouterContent {
+  return [{ type: 'text', text: prompt }, ...images.map((url) => ({ type: 'image_url' as const, image_url: { url } }))];
+}
+
+async function openRouterCall(body: unknown, apiKey: string, signal: AbortSignal): Promise<OpenRouterResponse> {
+  const res = await fetch(OPENROUTER_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+      // App attribution on openrouter.ai (optional headers).
+      'HTTP-Referer': location.origin,
+      'X-Title': 'NanoThumbnail',
+    },
+    body: JSON.stringify(body),
+    signal,
+  });
+  if (!res.ok) throw await readError(res, 'openrouter');
+  const data: OpenRouterResponse = await res.json();
+  // Upstream failures can come back as 200 with an error object.
+  if (data.error) {
+    const status = typeof data.error.code === 'number' ? data.error.code : 500;
+    throw new ProviderError(data.error.message || 'OpenRouter error', status, data, 'openrouter');
+  }
+  return data;
+}
+
+async function openRouterImage(req: ImageRequest, signal: AbortSignal): Promise<Blob> {
+  const started = Date.now();
+  const tick = req.onProgress ? setInterval(() => req.onProgress?.(Date.now() - started), 500) : undefined;
+  try {
+    const data = await openRouterCall(
+      {
+        model: OPENROUTER_IMAGE_MODELS[req.params.model],
+        messages: [{ role: 'user', content: openRouterContent(req.prompt, req.images) }],
+        modalities: ['image', 'text'],
+        image_config: { aspect_ratio: req.params.aspectRatio, image_size: req.params.resolution },
+      },
+      req.apiKey,
+      signal,
+    );
+    const choice = data.choices?.[0];
+    const url = choice?.message?.images?.find((i) => i.image_url?.url)?.image_url?.url;
+    if (!url) {
+      throw new ProviderError(`OpenRouter returned no image (${choice?.finish_reason || 'NO_IMAGE'})`, 422, data, 'openrouter');
+    }
+    return url.startsWith('data:') ? dataUrlToBlob(url) : fetchBlob(url, signal);
+  } finally {
+    clearInterval(tick);
+  }
+}
+
+async function openRouterText(req: TextRequest, signal: AbortSignal): Promise<string> {
+  const data = await openRouterCall(
+    {
+      model: OPENROUTER_TEXT_MODEL,
+      messages: [
+        ...(req.system ? [{ role: 'system', content: req.system }] : []),
+        { role: 'user', content: openRouterContent(req.prompt, req.images) },
+      ],
+      temperature: 0.7,
+      ...(req.json ? { response_format: { type: 'json_object' } } : {}),
+    },
+    req.apiKey,
+    signal,
+  );
+  return data.choices?.[0]?.message?.content ?? '';
+}
+
 // ─── Public API ──────────────────────────────────────────
 
 export async function generateImage(req: ImageRequest): Promise<Blob> {
   const signal = withTimeout(req.signal, GENERATION_TIMEOUT_MS);
-  return req.params.provider === 'gemini' ? geminiImage(req, signal) : replicateImage(req, signal);
+  switch (req.params.provider) {
+    case 'gemini':
+      return geminiImage(req, signal);
+    case 'openrouter':
+      return openRouterImage(req, signal);
+    default:
+      return replicateImage(req, signal);
+  }
 }
 
 export async function generateText(req: TextRequest): Promise<string> {
   const signal = withTimeout(req.signal, 90_000);
-  return req.provider === 'gemini' ? geminiText(req, signal) : replicateText(req, signal);
+  switch (req.provider) {
+    case 'gemini':
+      return geminiText(req, signal);
+    case 'openrouter':
+      return openRouterText(req, signal);
+    default:
+      return replicateText(req, signal);
+  }
 }
 
 /** Ask for JSON and parse it, tolerating ```json fences some models add. */

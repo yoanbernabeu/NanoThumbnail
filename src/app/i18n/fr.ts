@@ -246,6 +246,8 @@ export const fr: Dict = {
     replicateHint: 'Paiement à l’image. Les requêtes passent par notre proxy (Replicate n’autorise pas les appels depuis le navigateur). Votre clé n’est jamais stockée côté serveur.',
     gemini: 'Google Gemini',
     geminiHint: 'Appelé directement depuis votre navigateur.',
+    openrouter: 'OpenRouter',
+    openrouterHint: 'Appelé directement depuis votre navigateur. Crédits prépayés, une seule clé pour de nombreux modèles.',
     apiKey: 'Clé API',
     getKey: 'Obtenir une clé',
     keyStorage: 'Mémoriser ma clé',
