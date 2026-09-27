@@ -176,3 +176,22 @@ export function extensionFor(blob: Blob): string {
   if (blob.type === 'image/webp') return 'webp';
   return 'png';
 }
+
+/** A mask covering one rectangle, given as fractions of the image (region edits from the agent). */
+export function rectMask(
+  width: number,
+  height: number,
+  region: { x: number; y: number; width: number; height: number },
+): HTMLCanvasElement {
+  const [c, ctx] = canvas(width, height);
+  ctx.fillStyle = 'rgb(255 0 200)';
+  ctx.fillRect(region.x * width, region.y * height, region.width * width, region.height * height);
+  return c;
+}
+
+/** Raw base64 (no data: prefix) and its MIME type. */
+export async function blobToBase64(blob: Blob): Promise<{ data: string; mimeType: string }> {
+  const url = await blobToDataUrl(blob);
+  const comma = url.indexOf(',');
+  return { data: url.slice(comma + 1), mimeType: url.slice(5, url.indexOf(';')) || blob.type };
+}

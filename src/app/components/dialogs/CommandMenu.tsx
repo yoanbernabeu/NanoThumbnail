@@ -1,4 +1,4 @@
-import { Folder, Palette, Plus, ScanLine, Settings, Sparkles, SunMoon, Tv, Users, Wand2 } from 'lucide-react';
+import { Bot, Folder, Palette, Plus, ScanLine, Settings, Sparkles, SunMoon, Tv, Users, Wand2 } from 'lucide-react';
 import {
   CommandDialog,
   CommandEmpty,
@@ -61,6 +61,9 @@ export function CommandMenu() {
           </CommandItem>
           <CommandItem onSelect={run(() => openDialog('settings'))}>
             <Settings /> {t('commands.openSettings')}
+          </CommandItem>
+          <CommandItem onSelect={run(() => openDialog('agent'))}>
+            <Bot /> {t('commands.agent')}
           </CommandItem>
           <CommandItem onSelect={run(() => setSettings({ theme: resolved === 'dark' ? 'light' : 'dark' }))}>
             <SunMoon /> {t('commands.toggleTheme')}

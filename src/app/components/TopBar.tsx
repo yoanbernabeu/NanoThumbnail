@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, ChevronsUpDown, Command, Folder, Monitor, Moon, Pencil, Plus, Settings, Sun, Trash2, Zap } from 'lucide-react';
+import { Bot, Check, ChevronsUpDown, Command, Folder, Monitor, Moon, Pencil, Plus, Settings, Sun, Trash2, Zap } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Kbd } from './ui/kbd';
@@ -26,6 +26,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { useWorkspace } from '../stores/workspace';
 import { useSettings, type Theme } from '../stores/settings';
 import { useUI } from '../stores/ui';
+import { useAgent } from '../agent/bridge';
+import { AgentStatusDot } from './dialogs/AgentDialog';
 import { useT } from '../i18n';
 import { cn } from '../lib/utils';
 
@@ -132,6 +134,7 @@ export function TopBar() {
   const { theme, lang, set } = useSettings();
   const hasKey = useSettings((s) => !!s.keys[s.provider]);
   const open = useUI((s) => s.open);
+  const agentOn = useAgent((s) => s.enabled);
   const ThemeIcon = THEME_ICON[theme];
 
   return (
@@ -150,6 +153,16 @@ export function TopBar() {
           <Command /> {t('topbar.commands')}
           <Kbd>{MOD} K</Kbd>
         </Button>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon-sm" className="relative" onClick={() => open('agent')} aria-label={t('agent.title')}>
+              <Bot />
+              {agentOn && <AgentStatusDot className="absolute top-1 right-1 size-1.5" />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('agent.title')}</TooltipContent>
+        </Tooltip>
 
         <DropdownMenu>
           <Tooltip>

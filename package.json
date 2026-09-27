@@ -3,6 +3,9 @@
   "private": true,
   "version": "2.1.0",
   "type": "module",
+  "workspaces": [
+    "mcp"
+  ],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -10,8 +13,9 @@
     "astro": "astro",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm test && npm run build"
+    "typecheck": "tsc --noEmit && npm run typecheck -w nanothumbnail-mcp",
+    "check": "npm run typecheck && npm test && npm run build",
+    "build:mcp": "npm run build -w nanothumbnail-mcp"
   },
   "dependencies": {
     "@astrojs/react": "^7.0.0",

@@ -14,6 +14,8 @@ import { BrandKitDialog } from './components/dialogs/BrandKitDialog';
 import { AssistantDialog } from './components/dialogs/AssistantDialog';
 import { ErrorDialog } from './components/dialogs/ErrorDialog';
 import { CommandMenu } from './components/dialogs/CommandMenu';
+import { AgentDialog } from './components/dialogs/AgentDialog';
+import { useAgent } from './agent/bridge';
 import { useApplyTheme } from './hooks/use-theme';
 import { useMediaQuery } from './hooks/use-media-query';
 import { useWorkspace } from './stores/workspace';
@@ -43,6 +45,8 @@ export default function App() {
       const migrated = await migrateFromV1();
       await useWorkspace.getState().init();
       requestPersistence();
+      // After init: agent tools act on a loaded workspace.
+      useAgent.getState().init();
       if (migrated?.imported) toast.success(`v1 → v2 : ${migrated.imported} ✓`);
       if (!useSettings.getState().apiKey()) useUI.getState().open('settings');
     })();
@@ -161,6 +165,7 @@ export default function App() {
       <AssistantDialog />
       <ErrorDialog />
       <CommandMenu />
+      <AgentDialog />
       {/* Bottom-right would cover the mobile tab bar */}
       <Toaster position={isDesktop ? 'bottom-right' : 'top-center'} />
     </TooltipProvider>

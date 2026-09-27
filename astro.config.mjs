@@ -18,8 +18,9 @@ export default defineConfig({
         "default-src 'self'",
         // Generated images (Replicate CDN), YouTube thumbnails, blobs/data for local images
         "img-src 'self' data: blob: https://replicate.delivery https://*.replicate.delivery https://i.ytimg.com https://img.youtube.com",
-        // Gemini and OpenRouter are called directly; Replicate goes through our function; images are downloaded from Replicate's CDN
-        "connect-src 'self' data: blob: https://generativelanguage.googleapis.com https://openrouter.ai https://replicate.delivery https://*.replicate.delivery https://www.youtube.com https://i.ytimg.com https://img.youtube.com",
+        // Gemini and OpenRouter are called directly; Replicate goes through our function; images are downloaded from Replicate's CDN.
+        // ws://127.0.0.1: the local MCP server (npx nanothumbnail-mcp) that lets an AI agent drive the studio.
+        "connect-src 'self' data: blob: https://generativelanguage.googleapis.com https://openrouter.ai https://replicate.delivery https://*.replicate.delivery https://www.youtube.com https://i.ytimg.com https://img.youtube.com ws://127.0.0.1:*",
         "font-src 'self'",
         "worker-src 'self'",
         "manifest-src 'self'",

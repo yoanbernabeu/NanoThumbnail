@@ -7,7 +7,7 @@ import { dimensions, highlightRegion, mergeWithMask, normaliseUpload, prepareRef
 import { explainError } from '../lib/errors';
 import { findStyle } from '../lib/styles';
 import { scoreThumbnail, rankThumbnails, type Ranking } from '../lib/ai';
-import type { BrandKit, Generation, GenerationKind, GenerationParams, LibraryImage, Persona, Project, RefImage, RefSource } from '../lib/types';
+import type { BrandKit, Generation, GenerationKind, GenerationParams, LibraryImage, Persona, Project, RefImage, RefSource, Score } from '../lib/types';
 import { useSettings } from './settings';
 import { t } from '../i18n';
 
@@ -33,6 +33,12 @@ export interface Brief {
   overlayText: string;
   textMode: TextMode;
   styleId: string;
+}
+
+/** What an action produced, for callers that need it (the agent bridge); the UI ignores it. */
+export interface Outcome<T> {
+  value?: T;
+  error?: string;
 }
 
 export interface ErrorReport {
@@ -81,8 +87,9 @@ interface WorkspaceState {
   clearRefs: () => void;
   togglePersona: (id: string) => void;
   // generation
-  generate: () => Promise<void>;
-  edit: (instruction: string) => Promise<void>;
+  generate: () => Promise<Outcome<Generation>[]>;
+  /** `mask` overrides the painted mask (the agent describes regions as rectangles). */
+  edit: (instruction: string, opts?: { mask?: HTMLCanvasElement }) => Promise<Outcome<Generation>[]>;
   cancelJob: (id: string) => void;
   dismissJob: (id: string) => void;
   cancelAll: () => void;
@@ -93,8 +100,8 @@ interface WorkspaceState {
   toggleFavorite: (id: string) => Promise<void>;
   removeGeneration: (id: string) => Promise<void>;
   reuse: (gen: Generation) => void;
-  score: (id: string) => Promise<void>;
-  rankPicked: () => Promise<void>;
+  score: (id: string) => Promise<Outcome<Score>>;
+  rankPicked: () => Promise<Outcome<Ranking>>;
   // assets
   reloadPersonas: () => Promise<void>;
   reloadLibrary: () => Promise<void>;
@@ -194,6 +201,11 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
     return out;
   }
 
+  function fail(message: string): Outcome<Generation>[] {
+    toast.error(message);
+    return [{ error: message }];
+  }
+
   function checkKey(): string | null {
     const key = useSettings.getState().apiKey();
     if (!key) {
@@ -217,7 +229,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
     finalize?: (blob: Blob) => Promise<Blob>;
     /** Shared by the jobs of one batch: the first result to arrive gets shown. */
     batch: { shown: boolean };
-  }): Promise<void> {
+  }): Promise<Outcome<Generation>> {
     const job: Job = {
       id: db.uid('j_'),
       kind: opts.kind,
@@ -267,12 +279,15 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
         }
       }
       set({ jobs: get().jobs.filter((j) => j.id !== job.id) });
+      return { value: generation };
     } catch (error) {
       if (isAbort(error) && job.controller.signal.aborted) {
         set({ jobs: get().jobs.filter((j) => j.id !== job.id) });
-        return;
+        return { error: t('agent.canceled') };
       }
-      patchJob({ status: 'failed', error: reportError(error, set) });
+      const message = reportError(error, set);
+      patchJob({ status: 'failed', error: message });
+      return { error: message };
     }
   }
 
@@ -399,9 +414,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
 
     generate: async () => {
       const { brief, refs } = get();
-      if (!brief.brief.trim()) return void toast.error(t('brief.needPrompt'));
+      if (!brief.brief.trim()) return fail(t('brief.needPrompt'));
       const apiKey = checkKey();
-      if (!apiKey) return;
+      if (!apiKey) return [{ error: t('brief.needKey') }];
 
       const settings = useSettings.getState();
       const attached = [
@@ -409,7 +424,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
         ...brandImages(),
         ...refs.map((r) => ({ blob: r.blob, role: { kind: 'reference', label: r.label } as ImageRole })),
       ];
-      if (attached.length > MAX_IMAGES) return void toast.error(t('brief.tooManyRefs'));
+      if (attached.length > MAX_IMAGES) return fail(t('brief.tooManyRefs'));
 
       const fullPrompt = buildGenerationPrompt({
         brief: brief.brief,
@@ -425,7 +440,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
       if (get().view === 'compare') set({ view: 'image' });
       const batch = { shown: false };
 
-      await Promise.all(
+      return Promise.all(
         Array.from({ length: settings.count }, () =>
           runJob({
             kind: 'generate',
@@ -441,24 +456,29 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
       );
     },
 
-    edit: async (instruction) => {
+    edit: async (instruction, opts) => {
       const source = get().generations.find((g) => g.id === get().selectedId);
-      if (!source || !instruction.trim()) return;
+      if (!source || !instruction.trim()) return [];
       const apiKey = checkKey();
-      if (!apiKey) return;
+      if (!apiKey) return [{ error: t('brief.needKey') }];
 
       const settings = useSettings.getState();
       const params: GenerationParams = { ...settings.params(), aspectRatio: source.params.aspectRatio };
-      const region = get().maskMode && get().hasMask && maskCanvas;
+      const painted = get().maskMode && get().hasMask ? maskCanvas : null;
 
-      if (region && maskCanvas) {
-        // Snapshot the mask: the user may keep painting while this runs.
-        const mask = document.createElement('canvas');
-        mask.width = maskCanvas.width;
-        mask.height = maskCanvas.height;
-        mask.getContext('2d')?.drawImage(maskCanvas, 0, 0);
-        const highlighted = await highlightRegion(source.blob, mask);
-        await runJob({
+      if (opts?.mask || painted) {
+        let mask = opts?.mask;
+        if (!mask && painted) {
+          // Snapshot the mask: the user may keep painting while this runs.
+          mask = document.createElement('canvas');
+          mask.width = painted.width;
+          mask.height = painted.height;
+          mask.getContext('2d')?.drawImage(painted, 0, 0);
+        }
+        if (!mask) return [];
+        const regionMask = mask;
+        const highlighted = await highlightRegion(source.blob, regionMask);
+        const outcome = await runJob({
           kind: 'region',
           prompt: instruction,
           fullPrompt: buildRegionEditPrompt(instruction),
@@ -469,15 +489,15 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
           parentId: source.id,
           videoTitle: source.videoTitle,
           apiKey,
-          finalize: (edited) => mergeWithMask(source.blob, edited, mask),
+          finalize: (edited) => mergeWithMask(source.blob, edited, regionMask),
           batch: { shown: false },
         });
-        return;
+        return [outcome];
       }
 
       // Re-send selected people so their identity doesn't drift over successive edits.
       const people = personaImages().slice(0, MAX_IMAGES - 1);
-      await runJob({
+      const outcome = await runJob({
         kind: 'edit',
         prompt: instruction,
         fullPrompt: buildEditPrompt(instruction, people.map((p) => p.role)),
@@ -488,6 +508,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
         apiKey,
         batch: { shown: false },
       });
+      return [outcome];
     },
 
     cancelJob: (id) => {
@@ -532,8 +553,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
 
     score: async (id) => {
       const gen = get().generations.find((g) => g.id === id);
+      if (!gen) return { error: t('agent.unknownImage', { id }) };
       const apiKey = checkKey();
-      if (!gen || !apiKey) return;
+      if (!apiKey) return { error: t('brief.needKey') };
       set({ scoring: id });
       try {
         const settings = useSettings.getState();
@@ -545,8 +567,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
         const updated = { ...gen, score };
         await db.putGeneration(updated);
         set({ generations: get().generations.map((g) => (g.id === id ? updated : g)) });
+        return { value: score };
       } catch (error) {
-        reportError(error, set);
+        return { error: reportError(error, set) };
       } finally {
         set({ scoring: null });
       }
@@ -555,8 +578,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
     rankPicked: async () => {
       const ids = get().pickedIds;
       const gens = ids.map((id) => get().generations.find((g) => g.id === id)).filter((g): g is Generation => !!g);
+      if (gens.length < 2) return { error: t('agent.needTwo') };
       const apiKey = checkKey();
-      if (gens.length < 2 || !apiKey) return;
+      if (!apiKey) return { error: t('brief.needKey') };
       set({ ranking_busy: true });
       try {
         const settings = useSettings.getState();
@@ -566,8 +590,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => {
           { videoTitle: gens[0].videoTitle || get().brief.videoTitle, lang: settings.lang },
         );
         set({ ranking: { ids: gens.map((g) => g.id), result } });
+        return { value: result };
       } catch (error) {
-        reportError(error, set);
+        return { error: reportError(error, set) };
       } finally {
         set({ ranking_busy: false });
       }
