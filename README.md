@@ -31,6 +31,11 @@ NanoThumbnail is a free, open-source studio to **generate, edit and test YouTube
 - **Safe zones**: duration badge, hover icons, progress bar, Shorts UI.
 - **Compare & rank** variants side by side, then **export for YouTube Studio's Test & Compare** (1280×720, under 2 MB).
 
+**AI agents (MCP)**
+- Let Claude, Cursor or any MCP-capable agent drive the studio: brief, generate, edit (whole image or a region), critique, rank, export to disk. You watch every action live and can disconnect at any time.
+- `claude mcp add nanothumbnail -- npx -y nanothumbnail-mcp`, then ask the agent to “open the NanoThumbnail studio” and click **Allow** once.
+- Companion skill with the workflow and thumbnail craft: `npx skills add yoanbernabeu/NanoThumbnail --skill nanothumbnail`.
+
 **Keyboard-first**
 - `⌘K` command palette, `⌘↵` generate, `F` feed preview, `Z` safe zones, `M` mask, `Esc` leave mask.
 
@@ -47,6 +52,7 @@ NanoThumbnail is a free, open-source studio to **generate, edit and test YouTube
 - **Replicate** has no browser CORS support, so calls go through a small Netlify function (`netlify/functions/replicate-proxy.ts`). It only accepts requests from the site's own origin, only relays the three Replicate routes the app needs (create, poll, cancel), and never stores or logs anything.
 - Reference images are downscaled client-side before upload, so requests stay small.
 - Prompts are built as structured natural language following Google's Nano Banana prompting guidance (declared image roles, identity locks, “change only X, keep everything else” edits), see `src/app/lib/prompt.ts`.
+- **AI agents**: the MCP server (`mcp/`, published as `nanothumbnail-mcp`) only relays tool calls over a WebSocket on `127.0.0.1` to the open studio tab, which runs them as store actions. Keys, projects and images never leave the browser. The socket accepts only the studio's origin and a pairing token; see [`mcp/README.md`](mcp/README.md).
 - Critique, ranking, concepts and style analysis use Gemini 3 Flash (directly with a Gemini key, `google/gemini-3-flash` on Replicate, or `google/gemini-3.6-flash` on OpenRouter).
 
 ## Landing, SEO & GEO
@@ -73,6 +79,7 @@ src/
 │   ├── components/         # brief/, canvas/, iterate/, dialogs/, ui/ (shadcn)
 │   ├── stores/             # Zustand: workspace, settings, ui
 │   ├── lib/                # providers, prompt, ai, images, db, backup, migrate…
+│   ├── agent/              # MCP bridge: tool definitions (protocol.ts), handlers, WebSocket client
 │   └── i18n/               # en.ts, fr.ts (typed: a missing key fails the build)
 ├── assets/                 # Landing images and screenshots (fr-*/en-*), optimised at build
 ├── components/site/        # Landing page (static Astro, no JS)
@@ -83,6 +90,8 @@ src/
 netlify/
 ├── functions/              # replicate-proxy, youtube-thumbnail-proxy
 └── lib/origin.ts           # Origin allowlist
+mcp/                        # nanothumbnail-mcp: stdio MCP server relaying to the studio
+skills/nanothumbnail/       # Companion agent skill (skills.sh)
 public/                     # sw.js, manifest, icons, og-{fr,en}.jpg, robots.txt
 ```
 
