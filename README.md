@@ -1,6 +1,6 @@
 # NanoThumbnail
 
-NanoThumbnail is a free, open-source studio to **generate, edit and test YouTube thumbnails** with Google's Nano Banana models (Nano Banana Pro and Nano Banana 2). It runs entirely in your browser: bring your own **Replicate** or **Google Gemini** key, your images stay on your device.
+NanoThumbnail is a free, open-source studio to **generate, edit and test YouTube thumbnails** with Google's Nano Banana models (Nano Banana Pro and Nano Banana 2). It runs entirely in your browser: bring your own **Replicate**, **Google Gemini** or **OpenRouter** key, your images stay on your device.
 
 ![NanoThumbnail Studio](src/assets/landing/en-studio.webp)
 
@@ -43,10 +43,11 @@ NanoThumbnail is a free, open-source studio to **generate, edit and test YouTube
 ## How it works
 
 - **Gemini** is called directly from the browser (Google's API supports CORS). The key is sent in the `x-goog-api-key` header.
+- **OpenRouter** is called directly from the browser too (`google/gemini-3-pro-image`, `google/gemini-3.1-flash-image`), with the key in the `Authorization` header.
 - **Replicate** has no browser CORS support, so calls go through a small Netlify function (`netlify/functions/replicate-proxy.ts`). It only accepts requests from the site's own origin, only relays the three Replicate routes the app needs (create, poll, cancel), and never stores or logs anything.
 - Reference images are downscaled client-side before upload, so requests stay small.
 - Prompts are built as structured natural language following Google's Nano Banana prompting guidance (declared image roles, identity locks, “change only X, keep everything else” edits), see `src/app/lib/prompt.ts`.
-- Critique, ranking, concepts and style analysis use Gemini 3 Flash (directly with a Gemini key, or `google/gemini-3-flash` on Replicate).
+- Critique, ranking, concepts and style analysis use Gemini 3 Flash (directly with a Gemini key, `google/gemini-3-flash` on Replicate, or `google/gemini-3.6-flash` on OpenRouter).
 
 ## Landing, SEO & GEO
 
@@ -87,7 +88,7 @@ public/                     # sw.js, manifest, icons, og-{fr,en}.jpg, robots.txt
 
 ## Getting started
 
-Prerequisites: Node.js 22+, and a [Replicate](https://replicate.com/account/api-tokens) or [Google Gemini](https://aistudio.google.com/apikey) API key.
+Prerequisites: Node.js 22+, and a [Replicate](https://replicate.com/account/api-tokens) or [Google Gemini](https://aistudio.google.com/apikey) or [OpenRouter](https://openrouter.ai/settings/keys) API key.
 
 ```bash
 git clone https://github.com/yoanbernabeu/NanoThumbnail.git
@@ -96,7 +97,7 @@ npm install
 npm run dev          # http://localhost:4321
 ```
 
-With `astro dev`, Gemini works out of the box. To use Replicate locally, run `netlify dev` so the proxy function is available.
+With `astro dev`, Gemini and OpenRouter work out of the box. To use Replicate locally, run `netlify dev` so the proxy function is available.
 
 | Command | Description |
 |---------|-------------|

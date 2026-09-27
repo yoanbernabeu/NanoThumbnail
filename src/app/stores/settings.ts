@@ -25,6 +25,7 @@ interface SettingsState {
   apiKey: () => string;
 }
 
+const PROVIDERS: Provider[] = ['replicate', 'gemini', 'openrouter'];
 const PREFS_KEY = 'nt_prefs';
 const KEY_PREFIX = 'nt_key_';
 
@@ -84,11 +85,8 @@ function load() {
   const keyPersistence: KeyPersistence = prefs.keyPersistence === 'session' ? 'session' : 'local';
   const store = keyPersistence === 'session' ? session : local;
   return {
-    provider: (prefs.provider === 'gemini' ? 'gemini' : 'replicate') as Provider,
-    keys: {
-      replicate: safeGet(store, KEY_PREFIX + 'replicate') ?? '',
-      gemini: safeGet(store, KEY_PREFIX + 'gemini') ?? '',
-    },
+    provider: (PROVIDERS.includes(prefs.provider) ? prefs.provider : 'replicate') as Provider,
+    keys: Object.fromEntries(PROVIDERS.map((p) => [p, safeGet(store, KEY_PREFIX + p) ?? ''])) as Record<Provider, string>,
     keyPersistence,
     model: (prefs.model === 'nano-banana-2' ? 'nano-banana-2' : 'nano-banana-pro') as ModelId,
     aspectRatio: (prefs.aspectRatio ?? '16:9') as AspectRatio,
@@ -109,7 +107,7 @@ function persistPrefs(s: SettingsState): void {
 
 function persistKeys(s: SettingsState): void {
   const [keep, clear] = s.keyPersistence === 'session' ? [session, local] : [local, session];
-  for (const provider of ['replicate', 'gemini'] as Provider[]) {
+  for (const provider of PROVIDERS) {
     safeSet(keep, KEY_PREFIX + provider, s.keys[provider]);
     safeSet(clear, KEY_PREFIX + provider, null);
   }
@@ -128,7 +126,7 @@ export const useSettings = create<SettingsState>((set, get) => ({
   },
   params: () => {
     const { provider, model, aspectRatio, resolution, format, safety } = get();
-    return { provider, model, aspectRatio, resolution, format: provider === 'gemini' ? 'png' : format, safety };
+    return { provider, model, aspectRatio, resolution, format: provider === 'replicate' ? format : 'png', safety };
   },
   apiKey: () => get().keys[get().provider],
 }));

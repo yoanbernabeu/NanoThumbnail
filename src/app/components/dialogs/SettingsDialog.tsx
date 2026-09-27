@@ -20,6 +20,13 @@ import type { Provider } from '../../lib/types';
 const KEY_LINKS: Record<Provider, string> = {
   replicate: 'https://replicate.com/account/api-tokens',
   gemini: 'https://aistudio.google.com/apikey',
+  openrouter: 'https://openrouter.ai/settings/keys',
+};
+
+const KEY_PLACEHOLDERS: Record<Provider, string> = {
+  replicate: 'r8_…',
+  gemini: 'AIza…',
+  openrouter: 'sk-or-…',
 };
 
 function formatBytes(n: number): string {
@@ -86,8 +93,11 @@ export function SettingsDialog() {
               <ToggleGroupItem value="gemini" className="h-auto min-h-9 min-w-0 flex-1 leading-tight whitespace-normal">
                 {t('settings.gemini')}
               </ToggleGroupItem>
+              <ToggleGroupItem value="openrouter" className="h-auto min-h-9 min-w-0 flex-1 leading-tight whitespace-normal">
+                {t('settings.openrouter')}
+              </ToggleGroupItem>
             </ToggleGroup>
-            <p className="text-xs text-muted-foreground">{s.provider === 'replicate' ? t('settings.replicateHint') : t('settings.geminiHint')}</p>
+            <p className="text-xs text-muted-foreground">{t(`settings.${s.provider}Hint`)}</p>
           </Field>
 
           <Field
@@ -109,7 +119,7 @@ export function SettingsDialog() {
                 spellCheck={false}
                 value={s.keys[s.provider]}
                 onChange={(e) => s.setKey(s.provider, e.target.value)}
-                placeholder={s.provider === 'replicate' ? 'r8_…' : 'AIza…'}
+                placeholder={KEY_PLACEHOLDERS[s.provider]}
                 className="pr-10 font-mono text-sm"
               />
               <Button

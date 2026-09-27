@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NanoThumbnail is a free, open-source, local-first studio to generate, edit and test YouTube thumbnails with Google's Nano Banana models (Pro / 2), BYOK via Replicate or Google Gemini.
+NanoThumbnail is a free, open-source, local-first studio to generate, edit and test YouTube thumbnails with Google's Nano Banana models (Pro / 2), BYOK via Replicate, Google Gemini or OpenRouter.
 
 **Stack**: Astro 7 (static), React 19 island for `/app`, shadcn/ui + Radix + Tailwind v4, Zustand, IndexedDB (`idb`), Vitest. Deployed on Netlify.
 
 ## Commands
 
 ```bash
-npm run dev        # http://localhost:4321 (Gemini works; Replicate needs `netlify dev` for the proxy)
+npm run dev        # http://localhost:4321 (Gemini/OpenRouter work; Replicate needs `netlify dev` for the proxy)
 npm run build      # → dist/
 npm test           # Vitest
 npm run typecheck  # tsc --noEmit (src + netlify)
@@ -23,7 +23,7 @@ npm run check      # typecheck + test + build (CI)
 - `src/app/` — the studio, a single React island (`<App client:only="react" />` in `src/pages/app.astro`).
   - `stores/workspace.ts` — core state & actions: projects, generations (with `parentId` lineage), jobs (abortable), brief, refs, personas, brand kit, edit/region-edit, score/rank.
   - `stores/settings.ts` — provider, keys (localStorage or sessionStorage), output params, theme, lang. Keys: `nt_prefs`, `nt_key_<provider>`, `nano_lang`.
-  - `lib/providers.ts` — Replicate (via proxy, `Prefer: wait`, backoff polling, cancel on abort) and Gemini (direct, `x-goog-api-key`). `generateImage`, `generateText`, `generateJSON`.
+  - `lib/providers.ts` — Replicate (via proxy, `Prefer: wait`, backoff polling, cancel on abort) Gemini (direct, `x-goog-api-key`) and OpenRouter (direct, OpenAI-style chat completions). `generateImage`, `generateText`, `generateJSON`.
   - `lib/prompt.ts` — prompt builder following Google's Nano Banana guidance (declared image roles, identity lock, "change only X" edits). Covered by tests.
   - `lib/ai.ts` — critique, ranking, concepts, channel style analysis (Gemini 3 Flash).
   - `lib/images.ts` — canvas helpers: reference downscaling, YouTube export (1280×720 ≤ 2 MB), mask highlight/merge for region edits.

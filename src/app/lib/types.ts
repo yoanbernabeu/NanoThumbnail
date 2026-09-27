@@ -1,4 +1,4 @@
-export type Provider = 'replicate' | 'gemini';
+export type Provider = 'replicate' | 'gemini' | 'openrouter';
 export type ModelId = 'nano-banana-pro' | 'nano-banana-2';
 export type AspectRatio = '16:9' | '9:16' | '4:3' | '1:1' | '21:9';
 export type Resolution = '1K' | '2K' | '4K';

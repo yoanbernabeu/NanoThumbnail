@@ -244,6 +244,8 @@ export const en = {
     replicateHint: 'Pay per image. Requests go through our proxy (Replicate does not allow browser calls). Your key is never stored server-side.',
     gemini: 'Google Gemini',
     geminiHint: 'Called directly from your browser. Free tier available on some models.',
+    openrouter: 'OpenRouter',
+    openrouterHint: 'Called directly from your browser. Prepaid credits, one key for many models.',
     apiKey: 'API key',
     getKey: 'Get a key',
     keyStorage: 'Remember my key',
