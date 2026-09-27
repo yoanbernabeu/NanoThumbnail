@@ -35,7 +35,7 @@ function VersionRow({ gen, active, onClick }: { gen: Generation; active: boolean
   );
 }
 
-function EditTab({ gen }: { gen: Generation }) {
+function EditTab({ gen, onEdited }: { gen: Generation; onEdited?: () => void }) {
   const t = useT();
   const { generations, select, edit, maskMode, hasMask, jobs } = useWorkspace();
   const [instruction, setInstruction] = useState('');
@@ -47,6 +47,7 @@ function EditTab({ gen }: { gen: Generation }) {
     if (!text.trim()) return;
     edit(text);
     setInstruction('');
+    onEdited?.();
   };
 
   return (
@@ -120,7 +121,8 @@ function EditTab({ gen }: { gen: Generation }) {
   );
 }
 
-export function IteratePanel() {
+/** `onEdited` fires once an edit is launched (mobile: jump back to the image to follow it). */
+export function IteratePanel({ onEdited }: { onEdited?: () => void }) {
   const t = useT();
   const gen = useWorkspace(selectedGeneration);
   const [tab, setTab] = useState('edit');
@@ -143,10 +145,16 @@ export function IteratePanel() {
         </TabsList>
       </div>
       <TabsContent value="edit" className="min-h-0 flex-1">
-        <EditTab gen={gen} />
+        <EditTab gen={gen} onEdited={onEdited} />
       </TabsContent>
       <TabsContent value="score" className="min-h-0 flex-1">
-        <ScorePanel gen={gen} onApplyEdit={() => setTab('edit')} />
+        <ScorePanel
+          gen={gen}
+          onApplyEdit={() => {
+            setTab('edit');
+            onEdited?.();
+          }}
+        />
       </TabsContent>
     </Tabs>
   );

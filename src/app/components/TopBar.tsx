@@ -44,7 +44,7 @@ function ProjectSwitcher() {
     <>
       <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="max-w-56 gap-2 font-medium">
+              <Button variant="ghost" size="sm" className="max-w-40 gap-2 font-medium sm:max-w-56">
                 <Folder className="text-muted-foreground" />
                 <span className="truncate">{current?.name ?? t('topbar.untitled')}</span>
                 <ChevronsUpDown className="text-muted-foreground" />
@@ -155,7 +155,7 @@ export function TopBar() {
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-sm" aria-label={t('topbar.theme')}>
+                <Button variant="ghost" size="icon-sm" className="hidden sm:inline-flex" aria-label={t('topbar.theme')}>
                   <ThemeIcon />
                 </Button>
               </DropdownMenuTrigger>
@@ -195,7 +195,7 @@ export function TopBar() {
               className={cn(!hasKey && 'gap-2')}
             >
               <Settings />
-              {!hasKey && t('topbar.keyMissing')}
+              {!hasKey && <span className="hidden sm:inline">{t('topbar.keyMissing')}</span>}
             </Button>
           </TooltipTrigger>
           <TooltipContent>{t('topbar.settings')}</TooltipContent>

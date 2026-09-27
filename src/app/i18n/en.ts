@@ -96,6 +96,8 @@ export const en = {
     safeZones: 'Safe zones',
     maskTool: 'Select an area',
     maskHint: 'Paint over the area to change, then describe the change on the right.',
+    maskHintMobile: 'Paint over the area to change, then describe the change.',
+    describeRegion: 'Describe the change',
     brush: 'Brush',
     eraser: 'Eraser',
     clearMask: 'Clear selection',

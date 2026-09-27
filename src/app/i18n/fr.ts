@@ -98,6 +98,8 @@ export const fr: Dict = {
     safeZones: 'Zones de sécurité',
     maskTool: 'Sélectionner une zone',
     maskHint: 'Peignez la zone à modifier, puis décrivez le changement à droite.',
+    maskHintMobile: 'Peignez la zone à modifier, puis décrivez le changement.',
+    describeRegion: 'Décrire la retouche',
     brush: 'Pinceau',
     eraser: 'Gomme',
     clearMask: 'Effacer la sélection',

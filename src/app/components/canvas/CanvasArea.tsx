@@ -178,7 +178,8 @@ function ImageActions({ gen }: { gen: Generation }) {
   );
 }
 
-export function CanvasArea() {
+/** `onDescribeRegion` (mobile): the instruction field lives in another tab, offer a way to it. */
+export function CanvasArea({ onDescribeRegion }: { onDescribeRegion?: () => void }) {
   const t = useT();
   const ws = useWorkspace();
   const gen = useWorkspace(selectedGeneration);
@@ -217,30 +218,6 @@ export function CanvasArea() {
                 <Wand2 />
               </Toggle>
             </IconTip>
-            {ws.maskMode && (
-              <div className="flex items-center gap-1 rounded-md bg-accent/60 px-1">
-                <ToggleGroup type="single" size="sm" value={tool} onValueChange={(v) => v && setTool(v as MaskTool)}>
-                  <ToggleGroupItem value="brush" aria-label={t('canvas.brush')}>
-                    <Brush />
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="eraser" aria-label={t('canvas.eraser')}>
-                    <Eraser />
-                  </ToggleGroupItem>
-                </ToggleGroup>
-                <Slider
-                  className="w-24"
-                  min={0.01}
-                  max={0.15}
-                  step={0.005}
-                  value={[brushSize]}
-                  onValueChange={([v]) => setBrushSize(v)}
-                  aria-label={t('canvas.brush')}
-                />
-                <Button variant="ghost" size="xs" onClick={() => setClearSignal((n) => n + 1)}>
-                  {t('canvas.clearMask')}
-                </Button>
-              </div>
-            )}
           </>
         )}
 
@@ -250,6 +227,37 @@ export function CanvasArea() {
           </div>
         )}
       </div>
+
+      {/* Mask tools get their own row: they don't fit next to the view switcher on narrow widths */}
+      {ws.maskMode && ws.view === 'image' && gen && (
+        <div className="flex h-10 shrink-0 items-center gap-1.5 border-b bg-background px-2">
+          <ToggleGroup type="single" size="sm" value={tool} onValueChange={(v) => v && setTool(v as MaskTool)}>
+            <ToggleGroupItem value="brush" aria-label={t('canvas.brush')}>
+              <Brush />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="eraser" aria-label={t('canvas.eraser')}>
+              <Eraser />
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <Slider
+            className="max-w-32 min-w-10 flex-1"
+            min={0.01}
+            max={0.15}
+            step={0.005}
+            value={[brushSize]}
+            onValueChange={([v]) => setBrushSize(v)}
+            aria-label={t('canvas.brush')}
+          />
+          <Button variant="ghost" size="xs" onClick={() => setClearSignal((n) => n + 1)} aria-label={t('canvas.clearMask')}>
+            <X /> <span className="hidden sm:inline">{t('canvas.clearMask')}</span>
+          </Button>
+          {onDescribeRegion && ws.hasMask && (
+            <Button size="xs" className="ml-auto" onClick={onDescribeRegion}>
+              {t('canvas.describeRegion')}
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* Body */}
       <div className="relative min-h-0 flex-1">
@@ -266,8 +274,9 @@ export function CanvasArea() {
         )}
 
         {ws.maskMode && ws.view === 'image' && (
-          <p className="pointer-events-none absolute top-3 left-1/2 flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2 rounded-full bg-foreground px-3 py-1 text-xs whitespace-nowrap text-background shadow">
-            <span className="truncate">{t('canvas.maskHint')}</span> <Kbd className="shrink-0">Esc</Kbd>
+          <p className="pointer-events-none absolute top-3 left-1/2 flex w-max max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2 rounded-2xl bg-foreground px-3 py-1 text-xs text-background shadow sm:rounded-full sm:whitespace-nowrap">
+            <span className="sm:truncate">{onDescribeRegion ? t('canvas.maskHintMobile') : t('canvas.maskHint')}</span>
+            <Kbd className="shrink-0 [@media(pointer:coarse)]:hidden">Esc</Kbd>
           </p>
         )}
 

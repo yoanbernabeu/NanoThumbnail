@@ -61,7 +61,7 @@ function PhotoSlot({ label, blob, required, onSet, onClear }: { label: string; b
                 e.stopPropagation();
                 onClear();
               }}
-              className="absolute top-1 right-1 rounded-full bg-black/70 p-1 text-white opacity-0 group-hover:opacity-100"
+              className="absolute top-1 right-1 rounded-full bg-black/70 p-1 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(pointer:coarse)]:opacity-100"
               aria-label="Remove"
             >
               <Trash2 className="size-3" />

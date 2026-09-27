@@ -60,13 +60,13 @@ export function AssistantDialog() {
         </DialogHeader>
 
         <form
-          className="flex items-end gap-2"
+          className="flex flex-col gap-2 sm:flex-row sm:items-end"
           onSubmit={(e) => {
             e.preventDefault();
             run();
           }}
         >
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <Field label={t('brief.videoTitle')} htmlFor="aTitle">
               <Input id="aTitle" value={brief.videoTitle} onChange={(e) => setBrief({ videoTitle: e.target.value })} placeholder={t('brief.videoTitlePlaceholder')} />
             </Field>

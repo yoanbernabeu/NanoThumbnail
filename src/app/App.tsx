@@ -123,15 +123,19 @@ export default function App() {
           </ResizablePanelGroup>
         ) : (
           <>
-            <div className="min-h-0 flex-1 overflow-hidden">
-              {mobileTab === 'brief' && <BriefPanel onGenerated={() => setMobileTab('canvas')} />}
-              {mobileTab === 'canvas' && (
-                <div className="flex h-full flex-col">
-                  <CanvasArea />
-                  <Filmstrip />
-                </div>
-              )}
-              {mobileTab === 'iterate' && <IteratePanel />}
+            {/* Panels stay mounted (hidden, not removed) so switching tabs keeps the
+                painted mask, scroll positions and drafts. */}
+            <div className="relative min-h-0 flex-1 overflow-clip">
+              <div className={cn('absolute inset-0', mobileTab !== 'brief' && 'invisible')}>
+                <BriefPanel onGenerated={() => setMobileTab('canvas')} />
+              </div>
+              <div className={cn('absolute inset-0 flex flex-col', mobileTab !== 'canvas' && 'invisible')}>
+                <CanvasArea onDescribeRegion={() => setMobileTab('iterate')} />
+                <Filmstrip />
+              </div>
+              <div className={cn('absolute inset-0', mobileTab !== 'iterate' && 'invisible')}>
+                <IteratePanel onEdited={() => setMobileTab('canvas')} />
+              </div>
             </div>
             <nav className="grid grid-cols-3 border-t bg-sidebar pb-[env(safe-area-inset-bottom)]">
               {(['brief', 'canvas', 'iterate'] as const).map((tab) => (
@@ -157,7 +161,8 @@ export default function App() {
       <AssistantDialog />
       <ErrorDialog />
       <CommandMenu />
-      <Toaster position="bottom-right" />
+      {/* Bottom-right would cover the mobile tab bar */}
+      <Toaster position={isDesktop ? 'bottom-right' : 'top-center'} />
     </TooltipProvider>
   );
 }

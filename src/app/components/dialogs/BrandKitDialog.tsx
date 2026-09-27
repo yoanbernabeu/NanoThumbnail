@@ -88,7 +88,7 @@ export function BrandKitDialog() {
                   <button
                     type="button"
                     onClick={() => patch({ colors: draft.colors.filter((_, j) => j !== i) })}
-                    className="absolute -top-1.5 -right-1.5 hidden rounded-full bg-foreground p-0.5 text-background group-hover:block"
+                    className="absolute -top-1.5 -right-1.5 hidden rounded-full bg-foreground p-0.5 text-background group-hover:block [@media(pointer:coarse)]:block"
                     aria-label={t('common.remove')}
                   >
                     <X className="size-3" />

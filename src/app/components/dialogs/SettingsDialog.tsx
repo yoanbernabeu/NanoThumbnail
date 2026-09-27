@@ -80,10 +80,10 @@ export function SettingsDialog() {
         <div className="space-y-5">
           <Field label={t('settings.provider')}>
             <ToggleGroup type="single" variant="outline" className="w-full" value={s.provider} onValueChange={(v) => v && s.set({ provider: v as Provider })}>
-              <ToggleGroupItem value="replicate" className="flex-1">
+              <ToggleGroupItem value="replicate" className="h-auto min-h-9 min-w-0 flex-1 leading-tight whitespace-normal">
                 {t('settings.replicate')}
               </ToggleGroupItem>
-              <ToggleGroupItem value="gemini" className="flex-1">
+              <ToggleGroupItem value="gemini" className="h-auto min-h-9 min-w-0 flex-1 leading-tight whitespace-normal">
                 {t('settings.gemini')}
               </ToggleGroupItem>
             </ToggleGroup>
@@ -134,10 +134,10 @@ export function SettingsDialog() {
               value={s.keyPersistence}
               onValueChange={(v) => v && s.set({ keyPersistence: v as KeyPersistence })}
             >
-              <ToggleGroupItem value="local" className="flex-1">
+              <ToggleGroupItem value="local" className="h-auto min-h-9 min-w-0 flex-1 leading-tight whitespace-normal">
                 {t('settings.keyLocal')}
               </ToggleGroupItem>
-              <ToggleGroupItem value="session" className="flex-1">
+              <ToggleGroupItem value="session" className="h-auto min-h-9 min-w-0 flex-1 leading-tight whitespace-normal">
                 {t('settings.keySession')}
               </ToggleGroupItem>
             </ToggleGroup>
@@ -146,10 +146,10 @@ export function SettingsDialog() {
           <Separator />
 
           <Field label={t('settings.appearance')}>
-            <div className="flex gap-2">
-              <ToggleGroup type="single" variant="outline" size="sm" className="flex-1" value={s.theme} onValueChange={(v) => v && s.set({ theme: v as Theme })}>
+            <div className="flex flex-wrap gap-2">
+              <ToggleGroup type="single" variant="outline" size="sm" className="min-w-52 flex-1" value={s.theme} onValueChange={(v) => v && s.set({ theme: v as Theme })}>
                 {(['light', 'dark', 'system'] as const).map((v) => (
-                  <ToggleGroupItem key={v} value={v} className="flex-1">
+                  <ToggleGroupItem key={v} value={v} className="min-w-0 flex-1">
                     {t(`topbar.${v}`)}
                   </ToggleGroupItem>
                 ))}
